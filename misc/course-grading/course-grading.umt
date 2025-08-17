@@ -1,0 +1,337 @@
+  		     C o u r s e  G r a d i n g   
+
+
+The following should be regarded as merely "guidelines" rather than
+hard-and-fast rules.
+
+The following guidelines apply to grading both homeworks and projects:
+
+  + The grading should be as consistent as possible:
+
+      #  For each assignment, between different students.
+
+      #  Between different assignments, though that is less important than
+         (1).
+
+  + To help achieve consistency, it may be a good idea to hold off on
+    completing grading, until the late submission deadline has passed.  Of
+    course, end-of-semester and other deadlines may preclude this.
+
+  + For what seem to be minor problems, 1/2 a point can be taken off.
+    However, when the overall assignment grade is recorded it should be
+    rounded up to the nearest integer.
+
+  + The guidelines given here are not inviolate and can be violated when it
+    makes sense to do so.
+
+			Exam and Homework Grading Guidelines
+			------------------------------------
+
+  + Not all homework/exam questions have exactly one answer; in fact,
+    some homeworks questions may be vague, intentionally or sometimes
+    unintentionally.  The student's answer to such questions should be
+    graded against what the question (and any clarifications made to
+    it) actually specifies and not only by comparison with the
+    provided solution.  For such questions, the provided solution may
+    be only one of many possible solutions.
+
+  + It is the student's obligation to ensure that work turned in is
+    readable by any average person. A grader should not feel
+    obligated to decipher illegible scribblings.
+
+  + It is the student's obligation to clearly indicate which answers are
+    canceled; if there are multiple answers to the same question, then only
+    the last answer should be graded.
+
+  + A reasonable answer should get at least 50% of the maximum points for
+    that question.
+
+  + If the language or style used in an assignment is inconsistent,
+    you should be suspicious.  Often web searches may be used to find
+    sources which the student copied without citing them, which
+    constitutes cheating.
+
+  + If a question is marked `[RECORD]`, then the grader should
+    record the grade obtained for that question individually for each
+    student.
+    
+
+			  Project Grading Guidelines
+			  --------------------------
+
+  + A project may be submitted multiple times before the project submission
+    deadline.  Only the last submission should be graded.
+
+  + If a project does not` ` ."compile .", the student should usually get no more
+    than 65%.  Depending on how complete the project is, it may get
+    appreciably less.  In this case, it is useful to look for README or
+    other files the student may have enclosed explaining the status of his
+    or her project.
+
+    If it doesn't compile because it appears to be missing a file,
+    then the grader *may* attempt to contact the student by email.
+    However, the grader has no obligation to do so, since it is entirely
+    the student's responsibility to ensure that a submission is
+    complete.
+
+  + If a project compiles and passes all its runtime tests it should be
+    guaranteed at least 90% assuming it has met *all* aspects of the project
+    specification.  Note that this does not imply that a project which fails
+    a single test cannot get more than 90%.
+
+  + The remaining 10% should be a judgement call on the grader's part.
+    Things like the following:
+
+      + Quality of code.  Is it modular?  Does it exhibit cut-and-paste reuse
+        rather than reuse using programming constructs?
+
+	If a reader cannot understand the code because the code logic
+        is convoluted with assignments to the same variable
+        interspersed in complex control flow, then that is often an
+        indication of poor code quality.
+
+        5-10 points may be taken off for particularly egregious submissions.
+
+      + Is it well-commented?  Note that the important point is that
+        the program should be easily understandable and not that it
+        meet some bureaucratic guidelines that every function have
+        comments in such-and-such form.  Also note that a program
+        understandable on its own with minimal or even no comments is
+        preferable to a convoluted program which needs heavy
+        commenting to explain its convolutions.
+
+      + Is it over-commented?  Does it exhibit the .~ `i++; /* increment i */`
+        syndrome?
+
+      + Consistency of formatting and naming conventions.  No
+        particular style is mandated as we all have our favorites.
+        The consistency though is important and IMHO a important
+        indicator of how well crafted the program may be.  5-10 points
+        may be taken off for particularly egregious submissions.
+
+      + Are there unnecessary fixed limits built into the code?  Are
+        there arrays declared with a fixed size which does not
+        naturally follow from the problem domain?
+
+      + Are there magic numbers hardwired into code rather than being
+        referenced via symbolic names.  This is such an egregious
+        violation of good programming practice that even a single
+        violation can be penalized by taking off 5 points.
+
+      + Does the project use the method(s) and algorithm(s) specified
+        in the assignment.  If not, you can take off much more than
+        15%, depending on how far off the project went from the spirit
+        of the assignment.
+
+    Violations of such subjective best practices in earlier projects
+    should result in low penalties (say 1 to 2 points).  This can be
+    increased to up to 10 points if egregious violations persist into
+    the later projects.
+
+  + The grader should usually merely be glancing at the code.  If a test case
+    has failed, then an attempt may be made to try finding out what caused
+    it to fail, but usually it would be unreasonable to spend more than a
+    couple of minutes on it.
+
+%%%
+    	      	      Setting Up Submission Links
+		      ===========================
+
+The grader should watch the course homepage for announcements regarding
+homework and exams.  The grader should set up submission links on
+brightspace for the homework or exam well before the submission deadline.
+For a homework assignment, the description for the submission link should
+contain a link to the homework assignment on the course website.
+
+%%%
+
+	      	       Returning Graded Work
+		       =====================
+
+Graded work should be returned to students, usually within 2 weeks
+after the late submission deadline, via gradescope.
+Besides the points obtained, the graded work should also include
+indications of why points were lost.  This should be done utilizing
+the dynamic rubrics facility of gradescope.
+separate text file.
+
+A graded project should be returned to the students via gradescope.
+The returned material should contain at least the following:
+
+  .!ol-letter!
+  
+  # The overall grade (and breakup if applicable).
+
+  # Log of the compilation (if applicable).
+
+  # Some description of the test case(s) used along with inputs and 
+    expected outputs.
+
+  # Log of the program execution.
+
+  # Dynamic gradescope rubrics used in determining the grade.
+
+	      	        Recording Grades
+			================
+
+All grades should be published to students via brightspace (if the
+assignment is graded using gradescope, then use the link to
+brightspace to publish the gradescope grade to brightspace).  Since
+brightspace is not capable of performing the computations needed for
+determining the overall grade, please *use Google Sheets to maintain
+a master copy* of the grades for the class.  Use automated ways of
+synchronizing the Google sheet with the grades published on
+brightspace.
+
+
+It is important to ensure that the spreadsheet distinguishes between
+assignments which were not turned in and those for which a zero grade
+was obtained.  The former should not be used in computing course
+statistics whereas the latter should be used.
+
+Each assignment or exam should use a separate auxiliary sheet within
+the spreadsheet. This sheet should record the overall grade for the
+assignment as well as the details of how that grade was determined.
+
+There should be a master sheet which contains all grades for the
+entire class, with a separate column dedicated to each assignment or
+exam.  The master sheet should be set up to automatically update from
+the auxiliary sheets recording the grades for individual assignments
+or exams.  The update process should be based on student ID's where a
+student should be identified by the prefix before the `@` in their BU
+email address.
+
+For example, the following Google sheet formula can be used on the master
+sheet to copy
+a student's grade from a `Project 1` auxiliary sheet:
+
+```
+=iferror(vlookup(E6, 'Project 1'!A:E,5,false), "")
+```
+
+  + `E6` is the cell in the master sheet containing the student's ID.
+
+  + `'Project 1'!A:E` specifies the column search range within the
+    auxiliary sheet where `vlookup()` looks for a matching student ID.
+
+  + `5` specifies offset of the column containing the grade within
+    the above search range.
+
+  + `false` specifies that the auxiliary sheet is not sorted.
+
+  + The `iferror(vlookup(...), "")` specifies that the result should
+    be an empty string if there is a `vlookup` error (typically, the
+    `E6` student ID is not found within the auxiliary sheet search
+    range).
+
+The master sheet should contain a column containing the overall grade
+for each student based on the assigned weights mentioned in the
+syllabus, except that it should not drop any grades.  This provides a
+snapshot of a student's performance as the course progresses.
+
+      	       		Accreditation Requirements
+			==========================
+
+For accreditation purposes, it is sometimes necessary to track the
+work done by students.  Specifically, if a question on a homework or
+exam is marked `[RECORD]`, then the grader *must* record the grade
+obtained for that question individually for each student.
+
+
+       	      	  	 Assignment of Final Grades
+			 ==========================
+
+Letter grades will be assigned strictly monotonically based on the overall
+grades with major input from the grader(s).  If at all possible, students whose
+overall grades differ by a very tiny amount will receive the same letter
+grade.
+
+Assignment of final grades will be done during a meeting after all
+work has been graded.  For this meeting, the grader should ensure that
+the master sheet within the google spreadsheet contains a summary of
+grades for each assignment/exam for all students (details of grades
+for individual assignments can be on other sheets).  Headings on the
+summary sheet should be fixed so that they are always visible as the
+content of the sheet are scrolled.  This should also be done for rows
+with aggregates so that grades can be sorted without moving the
+aggregates.
+
+This sheet should contain the following columns:
+
+  # Two columns for the student name titled `Last Name`, `First Name`
+    containing the student's name as provided by brightspace.
+
+  # A single column for the students ID (the prefix of their BU email address
+    before the `@`) titled `userId`.
+
+  # A single column for the students B-number titled `bNumber`.
+
+  # A single column for the grade for each project assigned titled
+    `prj`"N" for "N" in 1, 2...
+
+  # A single column for the grade for for each homework assigned
+    titled `hw`"N" for "N" in 1, 2...
+
+  # A single column for the grade for each quiz assigned `qz`"N" for
+    "N" in 1, 2...
+
+  # A single column for each exam titled `mid` and `fin`.
+
+  # A single column for the overall project grade out of 100, titled
+    `prjAvg` with lowest project dropped as per the course grading
+    policy. 
+
+  # A single column for the overall homework grade out of 100, titled
+    `hwAvg` with lowest homework dropped as per the course grading
+    policy.
+
+  # A single column for the overall quiz grade, titled `qzAvg` with
+    lowest quiz dropped as per the course grading policy.
+
+  # A single column for the overall course grade out of 100 titled
+    `total` weighted as per the weights specified in the
+    .<../../slides/syllabus/syllabus.html#weights> "course syllabus".
+
+  # A single column for the assigned letter grade titled `grade`.
+    This column will be completed during the meeting.
+
+  # A single column titled `notes` containing miscellaneous notes
+    for the student's letter grade, including any explanation for
+    reduction of the grade caused by cheating.
+
+There should be a row for each student with the rows set up in
+alternating colors so that they are easy to scan.  These rows should
+be sorted in descending order by the `total` column.
+
+All averages / totals should be rounded to 1 decimal position.
+
+Additionally, there should be rows at the top of the master sheet
+giving the following aggregates for each individual column:
+
+  .!ol-letter!
+
+  # Number submitted titled `Number`.  
+
+  # Maximum grade titled `Maximum`.
+
+  # Average grade titled `Average`.  This should not count students who
+    did not submit.
+
+  # Minimum grade titled `Minimum`. This should not count students who
+    did not submit.
+
+The above aggregate rows and `First Name` and `Last Name` columns
+should be frozen so that it is possible to scroll the rest of the
+sheet while keeping the frozen entries visible. 
+
+The columns should be resized to be as narrow as possible (use the
+fit-to-data option provided by Google sheets).  During the meeting,
+the `userId` and `bNumber` columns should be hidden as typically, they
+will not be needed to enter the letter grades.
+
+During the meeting, the cutoffs used will be recorded in the
+spreadsheet, possibly on a separate sheet.  These cutoffs should not
+be provided to students to avoid attempts by some students to game the
+system if they are close to a cut-off.
+
+

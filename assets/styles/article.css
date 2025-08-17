@@ -1,0 +1,328 @@
+:root {
+  /*
+  --base-color: 68, 68, 204;
+  --nav-bg-color: rgba(var(--base-color), 1.0);
+  --hdr-color: rgba(var(--base-color), 1.0);
+  --color09: rgb(var(--base-color));
+  --color01: rgba(var(--base-color), 0.05);
+  --color02: rgba(var(--base-color), 0.1);
+  --color03: rgba(var(--base-color), 0.15);
+  --color04: rgba(var(--base-color), 0.3);
+ */
+  --nav-bg-color: #88f;
+  --hdr-color: rgb(68, 68, 204);
+  --max-width: 65rem;
+}
+
+
+body {
+  max-width: var(--max-width);
+  font-size: 100%;
+  //margin: auto;
+}
+
+.umt-slides section[data-level=h1] {
+  font-size: 180%;
+}
+
+p:has(img) {
+  text-align: center;
+}
+
+dl {
+  margin_left: 0;
+  padding-left: 1.25em;
+}
+
+.visjs {
+  width: 800px;
+  height: 800px;
+  border: 2px solid cyan;
+}
+
+#umt-slides-toc {
+  position: fixed;
+  margin: 0;
+  padding: 0;
+  top: auto;
+  bottom: 0;
+  visibility: hidden;
+  border-width: 2px 2px 0 0;
+  border-style: solid;
+  border-color: black;
+  overflow-y: auto;
+  left: 0;
+  z-index: 9999;
+  height: 100vh;
+  width: 30vw;
+  background-color: #f0f0f0;
+}
+
+#umt-slides-toc div {
+  padding: 4px;
+  /* attempt to get content positioned on bottom
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  justify-content: end;
+  */
+}
+
+#umt-slides-toc a {
+  display: block;
+  padding: 4px;
+}
+ul, ol {
+  margin_left: 0;
+  padding-left: 2.5em;
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--nav-bg-color);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  max-width: var(--max-width);
+}
+
+nav.umt-slides-control ul {
+  bottom: 0;
+  top: auto;
+  height: 2rem;
+}
+
+
+nav li a {
+  color: white;
+  text-align: center;
+  padding: 12px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+nav li a:visited {
+  color: white;
+}
+
+nav li a:hover {
+  color: white;
+  background-color: #222;
+}
+
+nav li a.material-icons {
+  font-size: 110%;
+}
+
+
+.content {
+  margin: 1em;
+  padding-top: 3em;
+}
+
+h1 {
+  color: var(--hdr-color);
+  text-align: center;
+  font-size: 200%;
+  font-weight: bold;
+  padding: 0;
+  margin: 2rem 0 0 0;
+}
+
+h2 {
+  color: #527bdd;
+  text-align: center;
+  font-size: 150%;
+  font-weight: bold;
+  padding-bottom: 0.5em;
+  padding: 0;
+  margin: 0;
+}
+
+h3 {
+  color: #527bdd;
+  text-align: center;
+  font-size: 120%;
+  font-weight: bold;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+
+a:visited {
+  color: #336600;
+}
+
+a:hover {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+tt {
+  color: navy;
+}
+
+dl {
+  /* text-indent: 20px; */
+}
+
+dt {
+  font-weight: bold;
+  color: navy;
+  padding: 0px;
+  margin: 0px;
+  /* text-indent: -10px; */
+}
+
+dd > p {
+  padding: 0px 1rem;
+  margin: 0.1rem 1rem 0.6rem 0rem;
+}
+dd {
+  padding: 0px;
+  margin: 0px;
+}
+ol ol, .ol-letter {
+  list-style-type: lower-alpha;
+}
+ol ol ol, .ol-roman {
+  list-style-type: lower-roman;
+}
+.umt-slides section[data-level=h2] {
+  border: 2px solid #527bdd;
+  border-radius: 20px;
+  padding: 2rem;
+  margin: 4rem 2rem;
+}
+
+#page {
+  margin: 0px auto;
+  text-align: left;
+  padding: 0px;
+  overflow: auto;
+  float: left;
+}
+
+#header {
+  padding: 0;
+  margin: 0;
+}
+
+#main {
+  padding-left: 12em;
+  background: #fff;
+}
+
+#content {
+  padding: 0px 15px 30em 15px;
+}
+
+#announce DT {
+  font-weight: bold;
+}
+
+code {
+  font-family: "Courier New" Courier monospace;
+  font-size: 90%;
+  font-weight: bold;
+}
+
+.important {
+  font-weight: bold;
+  color: #ff0000;
+}
+
+.first-control, .previous-control, .next-control, .last-control {
+  /* cursor: pointer; */
+  padding: 1em;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.slide-controls {
+  clear: both;
+}
+
+.slide-end {
+  height: 4em;
+}
+
+.grid-form {
+  display: grid;
+  grid-template-columns: 0.5fr 1fr;
+  grid-gap: 2vw;
+}
+
+.grid-form input, .grid-form select {
+  width: 50%;
+}
+.grid-form input[type=checkbox], .grid-form input[type=radio] {
+  width: 10%;
+}
+.grid-form button {
+  width: 30%;
+}
+
+label {
+  font-weight: bold;
+  text-align: right;
+}
+
+
+.error {
+  color: red;
+}
+
+.center {
+  text-align: center;
+}
+
+@media print {
+  nav {
+    display: none;
+  }
+  .umt-slides section[data-level=h2] {
+    page-break-before: always;
+    min-height: 60ex;
+    font-size: 20px;
+  }
+  .umt-exam section[data-level=h1] > ol > li {
+    page-break-before: always;
+  }
+  .questions > li {
+    page-break-after: always;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .umt-slides section[data-level=h1] {
+    font-size: 80%;
+  }
+}

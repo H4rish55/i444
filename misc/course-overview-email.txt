@@ -1,0 +1,7 @@
+The course concentrates on the fundamentals of web development.  After a brief introduction to the course, around the first third of the course does a deep dive into JavaScript and TypeScript, including asynchronous programming.  Then we spend some time on the HTTP protocol with an emphasis on REST web services.  Then we look at browser technologies, including a brief overview of HTML, CSS selectors and the DOM API. Finally, we look at a frontend framework like React or Vue.  The course emphasizes security throughout the course, but towards the end of the course I cover it as its own topic.
+
+The course has 5 projects, 4-5 homework assignments, some number of pop quizzes, a midterm and a final. The quizzes are online only with each student receiving personalized random questions.  The midterm and final are in-person, on-paper, open-book, open-notes but no electronic devices.
+
+The projects build on each other, out from the server to the browser. The first project is a command-line pure TypeScript program, the second project is a command-line TypeScript program which uses a database, the third project builds REST web services, the fourth project builds out to the browser using the DOM and the final project uses a frontend framework.
+
+The course is not a course on any particular web framework.  The frameworks covered will not be covered in great depth.  Since this is a CS course, general CS topics like functional programming are emphasized.

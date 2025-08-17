@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>@{TITLE}</title>
+    <link href="/cs444/online/auth/css/quiz.css" rel="stylesheet"
+	  type="text/css" /> 
+    <link href="/cs444/assets/styles/article.css" rel="stylesheet"
+	  type="text/css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+    <script type="text/javascript"
+          src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/github.min.css">
+  </head>
+  <body>
+    <div class="quiz-header">
+      <span class="state-title">Choices</span>
+      <span class="quiz-answers"></span>
+      <span class="quiz-right">
+	<span class="quiz-time">15:00</span>
+	<button type="button" class="quiz-submit">Submit Quiz</button>
+      </span>
+    </div>
+    <div class="content">
+      @{CONTENT}
+    </div> <!-- #content -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="module" src="/cs444/assets/scripts/highlight.mjs"></script>
+    <script src="/cs444/online/auth/js/quiz.mjs" type="module"></script>
+  </body>
+</html>

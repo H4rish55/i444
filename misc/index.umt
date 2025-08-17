@@ -1,0 +1,39 @@
+                 M i s c e l l a n e o u s
+
+This directory will contains miscellaneous information relevant to
+this course.
+
+  
+  + .<academic-honesty/academic-honesty-policy.html>
+      "Academic Honesty Policy".
+      
+  + .<academic-honesty/academic-honesty-statement.html>
+    "Academic Honesty Statement": All students are required to submit.
+  
+  + .<course-grading/course-grading.html> "Course Grading" explains
+    how the course will be graded.  This document is primarily for
+    TAs/graders but may be useful for students too.  
+  
+  
+  + .<./videos/index.html> "Class videos": Usually made available the
+    day after the class.
+
+  + .<vm-setup/index.html> "Virtual Machine Setup":
+     Directions for setting up the virtual machine you will be using
+     for this course.
+
+%%%
+  + Listing of .<ports/ports.html> services running on
+    `zdu.binghamton.edu`.  ( .<./ports/ports.umt> "source",
+    .<./ports/ports.pdf> "PDF").
+    
+
+  + .<gui-remote-access/gui-remote-access.html> "GUI Remote Access"
+    Other formats: .<gui-remote-access/gui-remote-access.pdf> PDF,
+    .<gui-remote-access/gui-remote-access.umt> source.
+
+  + .<./fail2ban/fail2ban.html> "Fail2Ban Connectivity Issues" for
+    `remote.cs` (``.<./fail2ban/fail2ban.umt>source``).
+  
+%%%
+

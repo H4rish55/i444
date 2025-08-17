@@ -1,0 +1,27 @@
+module.exports = {
+  id: 'js',
+  title: 'JavaScript',
+  nested: [
+    require('./arith'),
+    require('./bitwise-operators'),
+    require('./template-strings'),
+    require('./falsy'),
+    require('./logical-operators'),
+    require('./loops'),
+    require('./map-reduce'),
+    require('./reduce-filter'),
+    require('./set-ops'),
+    require('./regex-meta-chars'),
+    require('./desc-to-regex'),
+    require('./regex-match'),
+    require('./event-loop'),
+    require('./promises-true-false'),
+    require('./promise-results'),
+    require('./prototype-true-false'),
+    require('./add-concat'),
+    require('./conversions'), 
+    require('./var-let-rules'),
+    require('./var-let-code'),
+  ],
+};
+

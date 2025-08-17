@@ -1,0 +1,496 @@
+/* basic reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --color-01: bisque;
+  --color-02: navajowhite;
+  --color-03: burlywood; 
+  --color-04: tan;
+  --color-05: saddlebrown;
+}
+
+
+#header {
+  top: 0;
+  background-color: var(--color-05);
+  color: white;
+  text-align: center;
+  padding: 20px;
+  min-width: 600px;
+  min-height: 40px;
+  position: relative;
+}
+
+
+#root {
+  display: grid;
+  grid-template-columns: 300px auto;
+}
+
+html,body {
+  /* margin: 0px 10px 0px 0px; */
+  margin: 0px 5px;
+  padding: 0px 10px 0px 0px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+nav#dir {
+  min-width: 300px;
+  width: 300px;
+  float: left;
+  height: 100vh;
+  overflow: auto;
+  white-space: nowrap;
+  background-color: var(--color-04);
+}
+
+#content-pane {
+}
+
+ul.dir-tree li {
+  /* margin: -30px 5px; */
+  list-style-type: none;
+  padding: 0px 10px;
+}
+
+ul.dir-tree li .dir-entry:hover {
+  background-color: var(--color-03);
+  color: white;
+}
+
+
+ul.dir-tree li.bin {
+  /* margin: -30px 5px; */
+  list-style-type: none;
+  color: red;
+}
+
+#content-holder {
+  position: relative;
+  overflow: auto;
+  /* border: 3px solid blue; */
+  max-height: calc(100vh - 100px);
+  /* max-width: calc(100vw - 350px); */
+  min-height: 350px;
+}
+
+@media screen and (min-width: 2000px) {
+  #content-holder {
+    max-width: calc(100vw - 350px);
+  }
+}  
+
+#content {
+  padding: 10px;
+  margin: 0px;
+  /* border: 2px solid green; */
+}
+
+menu.ctx-menu {
+  opacity: 1;
+  box-shadow: 2px 6px 6px 4px rgba(0, 0, 0, 0.4);
+  border: 1px solid black;
+  width: auto;
+  box-sizing: border-box;
+  transition: 0.5s display ease-in;
+  list-style-type: none;
+  min-width: 120px;
+  padding: 5px 0px 5px 5px;
+  margin: 0px;
+  background-color: var(--color-04);
+  overflow: auto;
+  /* display: inline-block; */
+}
+
+.ctx-menu {
+  z-index: 9;
+  position: relative;
+}
+
+.ctx-menu li {
+  position: relative;
+  text-align: left;
+}
+
+.ctx-menu li .title {
+  text-align: center;
+}  
+.ctx-menu li.hr {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: black;
+  height: 2px;
+}
+
+.ctx-menu li.action:hover {
+  background-color: var(--color-03);
+  cursor: pointer;
+}
+
+.note-container.lt0 {
+  color: red;
+  border: 2px solid red;
+  border-radius: 10px;
+}
+
+.note-container.gt0 {
+  color: green;
+}
+
+.note-container.eq0 {
+  color: blue;
+}
+
+.note-container {
+  transform: translate(-50%, -50%);
+}
+
+.note-text, #select-note-content {
+  background-color: #ffff66;
+  color: red;
+  border: 2px solid red;
+  border-radius: 10px;
+  padding: 5px;
+  font-family: "Just Another Hand", cursive;
+  font-size: larger;
+  width: 400px;
+  z-index: 9;
+}
+
+.note-text {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 9;
+}
+
+.eq0 {
+  color: blue;
+}
+.lt0 {
+  color: red;
+  text-align: right;
+}
+
+.gt0 {
+  border: 2px solid green;
+  border-radius: 10px;
+  color: green;
+  text-align: right;
+}
+
+/* Style for the form container */
+.form-container {
+  width: 600px;
+  border: 1px solid black;
+  border-radius: 4px;
+  margin: 10px;
+  text-align: center;
+  background-color: bisque;
+  visibility: hidden;
+  z-index: 9;
+}
+
+.bottom-pos {
+  position: fixed;
+  left: 300px;
+  bottom: 0px;
+}
+
+
+.form-container form {
+  margin: 0 auto;
+  padding: 10px;
+  font-size: 12px;
+  text-align: left;
+}
+
+.form-container h2 {
+  background-color:  #007bff;
+  width: 100%;
+  border: 1px solid #007bff;
+  border-radius: 2px;
+  font-size: 16px;
+  color: #fff;
+}
+
+/* Style for the form labels */
+.widget-container label {
+  display: block;
+  font-weight: bold;
+  /* margin-bottom: 5px; */
+}
+
+/* Style for the form inputs */
+.widget-container input {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-size: 10px;
+}
+
+.widget-container {
+  margin: 0 10px;
+}
+
+.widget-container input, .widget-container select {
+  width: 100%;
+}
+
+#level-container {
+  width: 20%;
+  font-size: 10px;
+}
+
+#id-container {
+  width: 60%;
+}
+
+#grade-container {
+  width:20%;
+}
+
+.error {
+  color: red;
+}
+
+/* Style for the textarea */
+.widget-container textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  resize: vertical;
+}
+
+select#add-note-icon {
+  background-repeat: no-repeat;
+  background-position: bottom left;
+  padding-left: 30px;
+  background-size: 20px;
+}
+
+select#add-note-icon option[value="bug"] {
+  background-image: url(/bug.svg);
+}
+select#add-note-icon option[value="note"] {
+  background-image: url(/note.svg);
+}
+select#add-note-icon option[value="question"] {
+  background-image: url(/question.svg);
+}
+select#add-note-icon option[value="thumbs-up"] {
+  background-image: url(/thumbs-up.svg);
+}
+select#add-note-icon option[value="tick"] {
+  background-image: url(/tick.svg);
+}
+select#add-note-icon option[value="wrong"] {
+  background-image: url(/wrong.svg);
+}
+
+/* Style for the buttons */
+.form-buttons {
+  margin-top: 10px;
+  text-align: right; /* Align buttons to the right */
+}
+
+.form-buttons button {
+  padding: 5px 15px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+/*
+    .form-buttons button:last-child {
+        margin-right: 0;
+    }
+*/
+
+.form-buttons button:hover {
+  background-color: #0056b3;
+}
+
+/* Style for inline container */
+.inline-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.test-summary {
+  max-width: 800px;
+}
+
+.test-summary h4 {
+  font-size: larger;
+  text-align: center;
+  font-weight: bold;
+  padding: 20pt;
+  margin-top: 20pt;
+}
+
+.test-summary .submission-info,
+.test-summary .summaries {
+  border: 2px solid var(--color-02);
+  background-color: var(--color-01);
+  margin: 10px;
+}
+
+.test-summary dl {
+  display: grid;
+  padding: 10px;
+  margin: 10px;
+}
+
+.test-summary dt {
+  font-weight: bold;
+  content-after: ':';
+  grid-column-start: 1;
+  padding-right: 10px;
+}
+.test-summary dd {
+  grid-column-start: 2;
+}
+
+.test-summary .submission-info,
+.test-summary .summaries {
+  border: 2px solid var(--color-02);
+  background-color: var(--color-01);
+}
+
+.test-summary .summaries {
+  width: 80%;
+}
+
+.test-summary ol {
+  left-padding: 20px;
+  padding-inline-start: 60px;
+}
+.test-summary li {
+  left-padding: 20px;
+}
+.test-summary .test-summaries li, 
+.test-summary .test-details li {
+  padding: 10px;
+}
+
+.test-summary .test-details pre {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-size: 12px;
+}
+
+.test-summary .test-details dl {
+  display: grid;
+}
+
+.test-summary .test-detail dt {
+  font-weight: bold;
+  grid-column-start: 1;
+}
+
+.test-summary .test-detail dd {
+  grid-column-start: 1;
+}
+
+.test-summary .passed {
+  color: green;
+}
+
+.test-summary .failed {
+  color: red;
+}
+
+.report table {
+  padding: 10px;
+  border: 1px solid lightblue;
+  margin: 20px;
+}
+.report table .numeric {
+  text-align: right;
+}
+
+.report table tr {
+  padding: 10px;
+  margin: 0px;
+}
+.report  table tr:nth-child(even) {
+  background-color: var(--color-02);
+}
+.report table tr:nth-child(odd) {
+  background-color: var(--color-01);
+}
+
+
+.report td, .report th {
+  padding: 10px;
+  margin: 0px;
+}
+
+.report th {
+  background-color: var(--color-04);
+}
+
+.report td.comment {
+  background-color: #ffff66;
+  color: red;
+  border: 2px solid red;
+  border-radius: 10px;
+  padding: 5px;
+  font-family: "Just Another Hand", cursive;
+  font-size: larger;
+  width: 400px;
+}
+
+.report td.path {
+  font-family: Courier, monospace;
+  font-size: smaller;
+}
+
+/* https://gist.github.com/LeaVerou/12b1d1e078510900c7ab206da1a0ff2e */
+
+.report dl {
+  display: grid;
+  grid-template: auto / 10em 1fr;
+  margin: 20px;
+}
+
+.report dt {
+  background: #fee;
+  font-weight: bold;
+}
+
+.report dt:after {
+  content: ':';
+}
+
+.report dd {
+  background: hsl(220, 10%, 95%);
+}
+
+.report dt, dd {
+  margin: 0;
+  padding: .3em .5em;
+  border-top: 1px solid rgba(0,0,0,.1);
+}

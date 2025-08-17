@@ -1,0 +1,1152 @@
+          J a v a S c r i p t / T y p e S c r i p t   O v e r v i e w
+
+	      	      	  Overview
+			  ========
+
+  + Quick summary of the main features of JavaScript and TypeScript so
+    that you can start work on programming projects.
+
+  + Details will be covered in subsequent classes.
+
+  + JavaScript versus TypeScript.
+
+  + Primitive types.
+
+  + Variables and declarations.
+
+  + Arrays.
+
+  + Objects.
+
+  + Regular expressions.
+
+  + Control statements summary.
+
+  + Functions.
+
+  + Classes.
+
+  + Dynamic language.
+
+  + TS literals vs JSON.
+
+  %%%
+  + Asynch code, Promises, async/await.
+  
+  + Gotchas.
+  %%%
+
+
+		   JavaScript vs TypeScript
+		   ========================
+
+  + JavaScript does not have any type declarations.  It is
+    .<https://en.wikipedia.org/wiki/Type_safety> "type safe"
+    but all type enforcement is performed dynamically at
+    runtime.
+
+  + TypeScript is JavaScript along with *optional* type declarations.
+    This allows static type enforcement before runtime.
+
+  + If possible, TypeScript *infers* a type when it is not provided.
+
+  + All legal JavaScript programs are legal TypeScript programs.
+
+  + TypeScript programs are transpiled to JavaScript using the
+    TypeScript compiler `tsc`.
+
+                 TypeScript to JavaScript
+		 ========================
+
+  + Example TypeScript .<code/ts-to-js/str-repeat.ts?lang=ts> str-repeat.ts:
+
+      .include("code/ts-to-js/str-repeat.ts")
+
+  + Compile to JavaScript using `tsc --lib es2022 --target es2022 str-repeat.ts`
+    to .<code/ts-to-js/str-repeat.js?lang=js> str-repeat.js:
+
+    .include("code/ts-to-js/str-repeat.js")
+
+  + Can also be compiled to legacy JS (ES3) using `tsc --lib es2022
+    str-repeat.ts --outFile str-repeat-legacy.js` to
+    .<code/ts-to-js/str-repeat-legacy.js?lang=js>
+    str-repeat-legacy.js:
+
+    .include("code/ts-to-js/str-repeat-legacy.js")
+
+  + Run using `node str-repeat.js` to get output
+
+    ```
+    [ 'a', 'aa', 'aaa', 'aaaa' ]
+    ```
+
+
+    		    TypeScript Types Overview
+		    =========================
+
+  + TypeScript types are based on
+    .<https://en.wikipedia.org/wiki/Algebraic_data_type> "algebraic
+    types".  Specifically, a *type* is a *set of values* while
+    operations on types correspond to operations on sets like
+    *cartesian product*, *set-union* and *set-intersection*.
+
+  + *Primitive types* like .code(lang=ts) `string`, .code(lang=ts)
+    `number`, .code(lang=ts) `boolean`, .code(lang=ts) `void`,
+    .code(lang=ts) `null`, .code(lang=ts) `undefined`.
+
+  + .<https://en.wikipedia.org/wiki/Top_type> *Top Types* `any` (no
+    type checking) and `unknown` (which is a type-safe counterpart to
+    `any`).
+
+  + .<https://en.wikipedia.org/wiki/Bottom_type> *Bottom Type*
+    `never`: an impossible type.
+
+  + *Array* of type .$\;T$ specified as .$\;T$`[]`.
+
+  + *Tuple* of types .$\;T_1, T_2, \ldots, T_n$ specified as `[`
+    .--.$T_1, T_2, \ldots, T_n$ .--`]`.  This is an example of a
+    .<https://en.wikipedia.org/wiki/Product_type> "product type"
+    (corresponding to the set cartesian product).
+
+  + *Named tuples* written as .code(lang=ts) `{name: string, age?: number}`.
+    Note that the `?` indicates that `age` is optional.
+
+  + *Function types*: `(`.$\mathtt{param_1\!\!:}\; T_1\mathtt{,}\ldots
+    \mathtt{,}\mathtt{param_n\!\!:}\; T_n$`) => `.$\mathtt{RetType}$.
+
+  + .<https://en.wikipedia.org/wiki/Tagged_union> "Sum type"
+    (corresponding to set union) indicated as .$\;T_1$ `|` .$T_2$ `|`
+    .$\ldots$ `|` .$T_n$.  Basically *untagged* (but programmer can
+    choose to make *tagged*).
+
+  + *Intersection Types*: contains all characteristics of constituent
+    types.  For example `Person & Serializable & Loggable`.
+
+  + .code(lang=ts) type "Name = Type" specifies "Name" as an alias
+    for "Type".
+
+
+
+		String Literal Types in TypeScript
+		==================================
+
+
+.<https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop> "Read-Eval-Print-Loop" or REPL using
+command .<https://typestrong.org/ts-node/> ts-node.
+
+.code(lang="ts")
+~~~
+> type Color = 'red' | 'blue' | 'green';
+undefined
+> let c: Color;
+undefined
+> c = 'red';
+'red'
+> c = 'Red';
+<repl>.ts:7:1 - error TS2820: Type '"Red"' is not 
+   assignable to type 'Color'. Did you mean '"red"'?
+> c = 'Red';
+  ~
+>  
+~~~
+
+ 
+    		    A TypeScript Example
+		    ====================
+
+In .<code/adt-example.ts?lang=ts> adt-example.ts
+( .--.<https://www.typescriptlang.org/play?#code/PTAqGUAIEMBsHMCmAjATtAlgY0gE2gC7SQECeADogM6QBmA9qnvQLaYB2kL9uissGdvACwAKDEgqAVxYkKiMWUqQACtFItE7AqHmQAvJADkAYQCC4ABJHIAH2PmASgBEb905YCiJgNJGA3GJBokqIkABC0FSIahpaBAaQAN6QANaCuABcquqa2rrKAL6BIXom0Ki4BWGGRgCyUQSIqOWVbsYAahhU0AHBIIJNqNFYBBj0nNDsuJDkqDxSo3KUVIplqIi4GAStM4aR0bF5CQBkyWKQaRnZpmYuRgA0F5BYFVXy2bvVT6KXr5UAORkyGa2SoBFQghEomKwVCkBMAAtEFhUokDjFcvFICdnkksMjUUCWCDUNl2MDmpBCjjkulpjcTF5fI9qSU1spylREeiopi4tpaUl6VkHBZrA82f1gNJZKEOWEjvE6ogCIieIkTBstjs3nYEYS0fYuYj2aIQHMFkt5aVlErBYYkpo1TxsvaCCqXbhJdBuFJtOTKahYeJzcAAHQARnDEmAADcKngUbAKoRxuwxFgJuCXlFEe63ViHedflxVerRcLrmKrEZCj9Lr76P6CNlIwBOcMAJi7PxDsYTTF4WBT6DGE0z2YSBNSBZyAoSjuezor2SrDIczL8koJKNSxNJbYADEfI-Xnk2W9kACwAZi73d7Yn7ofhjmoUlgi7xkHBhCkVBghCULUkKkDdJ4qDzGSdBwNEoG2D+mhUD0SBAZCQigWcKQQVBjDZBCUhhC+w6jmEtD+qM6azOoAAU5BFq287HAAlJA2TvtIX5mkAA> "TS playground")
+
+.include("code/adt-example.ts", end=".1.")
+
+    		    A TypeScript Example Continued
+		    ==============================
+
+.include("code/adt-example.ts", begin=".1.")
+
+
+%%%
+			Types
+			=====
+
+  + JS has eight types (checked at runtime): `undef`, `null`,
+    `boolean`, `number`, `bigint`, `string`, `symbol` and `object`.
+
+  + TS has all JS types, plus additional types as well as ways of
+    combining types to build more complex types.
+
+  + TS has has two .<https://en.wikipedia.org/wiki/Top_type> "top types"
+    `any` and `unknown`.  The former turns off all static type checking,
+    whereas the latter forces the programmer to narrow to a more specific
+    type before use.
+
+  + TS has .<https://en.wikipedia.org/wiki/Bottom_type> "bottom type"
+    `never`.  It can be used to represent the return type of a
+    function which never returns (for example, it may abort or have an
+    infinite loop).
+
+  + TS uses the `void` type to represent the return type of a function
+    which does not return a value.
+
+  + TS also provides `enum`'s (this is a TS feature which generates
+    non-trivial JS code).
+
+  + TS provides ways of combining types into more complex types like
+    array and object types.
+
+%%%
+
+			Numbers
+			=======
+
+All primitive numbers are floating point; no primitive integer types.
+TypeScript type `number`.
+
+~~~
+> 1 + 3*2**2**3   //power ** high precedence, right assoc
+769
+> -5 % 3       //remainder; has sign of first operand
+-2
+> 0xf & 0x32   //hex literals; bitwise and
+2
+> 0xf | 0x32   //bitwise or
+63
+> (0xf ^ 0x32).toString(16)  //xor;
+'3d'
+> 3 << 2       //left shift equiv mult by power-of-2
+12
+> 15 >> 2      //right shift equiv divsn by power-of-2
+3
+> 1 << 31      
+-2147483648    //32-bit overflow
+> 1n << 31n    //n suffix uses BigInt's.
+2147483648n
+> 64 >> 2      //arithmetic right-shift
+16
+> -1 >> 2      
+-1
+> -1 >>> 2     //logical right-shift
+1073741823
+> 
+~~~
+
+			Strings
+			=======
+
+  + TypeScript type `string`.
+
+  + Strings are immutable.
+
+  + String literals can be enclosed within single quotes
+    as .~ 'hello' or double-quotes as .~ `"world"`.  Absolutely
+    equivalent; I prefer using .~ 'string' as easier to type
+    on my keyboard.
+
+  + Above string literals can contain `\`-escape sequences.  They
+    cannot contain literal newlines but can contain escaped
+    newlines.
+
+  + `+` used for string concatenation.
+
+  + .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String> "Rich set of methods."
+
+		    String Examples
+		    ===============
+
+~~~
+> const str : string = 'hello\n\tworld'
+undefined
+> console.log(str)
+hello
+	world
+undefined
+let text = "echo a \\\n\t b c"  //no type declared
+undefined
+> .type text      //ts infers type from initializer
+let text: string
+undefined
+> console.log(text)
+echo a \
+	 b c
+undefined
+> str + text
+'hello\n\tworldecho a \\\n\t b c'
+~~~
+
+		Template String Literals
+		========================
+
+  + Enclosed within backquotes.
+
+  + Can contain literal newlines.
+
+    ~~~
+    > `Mult-line
+    ... string`
+    'Mult-line\nstring'
+    ~~~
+
+  + Allows interpolating arbitrary expressions enclosed within
+    `${...}`.
+
+    ~~~
+    > `Unit circle circumference:
+    ... ${2*Math.PI*1}\n`
+    'Unit circle circumference:\n6.283185307179586\n'
+    >
+    ~~~
+
+    	      
+		Variables and Declarations
+		==========================
+
+  + In JavaScript, it is possible to use a variable without declaring
+  it.  *Do not do so*; this is a bad idea and creates a` ` ."global``."
+  variable.  Modern JS environments disallow this.
+
+  + Do not use legacy `var` declarations; surprising semantics.
+
+  + Modern code declares block-scoped variables using `const` or
+    `let`.  Less surprising semantics.
+
+  + Always try to initialize variable in declaration.  When possible,
+    prefer `const` to `let`.
+
+  + `const` means variable cannot be changed.  However, it is possible
+    that the object referenced by the variable can still be changed.
+
+		Variables and Declarations: Examples
+		====================================
+
+Using `ts-node` REPL:
+
+~~~
+> let a: number = 22
+undefined
+> let a : number;
+... Cannot redeclare block-scoped variable 'a'.
+...
+> const b : number
+... 'const' declarations must be initialized.
+...
+> const b : number = 33;
+undefined
+let [c, d, e] = [88, 22, 15/3] //destructuring decl
+undefined
+> .type c  //inferred type
+let c: number
+> [a, b, c, d, e]
+[ 22, 33, 88, 22, 5 ]
+~~~
+
+			TypeScript Arrays
+			=================
+
+Array literals are comma-separated expressions within square brackets;
+last item can optionally be followed by a comma.
+
+TypeScript arrays must be *homogeneous* (all elements must be of the
+declared or inferred type).  Type is specified as `T[]` where `T` is
+the type of the elements.
+
+~~~
+> const arr = [1, 2, 'hello'.length, ]
+undefined
+> .type arr
+const arr: number[]
+> arr
+[ 1, 2, 5 ]
+> arr[1]
+2
+> arr.length
+3
+> arr[0] = 'world'
+... Type 'string' is not assignable to type 'number'.
+...
+>
+~~~
+
+			JavaScript Arrays
+			=================
+
+  + JavaScript arrays can be *non-homogeneous* (elements can have different
+    types.
+
+  + JavaScript arrrays are objects and can have properties.
+
+Using `node` REPL:
+
+```
+> const arr = [ 'a', 22, [33] ]
+undefined
+> arr
+[ 'a', 22, [ 33 ] ]
+> arr[2]
+[ 33 ]
+> arr.length
+3
+//give it a property
+> arr._name = 'arr'
+'arr'
+> arr
+[ 'a', 22, [ 33 ], _name: 'arr' ]
+>
+```
+
+			Array Methods
+			=============
+
+.<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array> MDN
+
+~~~
+> const arr1 : number[] = [1, 2, 'hello'.length, 6, ];
+undefined
+> arr1.slice(1, 3) //args: incl, excl
+[ 2, 5 ]
+> arr1.slice(1) //start to end
+[ 2, 5, 6 ]
+> arr1.slice(1, -1)  //neg index counts from end
+[ 2, 5 ]
+> arr1.slice(-2)  //start with -2 to end
+[ 5, 6 ]
+> arr1.indexOf(5)
+2
+> arr1.indexOf(8)
+-1
+> arr1.push(7, 8) //destructive operation
+6                 //length of result array
+> arr1            //changed
+[ 1, 2, 5, 6, 7, 8 ]
+> arr1.indexOf(8)
+5
+> 
+~~~
+
+			Array Methods Continued
+			=======================
+
+~~~
+> arr1.shift()   //destructive
+1
+> arr1           //changed
+[ 2, 5, 6, 7, 8 ]
+> arr1.at(-1)
+8
+> arr1.pop()     //destructive
+8
+> arr1
+[ 2, 5, 6, 7 ]
+// unshift and push both destructive
+> arr1.unshift(22); arr1.push(-1)
+6
+> arr1
+[ 22, 2, 5, 6, 7, -1 ]
+~~~
+
+			Array Methods Continued
+			=======================
+
+~~~
+> arr1.sort()                //destructive
+[ -1, 2, 22, 5, 6, 7 ]       //??
+> arr1.sort((a, b) => a - b)
+[ -1, 2, 5, 6, 7, 22 ]  
+> arr1                       //changed
+[ -1, 2, 5, 6, 7, 22 ]
+> arr1.concat(33, 44)        //non-destructive
+[
+  -1,  2,  5,  6,
+   7, 22, 33, 44
+]
+> arr1
+[ -1, 2, 5, 6, 7, 22 ]       //unchanged
+> 
+~~~
+
+			Array Methods Continued
+			=======================
+
+Newer additions:
+
+
+~~~
+> arr1 = [ 'a', 'b', 'c', 'd' ]
+[ 'a', 'b', 'c', 'd' ]
+// .at() allows negative indexes (like slice())
+> arr1.at(1)
+'b'
+> arr1.at(-11)
+undefined
+> arr1.at(-1)
+'d'
+> arr1.at(-2)
+'c'
+// .toSorted() is non-destructive version of .sort().
+> arr1.toSorted((a, b) => b.localeCompare(a))
+[ 'd', 'c', 'b', 'a' ]
+> arr1                   //unchanged
+[ 'a', 'b', 'c', 'd' ]
+// .toReversed() is non-destructive version of .reverse().
+> arr1.toReversed()
+[ 'd', 'c', 'b', 'a' ]
+> arr1                   //unchanged
+[ 'a', 'b', 'c', 'd' ]
+~~~
+					
+
+
+			Objects
+			=======
+
+JS objects are dictionaries mapping `string` properties to arbitrary
+values, with OO pixie dust sprinkled in.
+
+JS objects can be used in two ways:
+
+  + As C structures to map specific keys to values (aka *records*):
+    for example, `{ x: 22, y: 33, z: 44 }` can be used to represent a
+    3D point with fixed keys `x`, `y` and `z`.
+
+  + As dictionaries to map arbitrary string keys to values (JS also
+    has a specific
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map>
+    Map type for this use case, but objects have been used
+    traditionally).
+
+TS allows both uses.
+
+
+			Objects as Records in TypeScript
+			================================
+
+~~~
+> let o1 = { a1: 22, b1: 33, c1: 44 } 
+undefined
+> .type o1  //inferred type
+let o1: {
+    a1: number;
+    b1: number;
+    c1: number;
+}
+> o1.b1
+33
+> o1.d1
+... Property 'd1' does not exist on type
+...
+o1 = { a1: 44, b1: 88 }
+... Property 'c1' is missing in type
+...
+~~~
+
+
+                   Objects as Records with Optional Fields
+		   =======================================
+
+~~~
+> let o2 : { a2: number, b2?: number } //b2 optional
+undefined
+> .type o2
+let o2: {
+    a2: number;
+    b2?: number | undefined;
+}
+> o2 = { a2: 12, b2: 66 }
+{ a2: 12, b2: 66 }
+> o2 = { a2: 8 }
+{ a2: 8 }
+> o2 = { }
+... Property 'a2' is missing in type '{}'...
+...
+~~~
+
+			Objects as Dictionaries in TypeScript
+			=====================================
+
+~~~
+//declare m1 to be a dictionary from string keys to any type
+> let m1 : { [index: string]: any } = {}
+undefined
+> m1.a1 = 33
+33
+> m1['b' + '1'] = 44 //[ ] can contain expr
+44
+> m1
+{ a1: 33, b1: 44 }
+> m1.c1 = 55
+55
+> m1
+{ a1: 33, b1: 44, c1: 55 }
+> m1.d1 = 'hello'  //type allows any value
+'hello'
+> m1
+{ a1: 33, b1: 44, c1: 55, d1: 'hello' }
+> let [a1, b1 ] = [22, 33] 
+undefined
+> m1 = { a1, b1, d1: 99}  //shorthand literal notation
+{ a1: 22, b1: 33, d1: 99 }
+> 
+~~~
+			Object Methods
+			==============
+
+.<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object> MDN
+
+~~~
+> let obj =
+    Object.assign({}, {a: 22, b: 33}, {a: 44, c: 99})
+undefined
+> obj
+{ a: 44, b: 33, c: 99 }
+> Object.keys(obj)
+[ 'a', 'b', 'c' ]
+> Object.values(obj)
+[ 44, 33, 99 ]
+> Object.entries(obj)
+[ [ 'a', 44 ], [ 'b', 33 ], [ 'c', 99 ] ]
+> Object.fromEntries(Object.entries(obj).slice(1))
+{ b: 33, c: 99 }
+> 
+~~~
+
+
+			Regular Expressions
+			===================
+
+Invaluable tool for string matching,  JS and TS support regex literals
+enclosed within `/.../`.
+
+~~~
+> const [var1, var2] = [3, 5]
+> let str = `var1*var2 = ${var1*var2}`
+> str
+'var1*var2 = 15'
+> str.match(/=/)        //first match for '='
+[ '=', index: 10, ... ] //at index 10
+> str.match(/ /)        //look for space
+[ ' ', index: 9, ... ]  //at index 9
+> str.match(/\s/)       //special regex for whitespace
+[ ' ', index: 9, ... ]
+> str.match(/[0-9]/)    //char class: any char '0'...'9'
+                        //match single char in class
+[ '1', index: 3, ... ]
+> str.match(/\w/)       //word char: [a-zA-Z0-9_]
+[ 'v', index: 0, ... ]
+> str.match(/[A-Z]/)    //match uppercase char
+null                    //fails
+~~~
+
+			Regular Expressions Continued
+			=============================
+
+~~~
+> str.match(/[a-z]/)   //match lowercase letters
+[ 'v', index: 0, ... ]
+> str.match(/[a-z]+/) //+ means one-or-more 
+[ 'var', index: 0, ... ]
+> str.match(/\w+/)  //one-or-more word chars
+[ 'var1', index: 0, ... ]
+> str.match(/\d+/)  //one-or-more digits
+[ '1', index: 3, ... ]
+> let m = str.match(/(\w+)\W+(\w+)/) //capturing paren
+> m
+[ 'var1*var2','var1', 'var2', index: 0, ... ]
+> [m[0], m[1], m[2]]  //m[1], m[2] captured text
+[ 'var1*var2', 'var1', 'var2' ]
+~~~
+
+		Control Statements
+		==================
+
+  + C-style `if`-`else`, `for`, `while`, `do`-`while`,
+    `switch`-`case` statements.
+
+  + For iterating through an array always use `for`-`of`.
+
+    ~~~
+    > const arr = [33, 53, 36];
+    > for (const a of arr) { console.log(a); }
+    33
+    53
+    36
+    //.entries() produces [index, element] pairs
+    > for (const [i, a] of arr.entries()) {
+        console.log(a*i);
+      }
+    0
+    53
+    72
+    ~~~ 
+
+			Functions
+			=========
+
+  + Traditional functions.  Example factorial:
+
+    ~~~
+    > function fact(n: number): number {
+    ... return (n < 1) ? 1 : n*fact(n-1);
+    ... }
+    > fact(4)
+    24
+    ~~~
+
+  + Anonymous functions stored in a variable:
+
+    ~~~
+    > let add = function (a: number, b: number) {
+    ... return a + b ;
+    ... }
+    undefined
+    > add(3, 4)
+    7
+    > .type add
+    let add: (a: number, b: number) => number
+    ~~~
+
+  + Fat arrow anonymous functions:
+
+    ~~~
+    > const mult = (a: number, b: number ) => a*b
+    undefined
+    > mult(6, 7)
+    42
+    ~~~
+
+  + Subtle semantic differences between anonymous functions
+    defined using .~ function and those defined using fat-arrow.
+
+		Variable Args
+		=============
+
+If last formal parameter is preceeded by `...`, then all remaining
+arguments are collected into that *rest parameter* as an array.
+
+~~~
+> function polyEval(x: number, ...coeffs: number[]) {
+    let pow = 1;
+    let sum = 0;
+    for (const coeff of coeffs) {
+      sum += pow*coeff;
+      pow *= x;
+    }
+    return sum;
+  }
+> polyEval(2, 1, 2, 3, 4)
+49
+> 1*2**0 + 2*2**1 + 3*2**2 + 4*2**3
+49
+~~~
+
+		     First-Class Functions
+		     =====================
+
+Functions are *first-class values*; i.e., they can be treated like any
+other values:
+
+  + Can be stored in data-structures.
+
+    ~~~
+    > let fns = [ add, mult, ];
+    > [ fns[0](2, 3), fns[1](5, 6) ]
+    [ 5, 30 ]
+    ~~~
+
+  + Can be passed and returned from functions.
+
+    ~~~
+    //type declares a type alias
+    > type Fn2 = (a: number, b: number) => number
+    > const fn =
+        (cond: boolean, fn1: Fn2, fn2: Fn2) =>
+	  cond ? fn1 : fn2;
+    > fn(false, add, mult)(3, 6)
+    18
+    > fn(true, add, mult)(3, 6)
+    9
+    ~~~
+
+		    Classes
+		    =======
+
+JS does not really have classes in the sense of other OO languages.
+Syntactic sugar introduced relatively recently.
+
+On
+.<https://www.typescriptlang.org/play?#code/AQYwNghgzlwAoHsCWA7ALgJmAbwLAChgjgAPALmBQFcBbAIwFMAnAbmIHp2AHKusJEMFRQ0EFCAbAAZkgZgAJgWLAAnhWr1mbJcRAIUIplRBoETABTlKtRkwA0q9TeYBKHDuVoAFkigA6EmAAXlI2b18-FWDVFg9gAF84+V80AAZzNydNJhxgThoGbwRFQmVgJkKqJhRgAFkIbz8oAEcmNHNw-xIAKm6sAGpgTsjejBdY0qJE0um9AzRgLmiUBgB3eGR0DHMAZgcAFnGCOagEMAY-MAQAc3MuNw52DdRMXIAiEjeKPeA3lS-gPtZvpTudLjc7n5kiJ0i43JxgABWAhAA> "TS Playground"
+
+~~~
+  class Point2 {
+    x: number;   //public instance field
+    y: number; 
+    constructor(x: number, y: number) {
+      this.x = x; this.y = y;
+    }
+    dist0() : number { //method
+      return Math.sqrt(this.x**2 + this.y**2);
+    }
+  }
+const p = new Point2(3, 4);
+console.log(p)    // Point2 { "x": 3, "y": 4}
+console.log(p.dist0()) // 5
+~~~
+
+		First Class Classes
+		===================
+
+Classes are merely syntactic sugar for functions; hence they
+too are first-class.
+
+.<https://www.typescriptlang.org/play?#code/AQYwNghgzlwAoHsCWA7ALgJmAbwLAChgjgAPALmBQFcBbAIwFMAnAbmIHp2AHKusJEMFRQ0EFCAbAAZkgZgAJgWLAAnhWr1mbJcRAIUIplRBoETABTlKtRkwA0q9TeYBKHDuVoAFkigA6EmAAXlI2b18-FWDVFg9gAF84+V80AAZzNydNJhxgThoGbwRFQmVgJkKqJhRgAFkIbz8oAEcmNHNw-xIAKm6sAGpgTsjejBdY0qJE0viJgnBoWAA5CALc4B0AYhkmEQpDVABzNjKiTk2hFGSQBoZYACkAZWAuJiQAN1udV4-b4Eg9sADihjmd2AAVZ4-T5oSQAawYKgA7mYSkQ9AY0EYTGZzDtAcDDg4AWh9lijm48JMhj5-NskLs0NF8WgwrS-CToiSJlMdFIqGAwCsChl3NSKmgqjUAAYAEmww3pjPiwHlwxJ8WlPISBFmBHm+hEwAQdAAVtEqUQuMh0BREKhMHYdChVgwKMKGE78NMMUauABGaIoBhI41mvzWh3mf0YBwAVhcBoMCDADA5CEO5gDfmSInSLjcnGA-oAzEmjTUQsHQybTX4XSKAOR0JCCxsORtQGhIbyN8bllNpsAZ8woPz8wUejKF9jAABELcFQO73jnQA> "TS Playground"
+
+~~~
+class Name {  
+  #first: string;        //# indicates JS private
+  private last: string;  //TS private keyword
+  constructor(first: string, last: string) {
+    this.#first = first; this.last = last;
+  }
+  fullName() {
+    return `${this.#first} ${this.last}`;
+  }
+};
+
+const obj = {
+  point: Point2,
+  name: Name,
+}
+~~~
+
+		First Class Classes Continued
+		=============================
+
+~~~
+const p1 = new obj.point(12, 5)
+console.log(p1.dist0()) // 13
+const n = new obj.name('bill', 'smith');
+console.log(n.fullName()) // "bill smith"
+~~~
+
+
+
+%%%
+		JavaScript is a Dynamic Language
+		================================
+
+
+~~~
+> p.label = 'first'; p1.label = 'second';
+'second'
+> p
+Point2 { x: 3, y: 4, label: 'first' }
+> p1
+Point2 { x: 12, y: 5, label: 'second' }
+> delete p1.label
+true
+> p1
+Point2 { x: 12, y: 5 }
+> Point2.descr = '2D Point'
+'2D Point'
+> Point2
+[class Point2] { descr: '2D Point' }
+> 
+~~~
+
+With care, some of the dynamic features can be used in TypeScript, but
+you need to fight it.
+%%%
+
+    	    TypeScript Type Narrowing Example
+	    =================================
+
+In .<code/shapes1.ts?lang=ts> "shapes1.ts":
+
+.include("code/shapes1.ts")
+
+Log:
+
+.code(lang=sh)
+```
+$ ts-node code/shapes1.ts
+6
+3.141592653589793
+```
+
+.<https://www.typescriptlang.org/play/?#code/C4TwDgpgBAShDGwoF4oG8rAIYHMBcUA5HIoQDRQDuBAdgK4C2ARhAE4UAWtjLrUAvgG4AUMNCQoAYQCWreABtoqDNnxEZcxeSituzNgJHCA9MYDKHLBOkBnKFigATW-FbSG0mlmARHUOjTSAPY0FM42ru6e3r5QTCCYuGLg0BZWSrAISAA+UrIKEEYAZgGIwTT2rBBYABQ2BGmQAJTowlBQNpTSwPAcUHUAdKotaG3tUPBYNtDEWYR4Y+M6EMB0rBU2A5RQAFQdAxwiS5PT6vlaC0vtVavrUACy3hwDAAoAkjubrJ8DrEfjjggRSwdHkwEuV3gIRsSAA+hAAB6WOgw6QANwgkg4CAA1rQIBi+KgbP8ljc1hV4UiQaiMVjcf9+MImaIoTQYR1LJB6lBGhAANoAXRQY356ESalmpAo1CgACZOAQAMz8CgqXAEQgaAraXRQACMAigguKQT4NTZHLsQSKnPSNhalqCigG8iCOBqWCqtQdTSMQA> "TS Playground Link".
+
+
+                   TypeScript Narrowing Details
+		   ============================
+
+.<https://www.typescriptlang.org/docs/handbook/2/narrowing.html> Docs.
+
+  + If a condition narrows down to a possible type, then code
+    governed by that condition can depend on the narrowed type.
+
+  + Narrowing conditions can include JS `typeof`, `instanceof` and
+    `in`, `===`, `!==`, `==`, `!=`.
+
+
+In .<code/narrow1.ts?lang=ts> "narrow1.ts":
+
+.include("code/narrow1.ts")
+
+Log:
+
+.code(lang=sh)
+```
+$ ts-node ./code/narrow1.ts
+5 22 2
+```
+
+		JavaScript Literals
+		===================
+
+JavaScript has very rich notation for
+.<https://www.sitepoint.com/es6-enhanced-object-literals/> "literal
+data":
+
+A primitive JS literal value is one of:
+
+  + An integer (including `0xAf` and octal `072` literals),
+    floating point literal like `1.23e-2` or `1E4`.
+
+  + Special values like .~ null, .~ undefined or .~ NaN.
+
+  + A string literal delimited by single or double-quotes or by
+    backquotes for template literals.
+
+  + Anonymous functions using either the .~ function keyword, or
+    fat-arrow.
+
+  + Anonymous classes.
+
+		JavaScript Literals Continued
+		=============================
+
+A compound JS literal value is one of:
+
+  + Arrays of comma-separated literal data enclosed within `[ ]`.
+
+  + Object literals consisting of comma-separated `key: value`
+    pairs enclosed within `{ }`.
+
+      + Keys can be specified as non-template strings or simple
+        identifiers.
+
+      + Dynamic key values can be specified within `[ ]`.
+
+      + If a key-value is simply the name of a variable `var`, then it
+        is equivalent to the key-value `var: var`.
+
+      + If a key-value looks like `id(...) { ... }`, then it
+        is equivalent to `id: function (...) { ... }`.
+
+Both object and array literals permit an optional trailing `,` after
+the last item.
+
+	   	      Complex JavaScript Literal Example
+		      ==================================
+
+Using node REPL:
+
+~~~
+> const [ n1, n2 ] = [ 42, 33 ];
+> const [ str1, str2 ] = [ 'hello', 'world' ];
+> { n1: n1,
+    n2,
+    [`${str1}_${str2}`]: (a, b) => a+b,
+    [ str1 + '-' + str2 ]: 99,
+    mult(x, y) { return x*y; },
+    arr: [ n1, n2, ],
+  }
+{
+  n1: 42,
+  n2: 33,
+  hello_world: [Function: hello_world],
+  'hello-world': 99,
+  mult: [Function: mult],
+  arr: [ 42, 33 ]
+}
+> 
+~~~
+
+			JSON
+			====
+
+*JavaScript Object Notation*: Very simple .<https://www.json.org>
+specification.  A JSON literal can be one of:
+
+  + A primitive literal can be a number, string within double
+    quotes, or .~ true, .~ false or .~ `null`.
+
+  + An array literal consists of  JSON literal values separated
+    by comma's.  An optional trailing comma is *not allowed*.
+
+  + An object literal consists of `key: value` pairs separated
+    by comma's.  An optional trailing comma is not allowed.
+    The `key` *must* be a string within double-quotes.
+
+    	      	     JSON Example
+		     ============
+
+.code(lang=json)
+~~~
+{
+  "john": {
+     "name": "John Cassidy",
+     "age": 42,
+     "kids": [ "jane", "bill" ]
+   },
+  "mary": {
+     "name": "Mary Jones",
+     "age": 42,
+     "kids": [ "lucy", "sue" ]
+   }
+}
+~~~
+
+			JSON Evaluation
+			===============
+
+  + Can be easily parsed by standard JS library using
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse>
+    JSON.parse().
+
+  + A JS object can easily be converted to a JSON string using
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify>
+    JSON.stringify().  Usually, JS objects without a JSON
+    representation are silently ignored or represented as a .~ null
+    when within an array.
+
+  + Excellent data format for exchanging structured data between
+    heterogeneous systems.
+
+  + Restricted format.
+
+  + Comments are not allowed.  Makes it a bad choice as a
+    configuration format (unfortunately, many JS tools use
+    it as a configuration format; some of them allow comments).
+
+  + .<https://jsonlines.org/> "JSON Lines" format allows
+    multiple json values within a `*.jsonl` file with
+    one value per line.
+
+
+			Asynchronous Code
+			=================
+
+  + Many JavaScript libraries are event driven.
+
+  + A program registers interest in an event by registering
+    an event handler.
+
+  + The event handler is called asynchronously when the event
+    occurs.
+
+~~~
+//simulate async event using timeout
+> function event(handler) {
+    //after 3000 msec handler(42) is called
+    setTimeout(handler, 3000, 42);
+  }
+undefined
+> event(v => console.log(v));
+undefined  //call returns immediately
+> 42   //notice REPL prompt before output
+~~~
+
+		  Taming Asynchronity Using async/await
+		  =====================================
+
+~~~
+> async function event() {
+    return new Promise((res, rej) =>
+      setTimeout(n => res(n), 3000, 42));
+   }
+... ..... ... undefined
+> await event()    //new top-level await in ES2022
+42                 //output after 3 seconds
+> 
+~~~
+
+
+		   Generic Types
+		   =============
+
+  + TypeScript can use type variables.
+
+    .code(lang=ts)
+    ~~~
+    function identity<T>(arg: T) { return arg; }
+
+    let s = identity('hello'); //s: string inferred
+    let n: number = identity(s); //error
+    ~~~
+
+  + TypeScript provides several
+    .<https://www.typescriptlang.org/docs/handbook/utility-types.html>
+    "utility types" for manipulating types.  Examples:
+
+       : `Partial<T>` / `Required<T>` / `Readonly<T>` :
+         T with all properties optional / required / readonly.
+
+      : `Record<K, V>` :
+        An object having properties of type `K` and values of type `V`.
+
+       
+
+%%%
+
+                          Gotchas
+			  =======
+
+  + .~ return with return-expression on the next line will
+    result in .~undefined~ being returned.  If inconvenient
+    to begin return-expression on same line as .~ return
+    keyword, use:
+
+    ~~~
+    return (
+      longExpr
+    );
+    ~~~
+
+  + Never use `==` and `!=` for checking equality.  Surprising
+    type converions.  Always use `===` and `!==`; no conversions.
+
+    ~~~
+    > null == undefined
+    true
+    > null === undefined
+    false
+    > '' == 0
+    true
+    > '' === 0
+    false
+    >
+    ~~~
+
+			Gotcha's from C Legacy
+			======================
+
+  + Need .~ break after .~ case to avoid fall-thru.
+
+    ~~~
+      switch (type) {
+        case 'number':
+	  x = 1;
+	  //need a break statement here
+	case 'string';
+	  x = 42;
+	  break;
+      }
+    ~~~
+
+  + Integer literals starting with leading 0 are treated as octal:
+
+    ~~~
+    >  010
+    8
+    ~~~
+
+%%%

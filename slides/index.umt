@@ -1,0 +1,74 @@
+                    S l i d e s
+
+
+
+Course slides will usually be up around an hour before class.  If you
+would like to print them out, it is probably a good idea to wait
+around a week or so after the class which covered the slides as they
+may be corrected or enhanced.  To print or save as PDF, simply use the
+*print* dialog on your browser.
+
+Most slide sections will have a `code` directory containing
+runnable version of code for that section.
+
+  + .<syllabus/syllabus.html> Syllabus.
+
+  + .<js-ts-overview/js-ts-overview.html>
+    "JavaScript/TypeScript Overview".
+
+%%%
+  + .<practical-considerations/practical-considerations.html>
+    "Practical Considerations".
+
+  + .<grep-example/grep-example.html> "Grep Example".
+
+  + .<js-intro/js-intro.html> "Introduction to JavaScript".
+
+  + .<js-basics/js-basics.html> "JavaScript Basics".
+
+  + .<destructuring/destructuring.html> "Destructuring".
+
+  + .<regex/regex.html> "Regex".
+
+  + .<iterators-generators/iterators-generators.html>
+    "Iterators and Generators".
+
+  + .<async/async.html> Async.
+
+  + .<functions/functions.html> Functions.
+
+  + .<modules/modules.html> Modules.
+
+  + .<users-auth/users-auth.html> "Users Authentication".
+
+  + .<http/http.html> HTTP.
+
+  + .<users-ws/users-ws.html> "Users Web Services".
+
+  + .<objects/objects.html> Objects.
+    
+  + .<browser-tech/browser-tech.html> "Browser Technologies".
+
+  + .<reactjs/reactjs.html> React.
+
+  + .<headers/headers.html> Headers.
+
+  + .<js-bad-parts/js-bad-parts.html> "JavaScript Bad Parts".
+
+  + .<security/security.html> Security.
+
+  + .<apparch/apparch.html> "Application Architectures".
+
+  + .<ai-speculation/ai-speculation.html> "AI Speculation".
+    (``.<ai-speculation/ai-speculation.umt>source``).
+
+
+
+
+  + .<login-app/login-app.html> Login-App.
+    (``.<login-app/login-app.umt>source``).
+
+
+
+
+%%%

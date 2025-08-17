@@ -1,0 +1,351 @@
+                          G i t  S e t u p
+
+You will be using .<https://git-scm.com/doc> git for accessing all
+course material. 
+
+  + All course material is maintained on a git repository
+    hosted on a CS department machine.  You will be mirroring
+    this repository on your VM.
+
+    You should access course files only via this mirror.
+    *DO NOT DOWNLOAD MATERIAL DIRECTLY FROM THE WEB SITE*.
+
+  + You should maintain all your personal course files on a private
+    git repository like .<https://github.com> github.com.
+
+This document assumes that you have already
+.<../vm-setup/vm-setup.html> "set up your VM".
+
+This document provides step-by-step directions for mirroring the
+course repository and setting up a github repository.  You can obtain
+basic familiarity with `git` by looking at the copious documentation
+and tutorials available on the web.  This
+.<https://missing.csail.mit.edu/2020/version-control/> presentation is
+recommended.
+
+
+			.=git-setup= Git Setup
+			======================
+
+Set up your global git identity on your VM:
+
+.code(lang=sh)
+```
+$ git config --global user.name "Jane Doe"
+$ git config --global user.email "jdoe@binghamton.edu"
+```
+
+Substitute your name and email address suitably above.
+
+                Mirror Course Git Repository on your VM
+                =======================================
+
+  # .=mirror= On your VM, create a public-private key-pair:
+
+    .code(lang=sh)
+    ```
+    $ ssh-keygen 
+    ```
+
+    If you accept the defaults, you will create a private key in
+    `~/.ssh/id_rsa` and the corresponding public key in
+    `~/.ssh/id_rsa.pub`.  The former should be retained on
+    your VM whereas the latter may be distributed to machines
+    to which you would like to access from your VM.
+
+  # Copy the public member of the above key-pair to `remote.cs`:
+
+      `$ ssh-copy-id -i ~/.ssh/id_rsa` "LOGIN"`@remote.cs.binghamton.edu`
+
+
+    where "LOGIN" is your login-id on `remote.cs`.
+
+    You will be prompted for your password on `remote.cs`.
+
+  # Use ssh to connect from your VM to `remote.cs`:
+
+    `$ ssh `"LOGIN"`@remote.cs.binghamton.edu`
+
+    If you need to type in your `remote.cs` password, you have not
+    set up your ssh key correctly.  Please review the earlier steps
+    to see where you may have gone wrong.
+
+  # Run the following command on `remote.cs`:
+
+    .code(lang=sh)
+    ~~~
+    $ git config --global --add safe.directory \
+        /home/umrigar/git-repos/cs444.git
+    ~~~
+
+    This is a workaround for a recent security enhancement in git
+    to allow you to clone a directory not owned by you.
+
+  # Terminate your connection to `remote.cs` by typing a
+    Control-D (hold down the `Ctrl` and `d` keys simultaneously).
+
+  # Clone the course web site into your home directory back on your VM:
+  
+
+      `$ cd ~` .;
+      `$ git clone` "LOGIN"`@remote.cs.binghamton.edu:~umrigar/git-repos/cs444.git` 
+
+    where "LOGIN" is your login-id on `remote.cs`.  All the files
+    contained within the course web site should be copied into a
+    `cs444` sub-directory.
+
+
+  # Go into the newly cloned `cs444` directory.  You should then see
+    all the course web site files.
+
+*You should never be writing into this directory.*
+
+			Maintaining the Course Repository Clone
+			=======================================
+
+You can set up automated updates for your `cs444` course repository.
+You can also manually update it and use git to track changes.
+
+
+     	    	  .=cron= Automatically Tracking cs444 Changes
+		  --------------------------------------------
+
+You should set up a cron job to update your `~/cs444` directory from
+the course git repository:
+
+.code(lang=sh)
+```
+$ EDITOR=YOUR_FAVORITE_EDITOR crontab -e
+```
+
+where `YOUR_FAVORITE_EDITOR` is the command you use to start your
+preferred editor.  It should open up showing you an initial `crontab`
+file.  Add the following line at the end:
+
+.code(lang=sh)
+```
+BB * * * * cd ~/cs444; git pull > /dev/null
+```
+
+where `BB` is your B-number modulo 60.  Ensure that you have a newline
+at the end of this line.  Save the file and exit your editor.
+
+The cron job should update your repository every hour at `BB` minutes
+past the hour (by specifying the minutes using part of your B-number,
+we ensure that students do not all update at the same time, potentially
+causing an overload).  
+
+You should treat this directory as a *read-only directory*.
+
+
+                Manually Tracking cs444 Changes
+                -------------------------------
+
+If necessary, you can also manually update your `~/cs444` directory:
+
+     .code(lang=sh)
+     ```
+     $ ( cd ~/cs444;  git pull )
+     ```
+
+You can get a summary of all git changes by running a Ruby script:
+
+.code(lang=sh)
+```
+$ cd ~/cs444
+$ bin/git-changes.rb .
+```
+
+This will output a summary of all git changes since the last time you
+ran the script (it records the time via a timestamp stored in
+`~/cs444/.last-login`). It will not produce any output the first
+time you run the script.
+
+If you want to see all the commits in a particular directory like `hw/hw1`:
+
+.code(lang=sh)
+```
+$ cd ~/cs444
+$ git log --oneline -- slides/syllabus
+dc12cad added ta info
+...
+a1b23f4 added slides
+$
+```
+
+Your commit id's and messages will differ.
+
+If you want to see the details of a particular commit, use:
+
+.code(lang=sh)
+```
+$ git log --stat dc12cad^!
+```
+
+To see the diff's for a particular commit-id:
+
+.code(lang=sh)
+```
+$ git show dc12cad
+```
+
+To restrict the diff's to a particular path:
+
+.code(lang=sh)
+```
+$ git show dc12cad -- hw/hw1/hw1.umt
+```
+                Setting Up a Github Repository
+                ==============================
+
+You should maintain your personal course material within git.  You can
+set up a private repository on a git provider like
+.<https://github.com> github.com.
+
+
+                      Quick Start
+                      -----------
+
+If you know what you are doing, this `tl;dr` section should largely suffice:
+
+  # Set up a personal github account and create a *private* `i444` or
+    `i444` git repository, depending on the course you are registered
+    for.  Choose the github options to generate a `.gitignore` for
+    `node` and initialize your repository with a `README`.
+
+  # Clone your github repository into your home directory on your
+    VM. 
+
+  # Use a `submit` subdirectory within the cloned directory for
+    working on projects.  
+
+The following sections explain each of the above steps in detail.
+
+
+                Setting Up A Git Hub Repository Details
+		---------------------------------------
+
+You can set up a *private* git repository called `i444`
+or `i444` (depending on the course you are registered for) on github.
+It will be referred to as "iX44" in the sequel.  This repository can
+be used for working on course assignments like projects.
+
+  # Point a browser to .<https://github.com> github.com.
+
+  # Click on `Sign Up`, and complete the form.  You may choose any
+    appropriate *Username*, but it is strongly recommended that you
+    use the user-name associated with your `binghamton.edu` email (if
+    it is available).
+
+    %%%
+    Please ensure that you provide your `binghamton.edu` email address
+    in the *Email address* field.  This may make it slightly easier
+    for the grader to associate your github account with your BU id.
+    %%%
+
+  # Please complete all necessary steps to complete your registration
+    on github after satisfying their captcha and submitting the form.
+
+  # Set up your account appropriately.  On the github page, access
+    your account using the user icon on the top right of the page and
+    selecting "Settings".  Select *SSH and GPG keys* from the left
+    hand menu, then click  *New SSH key*.
+
+    On a terminal in your VM `cat ~/.ssh/id_rsa.pub` and then
+    copy-and-paste the output of that command into the provided *Key*
+    box.  Submit the form to set up your new key.
+
+  # To set up a project for the course, click on the green *New*
+    button on your .<https://github.com> "github home page".
+
+      # Fill in the repository name as `i444` or `i444`, depending on
+        the course you are registered for (this is absolutely
+        essential).
+
+      # Provide a suitable description for the repository.
+
+      # Make sure that you set up your repository as *Private*.
+
+      # Select `Add a README file`.
+
+      # Specify a `.gitignore` file for `node`.
+
+    Hit the *Create repository* button.
+
+  %%%
+  # Go to your repository using the link you will now find on your
+    github homepage. Go to `Settings->Collaborators` from the
+    left-hand side navigation.  Add the grader with github user id
+
+
+       *CS 444/444-01* (meets MW 4:40 - 6:05p): `Janani-Kichenamourty` .;
+       *CS 444-02* (meets MW 6:15 - 7:40p): `mdevara1` .;
+
+    as a collaborator.
+
+    As there are many similar names and some people may have multiple
+    accounts, *make 100% sure that you have the correct github
+    accounts* (the above "ID" must match).
+
+    This will provide the grader access to your repository once the
+    invitation to collaborate is accepted.
+  %%%
+
+                  Initializing Your Repository on your VM
+                  ---------------------------------------
+
+Clone your github repository into your home directory:
+
+  `$ cd ~` .;
+  `$ git clone` "YOUR_GITHUB_PROJECT_URL" .;
+
+You can copy and paste `YOUR_GITHUB_PROJECT_URL` from your github
+project page.  Click the green *<> Code* button and then copy the
+*SSH* url into your clipboard by using the copy widget on the
+right of the url.
+
+If you get an error when doing so, verify that you have correctly uploaded
+your public ssh key to github.
+
+
+If you `cd` over to your `i444` directory and do a `ls -a` you should
+see both the `README.md` and `.gitignore` files.  Feel free to add
+names/patterns into `.gitignore` file for files which should be
+ignored by git.  For example, if you are using emacs as your text
+editor, you may want to add in a line containing `*~` to tell git to
+ignore emacs backup files.
+
+Make sure that all updates have been pushed over to github:
+
+.code(lang=sh)
+```
+$ cd ~/i444
+$ mkdir -p submit
+$ git status -s #see if there are changes you want to commit
+$ git commit -a -m 'SOME COMMIT MSG' #commit if necessary
+$ git push #push changes to github
+```
+
+You should feel free to create any other subdirectories within your
+`i444` directory.
+
+%%%
+The only directory which will be monitored for
+submitted assignments is the `submit` directory in the `main` branch.
+%%%
+
+
+                            References
+                            ==========
+
+
+.<https://git-scm.com/> "Official Git Site".
+
+Scott Chacon, Ben Straub, .<https://git-scm.com/book/en/v2> "Pro Git".
+
+.<https://git-scm.com/docs> "Reference Documentation"
+
+Anish Athalye, .<https://missing.csail.mit.edu/2020/version-control/>
+"Version Control (Git)"; Part of .<https://missing.csail.mit.edu/>
+"MIT Missing Semester"; Highly recommended.
+

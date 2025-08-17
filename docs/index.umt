@@ -1,0 +1,36 @@
+		C S 4 4 4 :    D o c u m e n t a t i o n
+
+
+This pages links documents relevant to this course.  It will be updated
+as the course progresses.
+
+
+Kyle Simpson,
+.<https://github.com/getify/You-Dont-Know-JS/blob/1st-ed/README.md>
+"You Don't Know JS" series.
+
+.<https://developer.mozilla.org/en-US/docs/Web/JavaScript> "Mozilla
+Development Network: Javascript".  On this site, I usually keep many
+tabs open for different JS built-in types.
+
+.<http://exploringjs.com/>"Exploring JS".  A series of books by
+Dr. Axel Rauschmayer.
+
+.<https://developer.mozilla.org/en-US/docs/Web/HTML> "MDN HTML
+Documentation".
+
+.<https://www.w3.org/TR/html5/> "HTML5 Spec".
+
+Scott Chacon, Ben Straub, .<https://git-scm.com/book/en/v2> "Pro Git",
+APress, 2014.
+
+Anish Athalye, .<https://missing.csail.mit.edu/2020/version-control/>
+"Version Control (Git)"; Part of .<https://missing.csail.mit.edu/>
+"MIT Missing Semester"; Highly recommended.
+
+%%%
+Juho Vepsalainen, .<https://survivejs.com/webpack/preface/> "SurviveJS
+- Webpack".
+
+.<https://html.spec.whatwg.org/multipage/> "HTML5" as per the "Web Hypertext Application Technology Working Group" (WHATWG).
+%%%

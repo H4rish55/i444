@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>@{TITLE}</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link href="@{HOME}/assets/styles/article.css" rel="stylesheet" type="text/css" /> 
+</head>
+
+<body class=@{DOC-CLASS}>
+
+    <nav id="course-nav">
+      <ul>
+      </ul>
+    </nav>
+    
+    <div class="umt-content">
+      @{CONTENT}
+    </div>
+
+    <script type="module" src="@{HOME}/assets/scripts/slide-controls.mjs"></script>
+    <script type="module" src="@{HOME}/assets/scripts/nav.mjs"></script> 
+    <script type="module" src="@{HOME}/assets/scripts/highlight.mjs"></script>
+</body>
+</html>
