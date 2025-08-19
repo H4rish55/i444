@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Git Setup</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link href="../../assets/styles/article.css" rel="stylesheet" type="text/css" /> 
+</head>
+
+<body class=umt-article>
+
+    <nav id="course-nav">
+      <ul>
+      </ul>
+    </nav>
+    
+    <div class="umt-content">
+      <div><section data-level="h1"><h1>Git Setup</h1><p>You will be using  <a href="https://git-scm.com/doc">git</a> for accessing all
+course material. 
+</p><ul><li><p>All course material is maintained on a git repository
+    hosted on a CS department machine.  You will be mirroring
+    this repository on your VM.
+</p><p>    You should access course files only via this mirror.
+    <strong>DO NOT DOWNLOAD MATERIAL DIRECTLY FROM THE WEB SITE</strong>.
+</p></li><li><p>You should maintain all your personal course files on a private
+    git repository like  <a href="https://github.com">github.com.</a>
+</p></li></ul><p>This document assumes that you have already
+ <a href="../vm-setup/vm-setup.html">set up your VM</a>.
+</p><p>This document provides step-by-step directions for mirroring the
+course repository and setting up a github repository.  You can obtain
+basic familiarity with <code>git</code> by looking at the copious documentation
+and tutorials available on the web.  This
+ <a href="https://missing.csail.mit.edu/2020/version-control/">presentation</a> is
+recommended.
+</p><section data-level="h2"><h2> <span id="git-setup">Git</span> Setup</h2><p>Set up your global git identity on your VM:
+</p><pre class="hljs language-sh">$ git config --global user.name &quot;Jane Doe&quot;
+$ git config --global user.email &quot;jdoe@binghamton.edu&quot;
+</pre><p>Substitute your name and email address suitably above.
+</p></section><section data-level="h2"><h2>Mirror Course Git Repository on your VM</h2><ol><li><p> <span id="mirror">On</span> your VM, create a public-private key-pair:
+</p><pre class="hljs language-sh">    $ ssh-keygen 
+</pre><p>    If you accept the defaults, you will create a private key in
+    <code>~/.ssh/id_rsa</code> and the corresponding public key in
+    <code>~/.ssh/id_rsa.pub</code>.  The former should be retained on
+    your VM whereas the latter may be distributed to machines
+    to which you would like to access from your VM.
+</p></li><li><p>Copy the public member of the above key-pair to <code>remote.cs</code>:
+</p><p>      <code>$ ssh-copy-id -i ~/.ssh/id_rsa</code> <em>LOGIN</em><code>@remote.cs.binghamton.edu</code>
+</p><p>    where <em>LOGIN</em> is your login-id on <code>remote.cs</code>.
+</p><p>    You will be prompted for your password on <code>remote.cs</code>.
+</p></li><li><p>Use ssh to connect from your VM to <code>remote.cs</code>:
+</p><p>    <code>$ ssh </code><em>LOGIN</em><code>@remote.cs.binghamton.edu</code>
+</p><p>    If you need to type in your <code>remote.cs</code> password, you have not
+    set up your ssh key correctly.  Please review the earlier steps
+    to see where you may have gone wrong.
+</p></li><li><p>Run the following command on <code>remote.cs</code>:
+</p><pre class="hljs language-sh">    $ git config --global --add safe.directory \
+        /home/umrigar/git-repos/cs444.git
+</pre><p>    This is a workaround for a recent security enhancement in git
+    to allow you to clone a directory not owned by you.
+</p></li><li><p>Terminate your connection to <code>remote.cs</code> by typing a
+    Control-D (hold down the <code>Ctrl</code> and <code>d</code> keys simultaneously).
+</p></li><li><p>Clone the course web site into your home directory back on your VM:
+</p><p>      <code>$ cd ~</code> <br>
+      <code>$ git clone</code> <em>LOGIN</em><code>@remote.cs.binghamton.edu:~umrigar/git-repos/cs444.git</code> 
+</p><p>    where <em>LOGIN</em> is your login-id on <code>remote.cs</code>.  All the files
+    contained within the course web site should be copied into a
+    <code>cs444</code> sub-directory.
+</p></li><li><p>Go into the newly cloned <code>cs444</code> directory.  You should then see
+    all the course web site files.
+</p></li></ol><p><strong>You should never be writing into this directory.</strong>
+</p></section><section data-level="h2"><h2>Maintaining the Course Repository Clone</h2><p>You can set up automated updates for your <code>cs444</code> course repository.
+You can also manually update it and use git to track changes.
+</p><section data-level="h3"><h3> <span id="cron">Automatically</span> Tracking cs444 Changes</h3><p>You should set up a cron job to update your <code>~/cs444</code> directory from
+the course git repository:
+</p><pre class="hljs language-sh">$ EDITOR=YOUR_FAVORITE_EDITOR crontab -e
+</pre><p>where <code>YOUR_FAVORITE_EDITOR</code> is the command you use to start your
+preferred editor.  It should open up showing you an initial <code>crontab</code>
+file.  Add the following line at the end:
+</p><pre class="hljs language-sh">BB * * * * cd ~/cs444; git pull > /dev/null
+</pre><p>where <code>BB</code> is your B-number modulo 60.  Ensure that you have a newline
+at the end of this line.  Save the file and exit your editor.
+</p><p>The cron job should update your repository every hour at <code>BB</code> minutes
+past the hour (by specifying the minutes using part of your B-number,
+we ensure that students do not all update at the same time, potentially
+causing an overload).  
+</p><p>You should treat this directory as a <strong>read-only directory</strong>.
+</p></section><section data-level="h3"><h3>Manually Tracking cs444 Changes</h3><p>If necessary, you can also manually update your <code>~/cs444</code> directory:
+</p><pre class="hljs language-sh">     $ ( cd ~/cs444;  git pull )
+</pre><p>You can get a summary of all git changes by running a Ruby script:
+</p><pre class="hljs language-sh">$ cd ~/cs444
+$ bin/git-changes.rb .
+</pre><p>This will output a summary of all git changes since the last time you
+ran the script (it records the time via a timestamp stored in
+<code>~/cs444/.last-login</code>). It will not produce any output the first
+time you run the script.
+</p><p>If you want to see all the commits in a particular directory like <code>hw/hw1</code>:
+</p><pre class="hljs language-sh">$ cd ~/cs444
+$ git log --oneline -- slides/syllabus
+dc12cad added ta info
+...
+a1b23f4 added slides
+$
+</pre><p>Your commit id's and messages will differ.
+</p><p>If you want to see the details of a particular commit, use:
+</p><pre class="hljs language-sh">$ git log --stat dc12cad^!
+</pre><p>To see the diff's for a particular commit-id:
+</p><pre class="hljs language-sh">$ git show dc12cad
+</pre><p>To restrict the diff's to a particular path:
+</p><pre class="hljs language-sh">$ git show dc12cad -- hw/hw1/hw1.umt
+</pre></section></section><section data-level="h2"><h2>Setting Up a Github Repository</h2><p>You should maintain your personal course material within git.  You can
+set up a private repository on a git provider like
+ <a href="https://github.com">github.com.</a>
+</p><section data-level="h3"><h3>Quick Start</h3><p>If you know what you are doing, this <code>tl;dr</code> section should largely suffice:
+</p><ol><li><p>Set up a personal github account and create a <strong>private</strong> <code>i444</code> or
+    <code>i444</code> git repository, depending on the course you are registered
+    for.  Choose the github options to generate a <code>.gitignore</code> for
+    <code>node</code> and initialize your repository with a <code>README</code>.
+</p></li><li><p>Clone your github repository into your home directory on your
+    VM. 
+</p></li><li><p>Use a <code>submit</code> subdirectory within the cloned directory for
+    working on projects.  
+</p></li></ol><p>The following sections explain each of the above steps in detail.
+</p></section><section data-level="h3"><h3>Setting Up A Git Hub Repository Details</h3><p>You can set up a <strong>private</strong> git repository called <code>i444</code>
+or <code>i444</code> (depending on the course you are registered for) on github.
+It will be referred to as <em>iX44</em> in the sequel.  This repository can
+be used for working on course assignments like projects.
+</p><ol><li><p>Point a browser to  <a href="https://github.com">github.com.</a>
+</p></li><li><p>Click on <code>Sign Up</code>, and complete the form.  You may choose any
+    appropriate <strong>Username</strong>, but it is strongly recommended that you
+    use the user-name associated with your <code>binghamton.edu</code> email (if
+    it is available).
+</p></li><li><p>Please complete all necessary steps to complete your registration
+    on github after satisfying their captcha and submitting the form.
+</p></li><li><p>Set up your account appropriately.  On the github page, access
+    your account using the user icon on the top right of the page and
+    selecting <em>Settings</em>.  Select <strong>SSH and GPG keys</strong> from the left
+    hand menu, then click  <strong>New SSH key</strong>.
+</p><p>    On a terminal in your VM <code>cat ~/.ssh/id_rsa.pub</code> and then
+    copy-and-paste the output of that command into the provided <strong>Key</strong>
+    box.  Submit the form to set up your new key.
+</p></li><li><p>To set up a project for the course, click on the green <strong>New</strong>
+    button on your  <a href="https://github.com">github home page</a>.
+</p><ol><li><p>Fill in the repository name as <code>i444</code> or <code>i444</code>, depending on
+        the course you are registered for (this is absolutely
+        essential).
+</p></li><li><p>Provide a suitable description for the repository.
+</p></li><li><p>Make sure that you set up your repository as <strong>Private</strong>.
+</p></li><li><p>Select <code>Add a README file</code>.
+</p></li><li><p>Specify a <code>.gitignore</code> file for <code>node</code>.
+</p></li></ol><p>    Hit the <strong>Create repository</strong> button.
+</p></li></ol></section><section data-level="h3"><h3>Initializing Your Repository on your VM</h3><p>Clone your github repository into your home directory:
+</p><p>  <code>$ cd ~</code> <br>
+  <code>$ git clone</code> <em>YOUR_GITHUB_PROJECT_URL</em> <br>
+</p><p>You can copy and paste <code>YOUR_GITHUB_PROJECT_URL</code> from your github
+project page.  Click the green <strong>&lt;> Code</strong> button and then copy the
+<strong>SSH</strong> url into your clipboard by using the copy widget on the
+right of the url.
+</p><p>If you get an error when doing so, verify that you have correctly uploaded
+your public ssh key to github.
+</p><p>If you <code>cd</code> over to your <code>i444</code> directory and do a <code>ls -a</code> you should
+see both the <code>README.md</code> and <code>.gitignore</code> files.  Feel free to add
+names/patterns into <code>.gitignore</code> file for files which should be
+ignored by git.  For example, if you are using emacs as your text
+editor, you may want to add in a line containing <code>*~</code> to tell git to
+ignore emacs backup files.
+</p><p>Make sure that all updates have been pushed over to github:
+</p><pre class="hljs language-sh">$ cd ~/i444
+$ mkdir -p submit
+$ git status -s #see if there are changes you want to commit
+$ git commit -a -m 'SOME COMMIT MSG' #commit if necessary
+$ git push #push changes to github
+</pre><p>You should feel free to create any other subdirectories within your
+<code>i444</code> directory.
+</p></section></section><section data-level="h2"><h2>References</h2><p> <a href="https://git-scm.com/">Official Git Site</a>.
+</p><p>Scott Chacon, Ben Straub,  <a href="https://git-scm.com/book/en/v2">Pro Git</a>.
+</p><p> <a href="https://git-scm.com/docs">Reference Documentation</a>
+</p><p>Anish Athalye, 
+<a href="https://missing.csail.mit.edu/2020/version-control/">Version Control (Git)</a>; Part of 
+<a href="https://missing.csail.mit.edu/">MIT Missing Semester</a>; Highly recommended.
+</p></section></section></div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/slide-controls.mjs"></script>
+    <script type="module" src="../../assets/scripts/nav.mjs"></script> 
+    <script type="module" src="../../assets/scripts/highlight.mjs"></script>
+</body>
+</html>
+

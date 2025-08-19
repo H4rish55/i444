@@ -18,11 +18,11 @@ this course.
   + .<./videos/index.html> "Class videos": Usually made available the
     day after the class.
 
+%%%
   + .<vm-setup/index.html> "Virtual Machine Setup":
      Directions for setting up the virtual machine you will be using
      for this course.
 
-%%%
   + Listing of .<ports/ports.html> services running on
     `zdu.binghamton.edu`.  ( .<./ports/ports.umt> "source",
     .<./ports/ports.pdf> "PDF").

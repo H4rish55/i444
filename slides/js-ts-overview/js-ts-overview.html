@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JavaScript/TypeScript  Overview</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link href="../../assets/styles/article.css" rel="stylesheet" type="text/css" /> 
+</head>
+
+<body class=umt-slides>
+
+    <nav id="course-nav">
+      <ul>
+      </ul>
+    </nav>
+    
+    <div class="umt-content">
+      <div><section data-level="h1"><h1>JavaScript/TypeScript  Overview</h1><section data-level="h2"><h2>Overview</h2><ul><li><p>Quick summary of the main features of JavaScript and TypeScript so
+    that you can start work on programming projects.
+</p></li><li><p>Details will be covered in subsequent classes.
+</p></li><li><p>JavaScript versus TypeScript.
+</p></li><li><p>Primitive types.
+</p></li><li><p>Variables and declarations.
+</p></li><li><p>Arrays.
+</p></li><li><p>Objects.
+</p></li><li><p>Regular expressions.
+</p></li><li><p>Control statements summary.
+</p></li><li><p>Functions.
+</p></li><li><p>Classes.
+</p></li><li><p>Dynamic language.
+</p></li><li><p>TS literals vs JSON.
+</p></li></ul></section><section data-level="h2"><h2>JavaScript vs TypeScript</h2><ul><li><p>JavaScript does not have any type declarations.  It is
+     <a href="https://en.wikipedia.org/wiki/Type_safety">type safe</a>
+    but all type enforcement is performed dynamically at
+    runtime.
+</p></li><li><p>TypeScript is JavaScript along with <strong>optional</strong> type declarations.
+    This allows static type enforcement before runtime.
+</p></li><li><p>If possible, TypeScript <strong>infers</strong> a type when it is not provided.
+</p></li><li><p>All legal JavaScript programs are legal TypeScript programs.
+</p></li><li><p>TypeScript programs are transpiled to JavaScript using the
+    TypeScript compiler <code>tsc</code>.
+</p></li></ul></section><section data-level="h2"><h2>TypeScript to JavaScript</h2><ul><li><p>Example TypeScript  <a href="code/ts-to-js/str-repeat.ts?lang=ts">str-repeat.ts:</a>
+</p><pre class="hljs language-ts">function strRepeat(str: string, repeat: number)
+  : string[]
+{
+  return Array.from({length: repeat})
+    .map((_, i) => str.repeat(i + 1));
+}
+
+
+globalThis.console.log(strRepeat('a', 4));
+</pre></li><li><p>Compile to JavaScript using <code>tsc --lib esnext --target esnext str-repeat.ts</code>
+    to  <a href="code/ts-to-js/str-repeat.js?lang=js">str-repeat.js:</a>
+</p><pre class="hljs language-js">function strRepeat(str, repeat) {
+    return Array.from({ length: repeat })
+        .map((_, i) => str.repeat(i + 1));
+}
+globalThis.console.log(strRepeat('a', 4));
+</pre></li><li><p>Can also be compiled to legacy JS (ES3) using <code>tsc --lib esnext
+    str-repeat.ts --outFile str-repeat-legacy.js</code> to
+    
+    <a href="code/ts-to-js/str-repeat-legacy.js?lang=js">str-repeat-legacy.js:</a>
+</p><pre class="hljs language-js">function strRepeat(str, repeat) {
+    return Array.from({ length: repeat })
+      .map(function (_, i) {
+             return str.repeat(i + 1); 
+    });
+}
+globalThis.console.log(strRepeat('a', 4));
+</pre></li><li><p>Run using <code>node str-repeat.js</code> to get output
+</p><pre>    [ 'a', 'aa', 'aaa', 'aaaa' ]
+</pre></li></ul></section><section data-level="h2"><h2>TypeScript Types Overview</h2><ul><li><p>TypeScript types are based on
+     <a href="https://en.wikipedia.org/wiki/Algebraic_data_type">algebraic
+    types</a>.  Specifically, a <strong>type</strong> is a <strong>set of values</strong> while
+    operations on types correspond to operations on sets like
+    <strong>cartesian product</strong>, <strong>set-union</strong> and <strong>set-intersection</strong>.
+</p></li><li><p><strong>Primitive types</strong> like  <code class="hljs language-ts">string</code>, 
+    <code class="hljs language-ts">number</code>,  <code class="hljs language-ts">boolean</code>,  <code class="hljs language-ts">void</code>,
+     <code class="hljs language-ts">null</code>,  <code class="hljs language-ts">undefined</code>.
+</p></li><li><p> <a href="https://en.wikipedia.org/wiki/Top_type">Top Type</a> <code>unknown</code>
+     stands for the set of all values.  
+</p></li><li><p> <a href="https://en.wikipedia.org/wiki/Bottom_type">Bottom Type</a>
+    <code>never</code>: an impossible type containing no values.
+</p></li><li><p>A special type <code>any</code> which stands for any type and is not
+    type-checked.  
+</p></li><li><p><strong>Array</strong> of type \(\;T\) specified as \(\;T\)<code>[]</code>.
+</p></li><li><p><strong>Tuple</strong> of types \(\;T_1, T_2, \ldots, T_n\) specified as <code>[</code>
+    <code></code>\(T_1, T_2, \ldots, T_n\) <code></code><code>]</code>.  This is an example of a
+     <a href="https://en.wikipedia.org/wiki/Product_type">product type</a>
+    (corresponding to the set cartesian product).
+</p></li><li><p><strong>Named tuples</strong> written as  <code class="hljs language-ts">{name: string, age?: number}</code>.
+    Note that the <code>?</code> indicates that <code>age</code> is optional.
+</p></li><li><p><strong>Function types</strong>: <code>(</code>\(\mathtt{param_1\!\!:}\; T_1\mathtt{,}\ldots
+    \mathtt{,}\mathtt{param_n\!\!:}\; T_n\)<code>) => </code>\(\mathtt{RetType}\).
+</p></li><li><p> <a href="https://en.wikipedia.org/wiki/Tagged_union">Sum type</a>
+    (corresponding to set union) indicated as \(\;T_1\) <code>|</code> \(T_2\) <code>|</code>
+    \(\ldots\) <code>|</code> \(T_n\).  Basically
+    
+    <a href="https://en.wikipedia.org/wiki/Union_type#Untagged_unions">untagged unions</a> (but programmer can choose to make <strong>tagged</strong>).
+</p></li><li><p><strong>Intersection Types</strong>: contains all characteristics of constituent
+    types.  For example <code>Person &amp; Serializable &amp; Loggable</code>.
+</p></li><li><p> <code class="hljs language-ts">type</code> <em>Name = Type</em> specifies <em>Name</em> as an alias
+    for <em>Type</em>.
+</p></li></ul></section><section data-level="h2"><h2>Type Checking in TypeScript</h2><p> <a href="https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop">Read-Eval-Print-Loop</a> or REPL using
+command  <a href="https://typestrong.org/ts-node/">ts-node</a> (this log was produced some time ago, does not currently work on my computer):
+</p><pre class="hljs language-ts">> type Color = 'red' | 'blue' | 'green';
+undefined
+> let c: Color;
+undefined
+> c = 'red';
+'red'
+> c = 'Red';
+&lt;repl>.ts:7:1 - error TS2820: Type '&quot;Red&quot;' is not 
+   assignable to type 'Color'. Did you mean '&quot;red&quot;'?
+> c = 'Red';
+  ~
+>  
+</pre></section><section data-level="h2"><h2>A TypeScript Example</h2><p>Algebraic types are great for modeling a problem.
+</p><p>In  <a href="code/adt-example.ts?lang=ts">adt-example.ts</a>
+( <code></code> <a href="https://www.typescriptlang.org/play?#code/PTAqGUAIEMBsHMCmAjATtAlgY0gE2gC7SQECeADogM6QBmA9qnvQLaYB2kL9uissGdvACwAKDEgqAVxYkKiMWUqQACtFItE7AqHmQAvJADkAYQCC4ABJHIAH2PmASgBEb905YCiJgNJGA3GJBokqIkABC0FSIahpaBAaQAN6QANaCuABcquqa2rrKAL6BIXom0Ki4BWGGRgCyUQSIqOWVbsYAahhU0AHBIIJNqNFYBBj0nNDsuJDkqDxSo3KUVIplqIi4GAStM4aR0bF5CQBkyWKQaRnZpmYuRgA0F5BYFVXy2bvVT6KXr5UAORkyGa2SoBFQghEomKwVCkBMAAtEFhUokDjFcvFICdnkksMjUUCWCDUNl2MDmpBCjjkulpjcTF5fI9qSU1spylREeiopi4tpaUl6VkHBZrA82f1gNJZKEOWEjvE6ogCIieIkTBstjs3nYEYS0fYuYj2aIQHMFkt5aVlErBYYkpo1TxsvaCCqXbhJdBuFJtOTKahYeJzcAAHQARnDEmAADcKngUbAKoRxuwxFgJuCXlFEe63ViHedflxVerRcLrmKrEZCj9Lr76P6CNlIwBOcMAJi7PxDsYTTF4WBT6DGE0z2YSBNSBZyAoSjuezor2SrDIczL8koJKNSxNJbYADEfI-Xnk2W9kACwAZi73d7Yn7ofhjmoUlgi7xkHBhCkVBghCULUkKkDdJ4qDzGSdBwNEoG2D+mhUD0SBAZCQigWcKQQVBjDZBCUhhC+w6jmEtD+qM6azOoAAU5BFq287HAAlJA2TvtIX5mkAA">TS playground</a>)
+</p><pre class="hljs language-ts">//TS algebraic data types for domain modelling
+
+//sum type
+type PaymentType = 'CASH' | 'CARD' | 'CHECK';
+
+
+type BasePayment = { kind: PaymentType };
+type CardType = 'MasterCard' | 'Visa';
+
+//intersection and product types
+type CreditCard = BasePayment &amp; {
+  kind: 'CARD',
+  cardType: CardType,
+  cardNumber: string
+};
+
+type Check = BasePayment &amp;
+  {checkNumber: number } &amp; {kind: 'CHECK', };
+
+type Cash = BasePayment &amp; {kind: 'CASH', };
+
+//sum type
+type PaymentMethod = CreditCard | Check | Cash;
+
+//product type
+type Payment = {
+  method: PaymentMethod,
+  amount: number
+};
+
+</pre></section><section data-level="h2"><h2>A TypeScript Example Continued</h2><pre class="hljs language-ts">//var declaration
+const cashPayment: Payment = {
+  method: {kind: 'CASH'},
+  amount: 19.22,
+};
+
+//var declaration
+const chkPayment: Payment = {
+  method: {kind: 'CHECK', checkNumber: 1001},
+  amount: 432.22,
+};
+
+
+type Result =
+  { status: string } &amp; { isError: false } |
+  { message: string } &amp; { isError: true };
+
+declare function pay(payment: Payment) : Result;
+
+</pre></section><section data-level="h2"><h2>Numbers</h2><p>All primitive numbers are floating point; no primitive integer types.
+TypeScript type <code>number</code>.
+</p><pre class="hljs language-javascript">> 1 + 3*2**2**3   //power ** high precedence, right assoc
+769
+> -5 % 3       //remainder; has sign of first operand
+-2
+> 0xf &amp; 0x32   //hex literals; bitwise and
+2
+> 0xf | 0x32   //bitwise or
+63
+> (0xf ^ 0x32).toString(16)  //xor;
+'3d'
+> 3 &lt;&lt; 2       //left shift equiv mult by power-of-2
+12
+> 15 >> 2      //right shift equiv divsn by power-of-2
+3
+> 1 &lt;&lt; 31      
+-2147483648    //32-bit overflow
+> 1n &lt;&lt; 31n    //n suffix uses BigInt's.
+2147483648n
+> 64 >> 2      //arithmetic right-shift
+16
+> -1 >> 2      
+-1
+> -1 >>> 2     //logical right-shift
+1073741823
+> 
+</pre></section><section data-level="h2"><h2>Strings</h2><ul><li><p>TypeScript type <code>string</code>.
+</p></li><li><p>Strings are immutable.
+</p></li><li><p>String literals can be enclosed within single quotes
+    as  <code class="hljs language-javascript">'hello'</code> or double-quotes as  <code class="hljs language-javascript">&quot;world&quot;</code>.  Absolutely
+    equivalent; I prefer using  <code class="hljs language-javascript">'string'</code> as easier to type
+    on my keyboard.
+</p></li><li><p>Above string literals can contain <code>\</code>-escape sequences.  They
+    cannot contain literal newlines but can contain escaped
+    newlines.
+</p></li><li><p><code>+</code> used for string concatenation.
+</p></li><li><p> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">Rich set of methods.</a>
+</p></li></ul></section><section data-level="h2"><h2>String Examples</h2><pre class="hljs language-javascript">> const str : string = 'hello\n\tworld'
+undefined
+> console.log(str)
+hello
+	world
+undefined
+let text = &quot;echo a \\\n\t b c&quot;  //no type declared
+undefined
+> .type text      //ts infers type from initializer
+let text: string
+undefined
+> console.log(text)
+echo a \
+	 b c
+undefined
+> str + text
+'hello\n\tworldecho a \\\n\t b c'
+</pre></section><section data-level="h2"><h2>Template String Literals</h2><ul><li><p>Enclosed within backquotes.
+</p></li><li><p>Can contain literal newlines.
+</p><pre class="hljs language-javascript">    > `Mult-line
+    ... string`
+    'Mult-line\nstring'
+</pre></li><li><p>Allows interpolating arbitrary expressions enclosed within
+    <code>${...}</code>.
+</p><pre class="hljs language-javascript">    > `Unit circle circumference:
+    ... ${2*Math.PI*1}\n`
+    'Unit circle circumference:\n6.283185307179586\n'
+    >
+</pre></li></ul></section><section data-level="h2"><h2>Variables and Declarations</h2><ul><li><p>In JavaScript, it is possible to use a variable without declaring
+  it.  <strong>Do not do so</strong>; this is a bad idea and creates a<code> </code> &quot;global<code></code>&quot;
+  variable.  Modern JS environments disallow this.
+</p></li><li><p>Do not use legacy <code>var</code> declarations; surprising semantics.
+</p></li><li><p>Modern code declares block-scoped variables using <code>const</code> or
+    <code>let</code>.  Less surprising semantics.
+</p></li><li><p>Always try to initialize variable in declaration.  When possible,
+    prefer <code>const</code> to <code>let</code>.
+</p></li><li><p><code>const</code> means variable cannot be changed.  However, it is possible
+    that the object referenced by the variable can still be changed.
+</p></li></ul></section><section data-level="h2"><h2>Variables and Declarations: Examples</h2><p>Using <code>ts-node</code> REPL:
+</p><pre class="hljs language-javascript">> let a: number = 22
+undefined
+> let a : number;
+... Cannot redeclare block-scoped variable 'a'.
+...
+> const b : number
+... 'const' declarations must be initialized.
+...
+> const b : number = 33;
+undefined
+let [c, d, e] = [88, 22, 15/3] //destructuring decl
+undefined
+> .type c  //inferred type
+let c: number
+> [a, b, c, d, e]
+[ 22, 33, 88, 22, 5 ]
+</pre></section><section data-level="h2"><h2>TypeScript Arrays</h2><p>Array literals are comma-separated expressions within square brackets;
+last item can optionally be followed by a comma.
+</p><p>TypeScript arrays must be <strong>homogeneous</strong> (all elements must be of the
+declared or inferred type).  Type is specified as <code>T[]</code> where <code>T</code> is
+the type of the elements.
+</p><pre class="hljs language-javascript">> const arr = [1, 2, 'hello'.length, ]
+undefined
+> .type arr
+const arr: number[]
+> arr
+[ 1, 2, 5 ]
+> arr[1]
+2
+> arr.length
+3
+> arr[0] = 'world'
+... Type 'string' is not assignable to type 'number'.
+...
+>
+</pre></section><section data-level="h2"><h2>JavaScript Arrays</h2><ul><li><p>JavaScript arrays can be <strong>non-homogeneous</strong> (elements can have different
+    types.
+</p></li><li><p>JavaScript arrrays are objects and can have properties.
+</p></li></ul><p>Using <code>node</code> REPL:
+</p><pre>> const arr = [ 'a', 22, [33] ]
+undefined
+> arr
+[ 'a', 22, [ 33 ] ]
+> arr[2]
+[ 33 ]
+> arr.length
+3
+//give it a property
+> arr._name = 'arr'
+'arr'
+> arr
+[ 'a', 22, [ 33 ], _name: 'arr' ]
+>
+</pre></section><section data-level="h2"><h2>Array Methods</h2><p> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">MDN</a>
+</p><pre class="hljs language-javascript">> const arr1 : number[] = [1, 2, 'hello'.length, 6, ];
+undefined
+> arr1.slice(1, 3) //args: incl, excl
+[ 2, 5 ]
+> arr1.slice(1) //start to end
+[ 2, 5, 6 ]
+> arr1.slice(1, -1)  //neg index counts from end
+[ 2, 5 ]
+> arr1.slice(-2)  //start with -2 to end
+[ 5, 6 ]
+> arr1.indexOf(5)
+2
+> arr1.indexOf(8)
+-1
+> arr1.push(7, 8) //destructive operation
+6                 //length of result array
+> arr1            //changed
+[ 1, 2, 5, 6, 7, 8 ]
+> arr1.indexOf(8)
+5
+> 
+</pre></section><section data-level="h2"><h2>Array Methods Continued</h2><pre class="hljs language-javascript">> arr1.shift()   //destructive
+1
+> arr1           //changed
+[ 2, 5, 6, 7, 8 ]
+> arr1.at(-1)
+8
+> arr1.pop()     //destructive
+8
+> arr1
+[ 2, 5, 6, 7 ]
+// unshift and push both destructive
+> arr1.unshift(22); arr1.push(-1)
+6
+> arr1
+[ 22, 2, 5, 6, 7, -1 ]
+</pre></section><section data-level="h2"><h2>Array Methods Continued</h2><pre class="hljs language-javascript">> arr1.sort()                //destructive
+[ -1, 2, 22, 5, 6, 7 ]       //??
+> arr1.sort((a, b) => a - b)
+[ -1, 2, 5, 6, 7, 22 ]  
+> arr1                       //changed
+[ -1, 2, 5, 6, 7, 22 ]
+> arr1.concat(33, 44)        //non-destructive
+[
+  -1,  2,  5,  6,
+   7, 22, 33, 44
+]
+> arr1
+[ -1, 2, 5, 6, 7, 22 ]       //unchanged
+> 
+</pre></section><section data-level="h2"><h2>Array Methods Continued</h2><p>Newer additions:
+</p><pre class="hljs language-javascript">> arr1 = [ 'a', 'b', 'c', 'd' ]
+[ 'a', 'b', 'c', 'd' ]
+// .at() allows negative indexes (like slice())
+> arr1.at(1)
+'b'
+> arr1.at(-11)
+undefined
+> arr1.at(-1)
+'d'
+> arr1.at(-2)
+'c'
+// .toSorted() is non-destructive version of .sort().
+> arr1.toSorted((a, b) => b.localeCompare(a))
+[ 'd', 'c', 'b', 'a' ]
+> arr1                   //unchanged
+[ 'a', 'b', 'c', 'd' ]
+// .toReversed() is non-destructive version of .reverse().
+> arr1.toReversed()
+[ 'd', 'c', 'b', 'a' ]
+> arr1                   //unchanged
+[ 'a', 'b', 'c', 'd' ]
+</pre></section><section data-level="h2"><h2>Objects</h2><p>JS objects are dictionaries mapping <code>string</code> properties to arbitrary
+values, with OO pixie dust sprinkled in.
+</p><p>JS objects can be used in two ways:
+</p><ul><li><p>As C structures to map specific keys to values (aka <strong>records</strong>):
+    for example, <code>{ x: 22, y: 33, z: 44 }</code> can be used to represent a
+    3D point with fixed keys <code>x</code>, <code>y</code> and <code>z</code>.
+</p></li><li><p>As dictionaries to map arbitrary string keys to values (JS also
+    has a specific
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a> type for this use case, but unrestricted JS objects have been used
+    traditionally).
+</p></li></ul><p>TS allows both uses.
+</p></section><section data-level="h2"><h2>Structures in TypeScript</h2><p>Like C <code>struct</code>, but can also specify some properties as optional.
+</p><pre class="hljs language-javascript">> let o1 = { a1: 22, b1: 33, c1: 44 } 
+undefined
+> .type o1  //inferred type
+let o1: {
+    a1: number;
+    b1: number;
+    c1: number;
+}
+> o1.b1
+33
+> o1.d1
+... Property 'd1' does not exist on type
+...
+o1 = { a1: 44, b1: 88 }
+... Property 'c1' is missing in type
+...
+</pre></section><section data-level="h2"><h2>Objects as Structures with Optional Fields</h2><pre class="hljs language-javascript">> let o2 : { a2: number, b2?: number } //b2 optional
+undefined
+> .type o2
+let o2: {
+    a2: number;
+    b2?: number | undefined;
+}
+> o2 = { a2: 12, b2: 66 }
+{ a2: 12, b2: 66 }
+> o2 = { a2: 8 }
+{ a2: 8 }
+> o2 = { }
+... Property 'a2' is missing in type '{}'...
+...
+</pre></section><section data-level="h2"><h2>Objects as Dictionaries in TypeScript</h2><pre class="hljs language-javascript">//declare m1 to be a dictionary from string keys to any type
+> let m1 : { [index: string]: any } = {}
+undefined
+> m1.a1 = 33
+33
+> m1['b' + '1'] = 44 //[ ] can contain expr
+44
+> m1
+{ a1: 33, b1: 44 }
+> m1.c1 = 55
+55
+> m1
+{ a1: 33, b1: 44, c1: 55 }
+> m1.d1 = 'hello'  //type allows any value
+'hello'
+> m1
+{ a1: 33, b1: 44, c1: 55, d1: 'hello' }
+> let [a1, b1 ] = [22, 33] 
+undefined
+> m1 = { a1, b1, d1: 99}  //shorthand literal notation
+{ a1: 22, b1: 33, d1: 99 }
+>
+//can also declare using utility type Record&lt;KeyType, ValueType>:
+> let m2: Record&lt;string, number>;
+undefined
+> m2.a1 = 42
+42
+</pre></section><section data-level="h2"><h2>JS Object Methods</h2><p> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">MDN</a>
+</p><pre class="hljs language-javascript">> let obj =
+    Object.assign({}, {a: 22, b: 33}, {a: 44, c: 99})
+undefined
+> obj
+{ a: 44, b: 33, c: 99 }
+> Object.keys(obj)
+[ 'a', 'b', 'c' ]
+> Object.values(obj)
+[ 44, 33, 99 ]
+> Object.entries(obj)
+[ [ 'a', 44 ], [ 'b', 33 ], [ 'c', 99 ] ]
+> Object.fromEntries(Object.entries(obj).slice(1))
+{ b: 33, c: 99 }
+> 
+</pre></section><section data-level="h2"><h2>Regular Expressions</h2><p>Invaluable tool for string matching,  JS and TS support regex literals
+enclosed within <code>/.../</code>.
+</p><pre class="hljs language-javascript">> const [var1, var2] = [3, 5]
+> let str = `var1*var2 = ${var1*var2}`
+> str
+'var1*var2 = 15'
+> str.match(/=/)        //first match for '='
+[ '=', index: 10, ... ] //at index 10
+> str.match(/ /)        //look for space
+[ ' ', index: 9, ... ]  //at index 9
+> str.match(/\s/)       //special regex for whitespace
+[ ' ', index: 9, ... ]
+> str.match(/[0-9]/)    //char class: any char '0'...'9'
+                        //match single char in class
+[ '1', index: 3, ... ]
+> str.match(/\w/)       //word char: [a-zA-Z0-9_]
+[ 'v', index: 0, ... ]
+> str.match(/[A-Z]/)    //match uppercase char
+null                    //fails
+</pre></section><section data-level="h2"><h2>Regular Expressions Continued</h2><pre class="hljs language-javascript">> str.match(/[a-z]/)   //match lowercase letters
+[ 'v', index: 0, ... ]
+> str.match(/[a-z]+/) //+ means one-or-more 
+[ 'var', index: 0, ... ]
+> str.match(/\w+/)  //one-or-more word chars
+[ 'var1', index: 0, ... ]
+> str.match(/\d+/)  //one-or-more digits
+[ '1', index: 3, ... ]
+> let m = str.match(/(\w+)\W+(\w+)/) //capturing paren
+> m
+[ 'var1*var2','var1', 'var2', index: 0, ... ]
+> [m[0], m[1], m[2]]  //m[1], m[2] captured text
+[ 'var1*var2', 'var1', 'var2' ]
+</pre></section><section data-level="h2"><h2>Control Statements</h2><ul><li><p>C-style <code>if</code>-<code>else</code>, <code>for</code>, <code>while</code>, <code>do</code>-<code>while</code>,
+    <code>switch</code>-<code>case</code> statements.
+</p></li><li><p>For iterating through an array always use <code>for</code>-<code>of</code>.
+</p><pre class="hljs language-javascript">    > const arr = [33, 53, 36];
+    > for (const a of arr) { console.log(a); }
+    33
+    53
+    36
+    //.entries() produces [index, element] pairs
+    > for (const [i, a] of arr.entries()) {
+        console.log(a*i);
+      }
+    0
+    53
+    72
+</pre></li></ul></section><section data-level="h2"><h2>Functions</h2><ul><li><p>Traditional functions.  Example factorial:
+</p><pre class="hljs language-javascript">    > function fact(n: number): number {
+    ... return (n &lt; 1) ? 1 : n*fact(n-1);
+    ... }
+    > fact(4)
+    24
+</pre></li><li><p>Anonymous functions stored in a variable:
+</p><pre class="hljs language-javascript">    > let add = function (a: number, b: number) {
+    ... return a + b ;
+    ... }
+    undefined
+    > add(3, 4)
+    7
+    > .type add
+    let add: (a: number, b: number) => number
+</pre></li><li><p>Fat arrow anonymous functions:
+</p><pre class="hljs language-javascript">    > const mult = (a: number, b: number ) => a*b
+    undefined
+    > mult(6, 7)
+    42
+</pre></li><li><p>Subtle semantic differences between anonymous functions
+    defined using  <code class="hljs language-javascript">function</code> and those defined using fat-arrow.
+</p></li></ul></section><section data-level="h2"><h2>Variable Args</h2><p>If last formal parameter is preceeded by <code>...</code>, then all remaining
+arguments are collected into that <strong>rest parameter</strong> as an array.
+</p><pre class="hljs language-javascript">> function polyEval(x: number, ...coeffs: number[]) {
+    let pow = 1;
+    let sum = 0;
+    for (const coeff of coeffs) {
+      sum += pow*coeff;
+      pow *= x;
+    }
+    return sum;
+  }
+> polyEval(2, 1, 2, 3, 4)
+49
+> 1*2**0 + 2*2**1 + 3*2**2 + 4*2**3
+49
+</pre></section><section data-level="h2"><h2>First-Class Functions</h2><p>Functions are <strong>first-class values</strong>; i.e., they can be treated like any
+other values:
+</p><ul><li><p>Can be stored in data-structures.
+</p><pre class="hljs language-javascript">    > let fns = [ add, mult, ];
+    > [ fns[0](2, 3), fns[1](5, 6) ]
+    [ 5, 30 ]
+</pre></li><li><p>Can be passed and returned from functions.
+</p><pre class="hljs language-javascript">    //type declares a type alias
+    > type Fn2 = (a: number, b: number) => number
+    > const fn =
+        (cond: boolean, fn1: Fn2, fn2: Fn2) =>
+	  cond ? fn1 : fn2;
+    > fn(false, add, mult)(3, 6)
+    18
+    > fn(true, add, mult)(3, 6)
+    9
+</pre></li></ul></section><section data-level="h2"><h2>Classes</h2><p>JS does not really have classes in the sense of other OO languages.
+Syntactic sugar introduced relatively recently.
+</p><p>On
+ <a href="https://www.typescriptlang.org/play?#code/AQYwNghgzlwAoHsCWA7ALgJmAbwLAChgjgAPALmBQFcBbAIwFMAnAbmIHp2AHKusJEMFRQ0EFCAbAAZkgZgAJgWLAAnhWr1mbJcRAIUIplRBoETABTlKtRkwA0q9TeYBKHDuVoAFkigA6EmAAXlI2b18-FWDVFg9gAF84+V80AAZzNydNJhxgThoGbwRFQmVgJkKqJhRgAFkIbz8oAEcmNHNw-xIAKm6sAGpgTsjejBdY0qJE0um9AzRgLmiUBgB3eGR0DHMAZgcAFnGCOagEMAY-MAQAc3MuNw52DdRMXIAiEjeKPeA3lS-gPtZvpTudLjc7n5kiJ0i43JxgABWAhAA">TS Playground</a>
+</p><pre class="hljs language-javascript">  class Point2 {
+    x: number;   //public instance field
+    y: number; 
+    constructor(x: number, y: number) {
+      this.x = x; this.y = y;
+    }
+    dist0() : number { //method
+      return Math.sqrt(this.x**2 + this.y**2);
+    }
+  }
+const p = new Point2(3, 4);
+console.log(p)    // Point2 { &quot;x&quot;: 3, &quot;y&quot;: 4}
+console.log(p.dist0()) // 5
+</pre></section><section data-level="h2"><h2>First Class Classes</h2><p>Classes are merely syntactic sugar for functions; hence they
+too are first-class.
+</p><p> <a href="https://www.typescriptlang.org/play?#code/AQYwNghgzlwAoHsCWA7ALgJmAbwLAChgjgAPALmBQFcBbAIwFMAnAbmIHp2AHKusJEMFRQ0EFCAbAAZkgZgAJgWLAAnhWr1mbJcRAIUIplRBoETABTlKtRkwA0q9TeYBKHDuVoAFkigA6EmAAXlI2b18-FWDVFg9gAF84+V80AAZzNydNJhxgThoGbwRFQmVgJkKqJhRgAFkIbz8oAEcmNHNw-xIAKm6sAGpgTsjejBdY0qJE0viJgnBoWAA5CALc4B0AYhkmEQpDVABzNjKiTk2hFGSQBoZYACkAZWAuJiQAN1udV4-b4Eg9sADihjmd2AAVZ4-T5oSQAawYKgA7mYSkQ9AY0EYTGZzDtAcDDg4AWh9lijm48JMhj5-NskLs0NF8WgwrS-CToiSJlMdFIqGAwCsChl3NSKmgqjUAAYAEmww3pjPiwHlwxJ8WlPISBFmBHm+hEwAQdAAVtEqUQuMh0BREKhMHYdChVgwKMKGE78NMMUauABGaIoBhI41mvzWh3mf0YBwAVhcBoMCDADA5CEO5gDfmSInSLjcnGA-oAzEmjTUQsHQybTX4XSKAOR0JCCxsORtQGhIbyN8bllNpsAZ8woPz8wUejKF9jAABELcFQO73jnQA">TS Playground</a>
+</p><pre class="hljs language-javascript">class Name {  
+  #first: string;        //# indicates JS private
+  private last: string;  //TS private keyword
+  constructor(first: string, last: string) {
+    this.#first = first; this.last = last;
+  }
+  fullName() {
+    return `${this.#first} ${this.last}`;
+  }
+};
+
+const obj = {
+  point: Point2,
+  name: Name,
+}
+</pre></section><section data-level="h2"><h2>First Class Classes Continued</h2><pre class="hljs language-javascript">const p1 = new obj.point(12, 5)
+console.log(p1.dist0()) // 13
+const n = new obj.name('bill', 'smith');
+console.log(n.fullName()) // &quot;bill smith&quot;
+</pre></section><section data-level="h2"><h2>TypeScript Type Narrowing Example</h2><p>In  <a href="code/shapes1.ts?lang=ts">shapes1.ts</a>:
+</p><pre class="hljs language-ts">type Rect = { tag: 'Rect', w: number, h: number };
+
+type Circle = { tag: 'Circle', r: number };
+
+//Shape is a discriminated union, discriminated by tag
+type Shape = Rect | Circle;
+
+function area(s: Shape) {
+  switch (s.tag) {
+    case 'Rect':
+      return s.w * s.h;
+    case 'Circle':
+      return Math.PI*s.r*s.r;
+    default:
+      const _exhaustiveCheck: never = s;
+      return _exhaustiveCheck;
+  }
+}
+
+
+const shapes: Shape[] =
+  [ { tag: 'Rect', w: 2, h: 3}, { tag: 'Circle', r: 1 } ];
+
+for (const s of shapes) console.log(area(s));
+</pre><p>Log:
+</p><pre class="hljs language-sh">$ ts-node code/shapes1.ts
+6
+3.141592653589793
+</pre><p> <a href="https://www.typescriptlang.org/play/?#code/C4TwDgpgBAShDGwoF4oG8rAIYHMBcUA5HIoQDRQDuBAdgK4C2ARhAE4UAWtjLrUAvgG4AUMNCQoAYQCWreABtoqDNnxEZcxeSituzNgJHCA9MYDKHLBOkBnKFigATW-FbSG0mlmARHUOjTSAPY0FM42ru6e3r5QTCCYuGLg0BZWSrAISAA+UrIKEEYAZgGIwTT2rBBYABQ2BGmQAJTowlBQNpTSwPAcUHUAdKotaG3tUPBYNtDEWYR4Y+M6EMB0rBU2A5RQAFQdAxwiS5PT6vlaC0vtVavrUACy3hwDAAoAkjubrJ8DrEfjjggRSwdHkwEuV3gIRsSAA+hAAB6WOgw6QANwgkg4CAA1rQIBi+KgbP8ljc1hV4UiQaiMVjcf9+MImaIoTQYR1LJB6lBGhAANoAXRQY356ESalmpAo1CgACZOAQAMz8CgqXAEQgaAraXRQACMAigguKQT4NTZHLsQSKnPSNhalqCigG8iCOBqWCqtQdTSMQA">TS Playground Link</a>.
+</p></section><section data-level="h2"><h2>TypeScript Narrowing Details</h2><p> <a href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html">Docs.</a>
+</p><ul><li><p>If a condition narrows down to a possible type, then code
+    governed by that condition can depend on the narrowed type.
+</p></li><li><p>Narrowing conditions can include JS <code>typeof</code>, <code>instanceof</code> and
+    <code>in</code>, <code>===</code>, <code>!==</code>, <code>==</code>, <code>!=</code>.
+</p></li></ul><p>In  <a href="code/narrow1.ts?lang=ts">narrow1.ts</a>:
+</p><pre class="hljs language-ts">function f(s: string | number, t: string) : number {
+  return (s === t)
+    ? s.length
+    : (typeof s === 'number')
+    ? s
+    : t.length;
+}
+
+console.log(f('hello', 'hello'), f(22, 'x'), f('ts', 'js'));
+</pre><p>Log:
+</p><pre class="hljs language-sh">$ ts-node ./code/narrow1.ts
+5 22 2
+</pre></section><section data-level="h2"><h2>JavaScript Literals</h2><p>JavaScript has very rich notation for
+ <a href="https://www.sitepoint.com/es6-enhanced-object-literals/">literal
+data</a>:
+</p><p>A primitive JS literal value is one of:
+</p><ul><li><p>An integer (including <code>0xAf</code> and octal <code>072</code> literals),
+    floating point literal like <code>1.23e-2</code> or <code>1E4</code>.
+</p></li><li><p>Special values like  <code class="hljs language-javascript">null,</code>  <code class="hljs language-javascript">undefined</code> or  <code class="hljs language-javascript">NaN.</code>
+</p></li><li><p>A string literal delimited by single or double-quotes or by
+    backquotes for template literals.
+</p></li><li><p>Anonymous functions using either the  <code class="hljs language-javascript">function</code> keyword, or
+    fat-arrow.
+</p></li><li><p>Anonymous classes.
+</p></li></ul></section><section data-level="h2"><h2>JavaScript Literals Continued</h2><p>A compound JS literal value is one of:
+</p><ul><li><p>Arrays of comma-separated literal data enclosed within <code>[ ]</code>.
+</p></li><li><p>Object literals consisting of comma-separated <code>key: value</code>
+    pairs enclosed within <code>{ }</code>.
+</p><ul><li><p>Keys can be specified as non-template strings or simple
+        identifiers.
+</p></li><li><p>Dynamic key values can be specified within <code>[ ]</code>.
+</p></li><li><p>If a key-value is simply the name of a variable <code>var</code>, then it
+        is equivalent to the key-value <code>var: var</code>.
+</p></li><li><p>If a key-value looks like <code>id(...) { ... }</code>, then it
+        is equivalent to <code>id: function (...) { ... }</code>.
+</p></li></ul></li></ul><p>Both object and array literals permit an optional trailing <code>,</code> after
+the last item.
+</p></section><section data-level="h2"><h2>Complex JavaScript Literal Example</h2><p>Using node REPL:
+</p><pre class="hljs language-javascript">> const [ n1, n2 ] = [ 42, 33 ];
+> const [ str1, str2 ] = [ 'hello', 'world' ];
+> { n1: n1,
+    n2,
+    [`${str1}_${str2}`]: (a, b) => a+b,
+    [ str1 + '-' + str2 ]: 99,
+    mult(x, y) { return x*y; },
+    arr: [ n1, n2, ],
+  }
+{
+  n1: 42,
+  n2: 33,
+  hello_world: [Function: hello_world],
+  'hello-world': 99,
+  mult: [Function: mult],
+  arr: [ 42, 33 ]
+}
+> 
+</pre></section><section data-level="h2"><h2>JSON</h2><p><strong>JavaScript Object Notation</strong>: Very simple 
+<a href="https://www.json.org">specification.</a>  A JSON literal can be one of:
+</p><ul><li><p>A primitive literal can be a number, string within double
+    quotes, or  <code class="hljs language-javascript">true,</code>  <code class="hljs language-javascript">false</code> or  <code class="hljs language-javascript">null</code>.
+</p></li><li><p>An array literal consists of  JSON literal values separated
+    by comma's.  An optional trailing comma is <strong>not allowed</strong>.
+</p></li><li><p>An object literal consists of <code>key: value</code> pairs separated
+    by comma's.  An optional trailing comma is not allowed.
+    The <code>key</code> <strong>must</strong> be a string within double-quotes.
+</p></li></ul></section><section data-level="h2"><h2>JSON Example</h2><pre class="hljs language-json">{
+  &quot;john&quot;: {
+     &quot;name&quot;: &quot;John Cassidy&quot;,
+     &quot;age&quot;: 42,
+     &quot;kids&quot;: [ &quot;jane&quot;, &quot;bill&quot; ]
+   },
+  &quot;mary&quot;: {
+     &quot;name&quot;: &quot;Mary Jones&quot;,
+     &quot;age&quot;: 42,
+     &quot;kids&quot;: [ &quot;lucy&quot;, &quot;sue&quot; ]
+   }
+}
+</pre></section><section data-level="h2"><h2>JSON Evaluation</h2><ul><li><p>Can be easily parsed by standard JS library using
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse">JSON.parse().</a>
+</p></li><li><p>A JS object can easily be converted to a JSON string using
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">JSON.stringify().</a>  Usually, JS objects without a JSON
+    representation are silently ignored or represented as a  <code class="hljs language-javascript">null</code>
+    when within an array.
+</p></li><li><p>Excellent data format for exchanging structured data between
+    heterogeneous systems.
+</p></li><li><p>Restricted format.
+</p></li><li><p>Comments are not allowed.  Makes it a bad choice as a
+    configuration format (unfortunately, many JS tools use
+    it as a configuration format; some of them allow comments).
+</p></li><li><p> <a href="https://jsonlines.org/">JSON Lines</a> format allows
+    multiple json values within a <code>*.jsonl</code> file with
+    one value per line.
+</p></li></ul></section><section data-level="h2"><h2>Asynchronous Code</h2><ul><li><p>Many JavaScript libraries are event driven.
+</p></li><li><p>A program registers interest in an event by registering
+    an event handler.
+</p></li><li><p>The event handler is called asynchronously when the event
+    occurs.
+</p></li></ul><pre class="hljs language-javascript">//simulate async event using timeout
+> function event(handler) {
+    //after 3000 msec handler(42) is called
+    setTimeout(handler, 3000, 42);
+  }
+undefined
+> event(v => console.log(v));
+undefined  //call returns immediately
+> 42   //notice REPL prompt before output
+</pre></section><section data-level="h2"><h2>Taming Asynchronity Using async/await</h2><pre class="hljs language-javascript">> async function event() {
+    return new Promise((res, rej) =>
+      setTimeout(n => res(n), 3000, 42));
+   }
+... ..... ... undefined
+> await event()    //new top-level await in ES2022
+42                 //output after 3 seconds
+> 
+</pre></section><section data-level="h2"><h2>Generic Types</h2><ul><li><p>TypeScript can use type variables.
+</p><pre class="hljs language-ts">    function identity&lt;T>(arg: T) { return arg; }
+
+    let s = identity('hello'); //s: string inferred
+    let n: number = identity(s); //error
+</pre></li><li><p>TypeScript provides several
+    
+    <a href="https://www.typescriptlang.org/docs/handbook/utility-types.html">utility types</a> for manipulating types.  Examples:
+</p><dl><dt> <code>Partial&lt;T></code> / <code>Required&lt;T></code> / <code>Readonly&lt;T></code> </dt><dd><p>         T with all properties optional / required / readonly.
+</p></dd></dl><dl><dt> <code>Record&lt;K, V></code> </dt><dd><p>        An object having properties of type <code>K</code> and values of type <code>V</code>.
+</p></dd></dl></li></ul></section></section></div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/slide-controls.mjs"></script>
+    <script type="module" src="../../assets/scripts/nav.mjs"></script> 
+    <script type="module" src="../../assets/scripts/highlight.mjs"></script>
+</body>
+</html>
+

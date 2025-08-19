@@ -11,6 +11,9 @@
           *Office Hours*: Tue, Thu: 12:20 - 1:20p in EB N26, or by appointment .;
           *Email*: .<mailto:umrigar+cs444@binghamton.edu> umrigar+cs444@binghamton.edu
 
+  + The zoom link will be used for one-or-one meetings or if a class
+    is held online due to an exceptional situation.
+
   + Do *not* use the generic `umrigar@bing...` email address; *always*
     use the course specific `umrigar+cs444@bing...` email address.
           
@@ -115,6 +118,8 @@ book is strongly recommended:
 David Flanagan, "JavaScript: The Definitive Guide", 7th Edition,
 O'Reilly, 2020.
 
+Please also see the .<../../docs> doc folder for additional recommendations.
+
                          .=weights= Evaluation
                          =====================
 
@@ -153,7 +158,7 @@ O'Reilly, 2020.
 
   + A pop quiz *must* be started within three minutes of it being
     announced.  If you are having technical issues, please let me
-    know.
+    know before leaving the classroom.
 
   + If you have a legitimate reason for being unable to attend
     a class you must email me *before* the class.  If there is
@@ -173,13 +178,12 @@ O'Reilly, 2020.
 
   + Lowest project grade dropped.
 
-  + Must be submitted as a zip file on gradescope.
+  + Must be submitted as instructed, typically as a zip file on
+    gradescope.
 
-  + Usually 5 projects,  some of which will build on each other.
+  + 4 projects,  some of which will build on each other.
 
-      # Basic server side program.
-
-      # Server side program using a database.
+      # Basic server side program using a database.
 
       # Expose server side code using web services.
 
@@ -212,9 +216,10 @@ O'Reilly, 2020.
 
   + Homework assignments will be available on course website.
 
-  + Your homework assignment must be turned in via gradescope,
-    typically as a PDF.  You may include multiple files in the
-    submission for some homework assignments.
+  + Must be submitted as instructed, typically as a PDF on gradescope.
+    You may need to include multiple files in the submission for some
+    homework assignments.
+
 
 			Midterm and Final
 			=================
@@ -234,16 +239,15 @@ O'Reilly, 2020.
   + Final will be during finals week at a time determined by the university.
 
 
-
     	 	  	     Extra Credit
 			     ============
 
 Up to 3 extra points can be added to your overall total by contributing
 to a major open source project relevant to this course:
 
-  + Documentation typo fix: 0.5 points.
+  + Documentation typo fix: 0.5 points (limit 1).
 
-  + Documentation update: 1 point.
+  + Documentation update: up to 1 point (limit 1).
 
   + Code update: 1-3 points.
 
@@ -457,7 +461,7 @@ The university requires masks when indoors:
 
       + Accessing gradescope.
 
-  + Gradescope will be used for submitting labs, homework and projects.
+  + Gradescope will be used for submitting homework and projects.
 
   + Quizzes will be submitted online using the `Login` link on the
     course website (currently inactive).
@@ -537,8 +541,8 @@ The university requires masks when indoors:
   + Links to recordings of the zoom sessions will be made available on
     the course website in .<../../misc/videos> misc/videos.
 
-  + Please feel free to remind me if I start a class without recording
-    on zoom.
+  + Please feel free to remind me if I start a class without starting
+    the zoom recording.
 
      	      	  	    Virtual Machines
 			    ================
@@ -548,10 +552,13 @@ The university requires masks when indoors:
     course projects and other related work.
 
   + Each VM comes preinstalled with all the software needed for the
-    course. If you prefer to use your own computing environment, a
-    list of installed software is .<../../misc/vm-setup/setup.sh?lang=shell>
+    course. If you prefer to use your own computing environment, an
+    .<../../misc/vm-setup/setup.sh?lang=shell> "installation script"
     available. *However, it is your responsibility to ensure that
     submitted code runs within your VM environment*.
+
+  + The first project will require you to install additional software within
+    your home directory on your VM.
 
   + Each student has `sudo` access to their VM.  This makes it
     possible for the student to install any other required software.
@@ -578,7 +585,7 @@ some exposure to object-oriented programming.
 
 *CS 444 Prerequisites*: CS 320 or CS 350 or CS 375.
 
-Around 9 hours of work expected outside class each week.
+A typical week could require around 9.5 hours for this course.
 
 
 			    Objectives

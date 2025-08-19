@@ -62,12 +62,12 @@
 
       .include("code/ts-to-js/str-repeat.ts")
 
-  + Compile to JavaScript using `tsc --lib es2022 --target es2022 str-repeat.ts`
+  + Compile to JavaScript using `tsc --lib esnext --target esnext str-repeat.ts`
     to .<code/ts-to-js/str-repeat.js?lang=js> str-repeat.js:
 
     .include("code/ts-to-js/str-repeat.js")
 
-  + Can also be compiled to legacy JS (ES3) using `tsc --lib es2022
+  + Can also be compiled to legacy JS (ES3) using `tsc --lib esnext
     str-repeat.ts --outFile str-repeat-legacy.js` to
     .<code/ts-to-js/str-repeat-legacy.js?lang=js>
     str-repeat-legacy.js:
@@ -94,12 +94,14 @@
     `number`, .code(lang=ts) `boolean`, .code(lang=ts) `void`,
     .code(lang=ts) `null`, .code(lang=ts) `undefined`.
 
-  + .<https://en.wikipedia.org/wiki/Top_type> *Top Types* `any` (no
-    type checking) and `unknown` (which is a type-safe counterpart to
-    `any`).
+  + .<https://en.wikipedia.org/wiki/Top_type> *Top Type* `unknown`
+     stands for the set of all values.  
 
   + .<https://en.wikipedia.org/wiki/Bottom_type> *Bottom Type*
-    `never`: an impossible type.
+    `never`: an impossible type containing no values.
+
+  + A special type `any` which stands for any type and is not
+    type-checked.  
 
   + *Array* of type .$\;T$ specified as .$\;T$`[]`.
 
@@ -116,8 +118,9 @@
 
   + .<https://en.wikipedia.org/wiki/Tagged_union> "Sum type"
     (corresponding to set union) indicated as .$\;T_1$ `|` .$T_2$ `|`
-    .$\ldots$ `|` .$T_n$.  Basically *untagged* (but programmer can
-    choose to make *tagged*).
+    .$\ldots$ `|` .$T_n$.  Basically
+    .<https://en.wikipedia.org/wiki/Union_type#Untagged_unions>
+    *untagged unions* (but programmer can choose to make *tagged*).
 
   + *Intersection Types*: contains all characteristics of constituent
     types.  For example `Person & Serializable & Loggable`.
@@ -127,12 +130,12 @@
 
 
 
-		String Literal Types in TypeScript
-		==================================
+		Type Checking in TypeScript
+		===========================
 
 
 .<https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop> "Read-Eval-Print-Loop" or REPL using
-command .<https://typestrong.org/ts-node/> ts-node.
+command .<https://typestrong.org/ts-node/> ts-node (this log was produced some time ago, does not currently work on my computer):
 
 .code(lang="ts")
 ~~~
@@ -153,6 +156,8 @@ undefined
  
     		    A TypeScript Example
 		    ====================
+
+Algebraic types are great for modeling a problem.
 
 In .<code/adt-example.ts?lang=ts> adt-example.ts
 ( .--.<https://www.typescriptlang.org/play?#code/PTAqGUAIEMBsHMCmAjATtAlgY0gE2gC7SQECeADogM6QBmA9qnvQLaYB2kL9uissGdvACwAKDEgqAVxYkKiMWUqQACtFItE7AqHmQAvJADkAYQCC4ABJHIAH2PmASgBEb905YCiJgNJGA3GJBokqIkABC0FSIahpaBAaQAN6QANaCuABcquqa2rrKAL6BIXom0Ki4BWGGRgCyUQSIqOWVbsYAahhU0AHBIIJNqNFYBBj0nNDsuJDkqDxSo3KUVIplqIi4GAStM4aR0bF5CQBkyWKQaRnZpmYuRgA0F5BYFVXy2bvVT6KXr5UAORkyGa2SoBFQghEomKwVCkBMAAtEFhUokDjFcvFICdnkksMjUUCWCDUNl2MDmpBCjjkulpjcTF5fI9qSU1spylREeiopi4tpaUl6VkHBZrA82f1gNJZKEOWEjvE6ogCIieIkTBstjs3nYEYS0fYuYj2aIQHMFkt5aVlErBYYkpo1TxsvaCCqXbhJdBuFJtOTKahYeJzcAAHQARnDEmAADcKngUbAKoRxuwxFgJuCXlFEe63ViHedflxVerRcLrmKrEZCj9Lr76P6CNlIwBOcMAJi7PxDsYTTF4WBT6DGE0z2YSBNSBZyAoSjuezor2SrDIczL8koJKNSxNJbYADEfI-Xnk2W9kACwAZi73d7Yn7ofhjmoUlgi7xkHBhCkVBghCULUkKkDdJ4qDzGSdBwNEoG2D+mhUD0SBAZCQigWcKQQVBjDZBCUhhC+w6jmEtD+qM6azOoAAU5BFq287HAAlJA2TvtIX5mkAA> "TS playground")
@@ -510,14 +515,16 @@ JS objects can be used in two ways:
   + As dictionaries to map arbitrary string keys to values (JS also
     has a specific
     .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map>
-    Map type for this use case, but objects have been used
+    Map type for this use case, but unrestricted JS objects have been used
     traditionally).
 
 TS allows both uses.
 
 
-			Objects as Records in TypeScript
-			================================
+			Structures in TypeScript
+			========================
+
+Like C `struct`, but can also specify some properties as optional.
 
 ~~~
 > let o1 = { a1: 22, b1: 33, c1: 44 } 
@@ -539,8 +546,8 @@ o1 = { a1: 44, b1: 88 }
 ~~~
 
 
-                   Objects as Records with Optional Fields
-		   =======================================
+                   Objects as Structures with Optional Fields
+		   ==========================================
 
 ~~~
 > let o2 : { a2: number, b2?: number } //b2 optional
@@ -584,10 +591,15 @@ undefined
 undefined
 > m1 = { a1, b1, d1: 99}  //shorthand literal notation
 { a1: 22, b1: 33, d1: 99 }
-> 
+>
+//can also declare using utility type Record<KeyType, ValueType>:
+> let m2: Record<string, number>;
+undefined
+> m2.a1 = 42
+42
 ~~~
-			Object Methods
-			==============
+			JS Object Methods
+			=================
 
 .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object> MDN
 

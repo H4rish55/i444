@@ -35,9 +35,10 @@ dl {
 }
 
 .visjs {
-  width: 800px;
+  width: 90%;
   height: 800px;
   border: 2px solid cyan;
+  margin: auto;
 }
 
 #umt-slides-toc {
@@ -294,7 +295,6 @@ label {
   font-weight: bold;
   text-align: right;
 }
-
 
 .error {
   color: red;

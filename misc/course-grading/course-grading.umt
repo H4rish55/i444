@@ -149,13 +149,10 @@ contain a link to the homework assignment on the course website.
 		       =====================
 
 Graded work should be returned to students, usually within 2 weeks
-after the late submission deadline, via gradescope.
+after the late submission deadline.
 Besides the points obtained, the graded work should also include
-indications of why points were lost.  This should be done utilizing
-the dynamic rubrics facility of gradescope.
-separate text file.
+indications of why points were lost. 
 
-A graded project should be returned to the students via gradescope.
 The returned material should contain at least the following:
 
   .!ol-letter!
@@ -169,7 +166,7 @@ The returned material should contain at least the following:
 
   # Log of the program execution.
 
-  # Dynamic gradescope rubrics used in determining the grade.
+  # Description of rubrics used in determining the grade (when applicable).
 
 	      	        Recording Grades
 			================

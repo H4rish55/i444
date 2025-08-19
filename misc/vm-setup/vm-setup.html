@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Course   VM  Setup</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link href="../../assets/styles/article.css" rel="stylesheet" type="text/css" /> 
+</head>
+
+<body class=umt-article>
+
+    <nav id="course-nav">
+      <ul>
+      </ul>
+    </nav>
+    
+    <div class="umt-content">
+      <div><section data-level="h1"><h1>Course   VM  Setup</h1><p>Each student is being given a virtual machine which is dedicated to this
+course.  You may use it for any activities relevant to this course or
+your CS interests.
+</p><p>Note that you will have exclusive access to this VM via its IP address
+which will typically start with <code>128.226</code>.  All programming work for
+this course <strong>must</strong> be done on your VM.  <strong>Do not attempt to use
+remote.cs</strong>; it will not work as the software installed there is
+out-of-date.
+</p><p>The VM can only be accessed using ssh from <strong>within</strong> the campus
+network accessed using the campus VPN.
+</p><p>The VM runs Ubuntu 24.04.  Software which will be required by the
+course is  <a href="./setup.sh?lang=sh">pre-installed,</a> but it is possible that you may
+need to install additional software during the course of the semester.
+</p><p>You should make sure that you perform each of the following steps:
+</p><ol><li><p> <a href="#pw-change">Initial password change</a>.
+</p></li><li><p> <a href="#no-pw-ssh">SSH Access Without Using a Password</a>.
+</p></li><li><p> <a href="#x2go-access">X2Go access to your VM</a>.
+</p></li><li><p> <a href="#npm-sh">Set up a npm shell</a>.
+</p></li><li><p>Set up necessary git repositories on your
+    VM; this is detailed in a  <a href="./git-setup.html">separate document</a>.
+</p></li></ol><p>[This document uses the term &quot;workstation &quot; to refer to the computer
+to which your keyboard and mouse are attached to.]
+</p><section data-level="h2"><h2> <span id="pw-change">Initial</span> Password Change</h2><p>You should have received an email giving you the IP
+address <code>VM-IP</code> of your VM, your login id <code>VM-LOGIN-ID</code> and your initial
+password <code>VM-PW</code>.  Since your password has been exposed in an unsecure
+email, it <strong>must be changed</strong> ASAP.  Hence you should <strong>immediately</strong>
+login to your VM and change your password to some <code>VM-NEW-PW</code> of your
+choosing.
+</p><ol><li><p>Ensure that your workstation is connected to the campus network,
+    possibly using the
+    
+    <a href="https://www.binghamton.edu/its/about/teams/operations-infrastructure/network_administration/connecting_from_off_campus-ssl-vpn/index.html">campus VPN</a>.
+</p></li><li><p>Use ssh to connect to your VM using the provided IP address
+    <code>VM-IP</code>, <code>VM-LOGIN-ID</code> and initial password <code>VM-PW</code>.
+</p><p>    If your workstation runs Linux or OS/X, you can do so using a
+    command-line <code>ssh</code> client.  If your workstation runs Windows, you
+    can use
+    
+    <a href="https://docs.microsoft.com/en-us/windows/terminal/get-started">Windows Terminal</a> from the MS store.  There is even an
+    
+    <a href="https://chrome.google.com/webstore/detail/secure-shell/iodihamcpbpeioajjeobimgagajmlibd?hl=en">ssh app</a> which you can install for your Chrome browser; this
+    should work for all OS's which support Chrome.
+</p><p>    [It may be the case that your VM has a name starting with a course
+    number different from the course you are registered for; it was
+    set up this way for the convenience of the sysadmin and should not
+    make any difference to you.]
+</p></li><li><p>Use the <code>passwd</code> command on your VM, to change your password
+    to <code>VM-NEW-PW</code>.
+</p></li></ol><p>Once you have logged in to the campus VPN as in (1) above, the
+following log shows how you would perform steps (2) and (3):
+</p><pre class="hljs language-sh"># from a linux or os/x terminal (windows will differ).
+$ ssh VM-LOGIN-ID@VM-IP
+The authenticity of host 'VM-IP (VM-IP)' can't be established.
+ECDSA key fingerprint is ...
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'VM-IP' (ECDSA) to the list of known hosts.
+VM-LOGIN-ID@VM-IP's password: VM-PW   #will not be echoed
+Welcome to Ubuntu 22.04 ...
+...
+# at this point you should be connected to your VM.
+VM-LOGIN-ID@COURSE-VM-LOGIN-ID:~$ passwd  #passwords not echoed below
+Changing password for VM-LOGIN-ID.
+(current) UNIX password: VM-PW
+Enter new UNIX password: VM-NEW-PW
+Retype new UNIX password: VM-NEW-PW
+</pre></section><section data-level="h2"><h2> <span id="no-pw-ssh">SSH</span> Access Without Using a Password</h2><p>If your workstation does not already have a public/private ssh keys
+set up, generate one using the method appropriate for your workstation's
+OS and then copy over the public key to your VM.
+</p><p>On a unix-based OS like linux or OS/X this can be done using
+ <a href="https://man7.org/linux/man-pages/man1/ssh-keygen.1.html">ssh-keygen</a>
+to generate the public/private keypair and then using
+
+<a href="https://manpages.ubuntu.com/manpages/trusty/man1/ssh-copy-id.1.html">ssh-copy-id</a> to copy your public key to your workstation.
+</p><p>Verify that you can ssh from your workstation to your VM without
+needing to type your password.
+</p></section><section data-level="h2"><h2> <span id="x2go-access">X2Go</span> Access to your VM</h2><p>If you only use <code>ssh</code>, you obtain only basic command-line access to
+your VM.  But you will need GUI access to your VM as the course
+progresses and are required to verify that you have set up GUI access
+in your submission for <em>Project 1</em>.  The most convenient access is
+provided by x2go.  (The end of this document lists some alternatives
+in case you just cannot get x2go to work.)
+</p><ol><li><p>Install a
+     <a href="https://wiki.x2go.org/doku.php/download:start">X2Go client</a> for
+    the workstation you are using to access your VM if one is not
+    already installed (note that a <code>x2goclient</code> command is available
+    on <code>remote.cs</code>).
+</p></li><li><p>Start the <code>x2goclient</code>.
+</p></li><li><p>Create a session for connecting to your VM by clicking <em>Session</em>
+    -> <em>New session</em>.  Fill in the following fields:
+</p><dl><dt>Session name</dt><dd><p>          <code>webprog vm</code>
+</p></dd><dt>Host</dt><dd><p>         Your VM's IP address <code>VM-IP</code>
+</p></dd><dt>Login</dt><dd><p>         Your login id <code>VM-LOGIN-ID</code> on your VM (if different from your
+	 login id on your workstation).
+</p></dd><dt> Auto Login </dt><dd><p>         Select <em>Try auto login (via SSH Agent or default SSH key)</em>
+	 (this assumes that you have correctly set up password-less
+	 login from your workstation to your VM).
+</p></dd><dt>Session type</dt><dd><p>         <code>LXDE</code> or <code>XFCE</code>.
+</p></dd></dl></li><li><p>You should now be able to use the above session to access your VM
+    using a GUI.  You should not require a password if you have set up
+    the ssh keys correctly.
+</p></li></ol><p>The following is a screenshot of my <code>x2go</code> configuration for accessing
+my VM from within the campus network (or VPN):
+</p><p><img src="webprog-x2go-config.png">
+</p><p>With the above setup, I do not need to type in a password when
+connecting to my VM.
+</p><p>When disconnecting from x2go, use the <strong>Suspend</strong> control (the widget
+which looks like a <em>pause</em> control, with two lines) on the blue x2go
+window. This will ensure that you can pick up where you left off when
+you reconnect to your VM.  <strong>Do not shutdown</strong> your VM (you will need to
+restart it manually using the  <a href="#vsphere">VSphere Web Client</a> if you
+do so).
+</p></section><section data-level="h2"><h2> <span id="npm-sh">Setting</span> Your npm Shell</h2><p>To set the shell used by npm to bash, use the following command:
+</p><pre class="hljs language-sh">$ npm config set script-shell /usr/bin/bash
+</pre><p>This will update your <code>~/.npmrc</code> and npm will use bash to run scripts in
+the future.
+</p></section><section data-level="h2"><h2> <span id="restart">Restarting</span> your VM</h2><p>In case you accidentally shutdown your VM or simply find it
+unreachable, you can use your VM's web console to restart it.
+</p><ol><li><p>Use all except the last step in the instructions for the 
+     <a href="#vsphere">vSphere Web Client</a> to get access to your VM.
+</p></li><li><p>Use the <code>Actions->Power</code> menu item to restart your VM.
+</p></li></ol></section><section data-level="h2"><h2> <span id="debug">Debugging</span> VM Connectivity Issues</h2><p>If you cannot connect via x2go to your VM, please try the
+following:
+</p><ol><li><p>Verify that your workstation's internet connection is working by
+    accessing some web site not related to the university.
+</p></li><li><p>Connect your workstation to the campus VPN.
+</p></li><li><p>Use ssh to connect to <code>remote.cs</code>. If you are unable to do so, go
+    to the  <a href="https://www2.cs.binghamton.edu/~sysadmin/">CS SysAdmin</a>
+    page for assistance.
+</p></li><li><p>From <code>remote.cs</code>, ssh to your VM using its IP address.  If this
+    succeeds, then there is a problem with x2go.  If this fails, then
+    your VM is down;  <a href="#restart">restart</a> it using the 
+    <a href="#vsphere">vsphere</a> web client.
+</p></li><li><p>If the problem appears to be x2go, try shutting down your
+    x2goserver using the power button on your x2goclient or
+    by restarting your VM as per the previous step.
+</p><p>    Some students using OS/X workstations have found that:
+</p><ol><li><p>Rebooting your mac may help.
+</p></li><li><p>More drastic: <strong>Reinstalling</strong> x2go and xquartz solves x2go problems.
+</p></li></ol></li><li><p>One workaround for OS/X.  If you have xquartz installed, but x2go
+    is not installed or not working, you can display GUI applications
+    running on <code>remote.cs</code> on your mac by using the <code>-Y</code> option when
+    connecting to <code>remote.cs</code> using your OS/X terminal.
+</p></li></ol><p>If all else fails, please send me an email giving your VM's IP
+and describe your workstation's environment.  Please
+<strong>detail the responses to each of the above steps</strong>.
+</p></section><section data-level="h2"><h2>Administering Your VM</h2><p>Your vm account has administrative privileges.  You can run any
+administrative CLI command by preceeding that command by <code>sudo</code> at
+which point you will be prompted for your current password.  
+If you run an administrative task using the GUI, you will again be
+prompted for your current VM password.
+</p><p>You will find that the VM has two additional accounts in addition to
+your account.  You should <strong>not</strong> touch those accounts.  If something
+goes wrong with your VM, we may be able to use these accounts to login
+to your VM and attempt to fix the problem.
+</p><p>You can install additional system-wide software packages using the
+command line using  <a href="https://linux.die.net/man/8/apt">apt</a> or using a
+GUI-program found on the system menu.  In particular, <code>sudo apt
+install</code> <em>PACKAGE</em> can be used to install a <em>PACKAGE</em> from the Ubuntu
+package repository.
+</p><p>The VM has text editors/IDEs like Visual Studio <code>code</code>, <code>emacs</code>,
+<code>gedit</code>, <code>nano</code>, <code>sublime</code> and <code>vim</code> already installed.  However, you
+may want to use the above package manager to install a text editor or
+IDE of your choice.
+</p><p>It is a good idea to keep the software on your VM up-to-date.  Every
+few weeks, you should update it:
+</p><pre class="hljs language-sh">$ sudo apt update
+$ sudo apt upgrade
+</pre><p>Check whether you need to reboot:
+</p><pre>$ cat /var/run/reboot-required
+</pre><p>If this file exists, the above command will tell you whether a reboot
+is required.  To reboot, first backup all work, shutdown all applications
+running within your VM and then simply reboot:
+</p><pre class="hljs language-sh">$ sudo shutdown -r now
+</pre><p>Your GUI session will lock up.  You will need to escape out of it; you
+should be able to get back in within a couple of minutes.  If something
+goes wrong please use the  <a href="#vsphere">vsphere console</a> to debug.
+</p></section><section data-level="h2"><h2>Other Remote Access Methods</h2><p>If, for some reason, you just cannot get x2go to connect to your VM,
+you can try using one of these other methods of obtaining GUI access
+to your VM.
+</p><section data-level="h3"><h3>VNC Access</h3><p>  <a id="vnc-access" href="https://www.tightvnc.com/">VNC</a> allows remote access to
+graphical desktops.  It is not as efficient as x2go which is optimized
+for X11, but has the advantage that it can be used to access non-X11
+desktops like a Windows desktop.
+</p><ol><li><p>Connect to your VM using <code>ssh</code>.
+</p></li><li><p>Use an editor on your VM to create a script 
+    <a href="./vnc-xstartup">~/.vnc/xstartup</a> to start <code>lxde</code>.  Make it executable using <code>chmod
+    a+x ~/.vnc/xstartup</code>.
+</p></li><li><p>Start up a VNC server on your VM.
+</p><ol><li><p>Run <code>vncpasswd</code> to set up a password <code>VNC-PW</code> for your VNC
+         sessions.
+</p></li><li><p>Run <code>vncserver</code> to start up the VNC server.  Note the VNC
+         port <code>VNC-PORT</code> on which the server starts (usually 1).
+</p></li></ol></li><li><p>Install a VNC viewer for the workstation you are using to access
+    your VM if one is not already installed.
+</p></li><li><p>Run the VNC viewer to connect to <code>VM-IP:VNC-PORT</code>.  Provide your
+    VNC password <code>VNC-PW</code> when prompted.  You should see your desktop.
+</p></li></ol><p>You can kill your vnc server using <code>vncserver -kill :VNC-PORT</code>.  If
+you would like to set a size for its window, specify the <code>-geometry</code>
+argument.  See the  <a href="https://www.tightvnc.com/vncserver.1.php">man page</a>
+for more information.
+</p></section><section data-level="h3"><h3>Xming X Server for Windows</h3><p>Instead of running a full remote session, you can run a X11 server on
+your Windows workstation.
+ <a href="http://www.straightrunning.com/XmingNotes/">xming</a> appears to be a
+popular X11 server running under Window.  Apparently,
+ <a href="http://www.straightrunning.com/XmingNotes/IDH_DISPLAY.htm">xlaunch</a>
+is a wizard for starting xming sessions.  Since I do not use Windows,
+I have not tried this and YMMV.
+</p></section><section data-level="h3"><h3> <span id="vsphere">vSphere</span> Web Client</h3><ol><li><p>Go to this URL:  <a href="http://csvb-vc.binghamton.edu">&lt;http://csvb-vc.binghamton.edu></a>.  (this <strong>must</strong>
+    be done from within the campus network).
+</p></li><li><p>Click through the security warnings and click the <strong>LAUNCH VSPHERE
+    CLIENT</strong> button.
+</p></li><li><p>Login with your regular BU username and password.
+    Enter <code>BU\</code> before your username.  Do not check the
+    <em>Use Windows session authentication</em> checkbox.
+</p></li><li><p>On the left-hand side of the interface you can expand the
+    tree. Keep expanding the levels until you see a VM whose name is based
+    on your user ID.  You should see a summary of your VM.
+</p></li><li><p>Use the provided link to open a <strong>web console</strong> to the VM which will
+    allow you to interact with it as if you were sitting in front of
+    it using a console which runs within your web browser.
+</p></li></ol><p>Note that unlike the x2go or vnc options, the vSphere web client will
+not persist your session on your VM.
+</p></section></section></section></div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/slide-controls.mjs"></script>
+    <script type="module" src="../../assets/scripts/nav.mjs"></script> 
+    <script type="module" src="../../assets/scripts/highlight.mjs"></script>
+</body>
+</html>
+
