@@ -84,22 +84,32 @@ globalThis.console.log(strRepeat('a', 4));
     types</a>.  Specifically, a <strong>type</strong> is a <strong>set of values</strong> while
     operations on types correspond to operations on sets like
     <strong>cartesian product</strong>, <strong>set-union</strong> and <strong>set-intersection</strong>.
+</p></li><li><p> <code class="hljs language-ts">type</code> <em>Name = Type</em> specifies <em>Name</em> as an alias
+    for <em>Type</em>.
 </p></li><li><p><strong>Primitive types</strong> like  <code class="hljs language-ts">string</code>, 
     <code class="hljs language-ts">number</code>,  <code class="hljs language-ts">boolean</code>,  <code class="hljs language-ts">void</code>,
      <code class="hljs language-ts">null</code>,  <code class="hljs language-ts">undefined</code>.
+</p></li><li><p><strong>Literal types</strong> like <code>'hello'</code> and <code>42</code>.  Variables having
+    that type are restricted to a single value.  Seems pretty
+    constraining, but extremely useful when used with
+    <em>sum types</em>.
 </p></li><li><p> <a href="https://en.wikipedia.org/wiki/Top_type">Top Type</a> <code>unknown</code>
      stands for the set of all values.  
 </p></li><li><p> <a href="https://en.wikipedia.org/wiki/Bottom_type">Bottom Type</a>
     <code>never</code>: an impossible type containing no values.
 </p></li><li><p>A special type <code>any</code> which stands for any type and is not
     type-checked.  
-</p></li><li><p><strong>Array</strong> of type \(\;T\) specified as \(\;T\)<code>[]</code>.
+</p></li><li><p><strong>Array</strong> of type \(\;T\) specified as \(\;T\)<code>[]</code>.  Example:
+    <code>type nums = number[];</code>.
 </p></li><li><p><strong>Tuple</strong> of types \(\;T_1, T_2, \ldots, T_n\) specified as <code>[</code>
     <code></code>\(T_1, T_2, \ldots, T_n\) <code></code><code>]</code>.  This is an example of a
      <a href="https://en.wikipedia.org/wiki/Product_type">product type</a>
-    (corresponding to the set cartesian product).
+    (corresponding to the set cartesian product).  Example:
+    <code>type Coord3D = [number, number, number];</code>.
 </p></li><li><p><strong>Named tuples</strong> written as  <code class="hljs language-ts">{name: string, age?: number}</code>.
-    Note that the <code>?</code> indicates that <code>age</code> is optional.
+    Note that the <code>?</code> indicates that <code>age</code> is optional.  An alternate
+    <code>type Coord3D = { x: number, y: number, z: number };</code> may be preferable
+    to the tuple version.    
 </p></li><li><p><strong>Function types</strong>: <code>(</code>\(\mathtt{param_1\!\!:}\; T_1\mathtt{,}\ldots
     \mathtt{,}\mathtt{param_n\!\!:}\; T_n\)<code>) => </code>\(\mathtt{RetType}\).
 </p></li><li><p> <a href="https://en.wikipedia.org/wiki/Tagged_union">Sum type</a>
@@ -107,10 +117,9 @@ globalThis.console.log(strRepeat('a', 4));
     \(\ldots\) <code>|</code> \(T_n\).  Basically
     
     <a href="https://en.wikipedia.org/wiki/Union_type#Untagged_unions">untagged unions</a> (but programmer can choose to make <strong>tagged</strong>).
+    Example: <code>type UserStatus = 'anon' | 'registered';</code>.
 </p></li><li><p><strong>Intersection Types</strong>: contains all characteristics of constituent
     types.  For example <code>Person &amp; Serializable &amp; Loggable</code>.
-</p></li><li><p> <code class="hljs language-ts">type</code> <em>Name = Type</em> specifies <em>Name</em> as an alias
-    for <em>Type</em>.
 </p></li></ul></section><section data-level="h2"><h2>Type Checking in TypeScript</h2><p> <a href="https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop">Read-Eval-Print-Loop</a> or REPL using
 command  <a href="https://typestrong.org/ts-node/">ts-node</a> (this log was produced some time ago, does not currently work on my computer):
 </p><pre class="hljs language-ts">> type Color = 'red' | 'blue' | 'green';

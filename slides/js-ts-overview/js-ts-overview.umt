@@ -90,9 +90,17 @@
     operations on types correspond to operations on sets like
     *cartesian product*, *set-union* and *set-intersection*.
 
+  + .code(lang=ts) type "Name = Type" specifies "Name" as an alias
+    for "Type".
+
   + *Primitive types* like .code(lang=ts) `string`, .code(lang=ts)
     `number`, .code(lang=ts) `boolean`, .code(lang=ts) `void`,
     .code(lang=ts) `null`, .code(lang=ts) `undefined`.
+
+  + *Literal types* like `'hello'` and `42`.  Variables having
+    that type are restricted to a single value.  Seems pretty
+    constraining, but extremely useful when used with
+    "sum types".
 
   + .<https://en.wikipedia.org/wiki/Top_type> *Top Type* `unknown`
      stands for the set of all values.  
@@ -103,15 +111,19 @@
   + A special type `any` which stands for any type and is not
     type-checked.  
 
-  + *Array* of type .$\;T$ specified as .$\;T$`[]`.
+  + *Array* of type .$\;T$ specified as .$\;T$`[]`.  Example:
+    `type nums = number[];`.
 
   + *Tuple* of types .$\;T_1, T_2, \ldots, T_n$ specified as `[`
     .--.$T_1, T_2, \ldots, T_n$ .--`]`.  This is an example of a
     .<https://en.wikipedia.org/wiki/Product_type> "product type"
-    (corresponding to the set cartesian product).
+    (corresponding to the set cartesian product).  Example:
+    `type Coord3D = [number, number, number];`.
 
   + *Named tuples* written as .code(lang=ts) `{name: string, age?: number}`.
-    Note that the `?` indicates that `age` is optional.
+    Note that the `?` indicates that `age` is optional.  An alternate
+    `type Coord3D = { x: number, y: number, z: number };` may be preferable
+    to the tuple version.    
 
   + *Function types*: `(`.$\mathtt{param_1\!\!:}\; T_1\mathtt{,}\ldots
     \mathtt{,}\mathtt{param_n\!\!:}\; T_n$`) => `.$\mathtt{RetType}$.
@@ -121,12 +133,10 @@
     .$\ldots$ `|` .$T_n$.  Basically
     .<https://en.wikipedia.org/wiki/Union_type#Untagged_unions>
     *untagged unions* (but programmer can choose to make *tagged*).
+    Example: `type UserStatus = 'anon' | 'registered';`.
 
   + *Intersection Types*: contains all characteristics of constituent
     types.  For example `Person & Serializable & Loggable`.
-
-  + .code(lang=ts) type "Name = Type" specifies "Name" as an alias
-    for "Type".
 
 
 
