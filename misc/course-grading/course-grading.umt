@@ -133,6 +133,34 @@ The following guidelines apply to grading both homeworks and projects:
     it to fail, but usually it would be unreasonable to spend more than a
     couple of minutes on it.
 
+    	      	      The Use of Artificial Intelligence Tools
+		      ========================================
+
+Though AI tools are expected to form an important part of a
+programmer's toolbox, this course is not a course on the use of such
+tools, but tries to concentrate on the subject matter of the course.
+Hence students are not permitted to use AI in assignments and should
+receive a zero for that assignment if such use is unambiguously
+detected.  Detecting such use is difficult in general, but here are
+some guidelines which may help:
+
+  + The student's answer contains some text (like a prompt) which
+    clearly comes from an AI-generated answer.
+
+  + Some assignments may restrict the set of features which can be
+    used in the answer, clearly stating that the restrictions are
+    in place to combat the use of AI.  The answer can be regarded as
+    AI generated if it violates the restrictions.
+
+  + If the answer uses a very advanced or esoteric feature which was
+    not covered in classs in a rather casual manner, then that may
+    point to the cut-and-paste use of an AI-generated answer.  A
+    counter-indication would be if the student explains the use of the
+    feature and how they discovered it (without using AI).
+
+In suspicious cases which are not clear-cut, it may be useful to have
+the student come in during office hours and explain their answer.
+
 %%%
     	      	      Setting Up Submission Links
 		      ===========================
@@ -167,6 +195,7 @@ The returned material should contain at least the following:
   # Log of the program execution.
 
   # Description of rubrics used in determining the grade (when applicable).
+
 
 	      	        Recording Grades
 			================
