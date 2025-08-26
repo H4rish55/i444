@@ -16,10 +16,11 @@ runnable version of code for that section.
   + .<js-ts-overview/js-ts-overview.html>
     "JavaScript/TypeScript Overview".
 
-%%%
   + .<practical-considerations/practical-considerations.html>
     "Practical Considerations".
 
+
+%%%
   + .<grep-example/grep-example.html> "Grep Example".
 
   + .<js-intro/js-intro.html> "Introduction to JavaScript".

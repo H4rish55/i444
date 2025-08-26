@@ -1,0 +1,707 @@
+		  P r a c t i c a l  C o n s i d e r a t i o n s
+
+                     Overview
+		     ========
+
+  %%%
+  + Values versus entities.
+  %%%
+
+  + Pure functions.
+
+  + Error handling.
+
+  + IDs.
+
+  + Testing.
+
+  + TypeScript Compiler
+
+  + Node Package Manager npm.
+
+
+%%%
+
+      	               Entities vs Values
+		       ==================
+
+  + Entity objects have identity and changing state, value objects do not.
+
+  + Typically value objects are immutable.
+
+
+  + Examples:
+
+    + An employee is an entity.  Typically having multiple simultaneous
+      instances of the same employee would be a problem.
+
+    + Money would be a value. 
+
+    + A specific dollar bill would be an entity having a Money value.
+
+%%%
+
+      		 Pure Functions
+		 ==============
+
+A *pure function* only computes a result which depends only on its
+parameters.
+
+  + It does not change any of its parameters.
+
+  + It does not have any *side-effects*: no changes to non-local
+    state; *no I/O*.
+
+  + It cannot access any non-local variables.
+
+
+       	      Advantages of Pure Functions
+	      ============================
+
+  + Code which uses pure functions are
+    .<https://en.wikipedia.org/wiki/Referential_transparency>
+    "referentially transparent": i.e. the same expression always
+    results in the same result.
+
+    It will always be the case that `assertEqual(f(x), f(x))`
+    if `f()` is pure.
+
+  + Easy to understand as each function can be understood in isolation.
+
+  + Possible to cache function results.
+
+  + Easy to test as it is not necessary to mock I/O like databases.
+
+
+    	    Disadvantages of Pure Functions
+	    ===============================
+
+  + A program without side-effects is pretty useless.
+
+  + Does not fit in with OO, which is built around objects
+    having mutable state.
+
+  + Necessary to pass arguments via intermediate functions
+    which have no interest in them.
+
+  + Cannot update data structures: only build new versions.  No
+    writable arrays; need to use
+    .<https://en.wikipedia.org/wiki/Persistent_data_structure>
+    "persistent data-structures".
+
+                         Mutability
+			 ==========
+
+  + .~z = z + 1~ is *destructive assignment*; previous value of .~z~ is
+    lost.
+
+  + .~arr.push(22)~ mutates .~arr~ but .~arr.concat(22)~ does not
+    mutate .~arr~.
+
+  + .~arr.sort()~ mutates .~arr~.
+
+  + Reasoning about programs with mutable state is difficult.
+
+  + Try to minimize use of mutability.  Specifically, avoid mutation
+    visible outside a function so that the function remains pure even
+    though it may use mutation internally.
+
+
+       		Pure Functions in the Real World
+		================================
+
+  + Try to keep core of an application pure, keep impure
+    code restricted to the edges of the application.
+
+  + I restrict mutation to local variables within a function, unless I
+    am programming in an OO-style when I may mutate .~this~.
+
+  + Sometimes it is necessary to access global information like
+    configuration information all over the program.  Often dealt with
+    by passing some kind of read-only context parameter between
+    functions.  However, can also use a non-local access as long as
+    the access is read-only; think of it as an implicit parameter.
+
+  + Pure functional languages like Haskell support patterns to make
+    this easier.
+
+
+			System Architecture
+			===================
+
+  <div class="center">
+  .image(src="figs/pure-impure-code.png")
+  </div>
+
+
+			Error Architectures Alternatives
+			================================
+
+Important to design error handling from the start of a project.
+
+  + Ignore errors!!  Totally unacceptable.
+
+  + When code encounters an error, it outputs error message directly.
+    *Totally unacceptable* as all code becomes I/O dependent.
+
+  + Report errors by throwing an exception.  Violates principal of
+    "reserving exceptions for exceptional situations".  Makes
+    an otherwise pure function impure.
+
+  + Return errors by side-effecting arguments; resulting function impure.
+  
+  + Report errors with some kind of special error return value.
+
+  + Combine error and success return values and provide a way of
+    easily continuing the happy path, with short-circuit on errors.
+    Again, languages like Haskell provide this.
+
+    	   	       Types of Errors
+		       ===============
+
+Distinguish between recoverable errors and panics which terminate the
+current request or the entire program.
+
+  + A panic error corresponds to an unexpected condition usually
+    indicative of a program bug.
+
+    For example, if a value is .~null~ when it is not supposed
+    to be so, then that is a program bug.  It is usually best
+    to terminate the program (or possibly a request).
+
+    Do not attempt to continue program if unexpected condition
+    occurs:  Do not:
+
+    ~~~
+    //desperate attempt to continue
+    if (value === null) return 0;  
+    ~~~
+
+
+    Okay:
+
+    ~~~
+    //should not get removed
+    console.assert(value !== null); 
+    ~~~
+
+    or better:
+
+    ~~~
+    if (value === null) panic(`value is null`);
+    ~~~
+
+  + Other errors may be recoverable.  So for example, running out of
+    memory may be a recoverable error if the programmer can control
+    the code sufficiently to cause memory deallocation.
+
+  + A database or network error may disappear when retried.
+
+  + User errors are definitely not panics, they should simply
+    be reported back to the user.
+
+
+       		     	API Validation
+			==============
+
+  + Clearly identify boundaries between trusted and untrusted code.
+
+  + Always validate parameters to functions which may be called by
+    untrusted code.
+
+  + Do not validate parameters to functions which can only be called
+    by trusted code; i.e. validate parameters to public functions, do
+    not validate parameters to private functions.
+
+
+			.=ids= IDs
+			==========
+
+IDs are used to identify entities.
+
+  + IDs should be unique for a particular namespace of entities.
+
+  + If the entities need to be secure, then the IDs should be hard
+    to guess.  
+
+  + Usually, IDs should be opaque strings; opaque means that users of
+    the IDs should not care about the structure of the strings.
+
+    If efficiency is particularly important, they may be integers
+    (this may be the case for applications like games or when the
+    implementation language is a language like C with poor support for
+    strings).  See
+    .<https://developer.twitter.com/en/docs/twitter-ids> "Twitter's
+    discussion" of IDs.  The downside of using integers are
+    .<https://news.ycombinator.com/item?id=14539770> "embarrassing
+    episodes" if the integers IDs overflow.
+
+  + It is usually a bad idea to expose database IDs as external IDs;
+    doing so makes it difficult to migrate to a different database
+    instance or use a different database system.
+
+    	     	      Unique and Secure IDs
+		      =====================
+
+A possible scheme to generate unique and secure IDs:
+
+  + An ID is generated as a string of the form
+    ```${counter}_${rand}```.
+
+  + `counter` is a counter which is incremented whenever creating a
+    new ID.  It follows that `counter` must be stored across the
+    lifetime of the system.  The `counter` portion of the ID
+    guarantees that IDs are unique.
+
+  + `rand` is a random integer generated using a secure random number
+    generator.  The `rand` portion of the ID makes IDs hard to guess
+    and secure.
+
+  + So IDs may look like `"0_31324204"` or `"42_04394134"`.
+
+  + During development, it may be useful to restrict the random part
+    of the ID to say 2 digits, resulting in IDs like `"0_31"` or
+    `"42_04"`.
+
+
+			UUIDs
+			=====
+
+The previous scheme requires persisting the `counter`.  An alternate
+scheme for generating ID's is to use a .<https://en.wikipedia.org/wiki/Universally_unique_identifier> "Universally Unique Identifier" (UUID).
+
+  + UUIDs are 128-bit numbers: 16 octets written in groups 8-4-4-4-12;
+    Example `12345678-1abc-def0-a234-56789abcdef0`.
+
+  + Most languages will come with a library function for generating
+    UUIDs.
+
+  + Uniqueness guaranteed by using UUID v1.  However, it may be guessable,
+    hence not good for security.
+  
+  + If generated IDs must be secure, then use
+    .<https://versprite.com/blog/universally-unique-identifiers/>
+    "UUID v4" using a cryptographically secure random number
+    generator.  Tiny chance (one in .$2^{122}$) of non-uniqueness.
+
+
+			TypeScript Compiler
+			===================
+
+TypeScript compiler tsc compiles TypeScript to JavaScript.  Governed by
+`tsconfig.json` or command-line options:
+
+  + `target` specified version of JS to be generated.
+
+  + `module` specifies module system to be used.
+
+  + Other options allow selecting source files, destination folder/file.
+
+  + Unlike strict JSON, `tsconfig.json` allows comments and trailing
+    commas.
+
+  + .<https://www.typescriptlang.org/docs/handbook/compiler-options.html>
+    "Numerous options".
+
+  + .<code/tsconfig.json?lang=json> "Example tsconfig.json" template
+    generated using `tsc --init`.
+
+  %%%
+  + Example .<../../lib/js-utils/tsconfig.json?lang=json> tsconfig.json for
+    `cs544-js-utils` library.
+  %%%
+
+			Node Package Manager
+			====================
+
+  + Track dependencies of project transitively.
+
+  + Handles multiple versions of same package.
+
+      # Assume project requires v1 of packages A and B.
+
+      # Package A requires v1 of package C.
+
+      # Package B requires v2 of package C.
+
+    npm sets things up so as to have both v1 and v2 coexistent
+    at runtime.  This can occasionally cause trouble, but usually
+    works seamlessly.
+
+
+			npm Dependencies
+			================
+
+  + Distinguish different types of dependencies:
+
+      + *Runtime Dependencies* needed for running the program.
+
+      + *Development Dependencies* needed only during development
+        (use option `-D` or `--save-dev`).
+
+          + Build dependencies like `tsc`, `parcel` or `webpack`.
+
+          + Testing dependencies like `mocha` and `chai`.
+
+
+                   Config File package.json
+		   ========================
+
+  + Config file `package.json` is strict JSON: hence no comments
+    allowed!!
+
+  + Sample .<../../lib/node-utils/package.json?lang=json> package.json for
+    `cs544-node-utils` library.
+
+  + `npm install PACKAGE` will install `PACKAGE` and all its
+    dependencies as runtime dependencies in the `node_modules`
+    directory.  
+
+  + `npm install -D PACKAGE` will install `PACKAGE` and all its
+    dependencies as development dependencies in the `node_modules`
+    directory.
+
+  + Above commands will create a `package-lock.json` which specifies
+    the exact versions of the dependencies found.
+
+  + `npm install` will install all dependencies from `package.json`.
+    Unfortunately, it 
+    .<https://stackoverflow.com/questions/45022048/why-does-npm-install-rewrite-package-lock-json>
+    "does not respect package-lock.json".
+
+  + I use `npm ci` to get exactly the same versions as
+    `package-lock.json`.
+
+
+			Bundlers
+			========
+
+  + A web application consists of many different artifacts: HTML
+    content, JavaScript, CSS, images.
+
+  + Without a bundler, loading each artifact requires a separate
+    network request which is expensive.
+
+  + Bundlers like webpack, parcel and rollup allow bundling artifacts
+    into bundles so that the application can be loaded using fewer
+    network requests.
+
+  + It may be the case that not all the code in a JavaScript
+    artifact is actually used by the application.
+
+  + Some bundlers use *tree shaking* to ensure that code not needed
+    by the application is not included in the bundle.
+
+  + Methods are tied to an object and are difficult to tree-shake.
+    OTOH, functions are easier to tree-shake.
+
+    	  	    	Result Type
+			===========
+
+Package success and error values together (inspired by Rust):
+
+  + Have processing functions return a `result` having type .~Result<T, E>~
+    having one of two properties:
+
+      + If `result.isOk` is true, then `result.val: T` provides
+        success result.
+
+      + If `result.isOk` is false,  then `result.err: E` provides
+        an error result.
+
+  + Create a success `Result<T>` using `okResult(val: T)`.
+
+  + Create an error `Result<T>` using `errResult(err: E)`.
+
+    	      	    Implementing `Result`
+		    =====================
+
+.code(lang=js)
+~~~
+class OkResult<T> {
+  readonly isOk = true as const;
+  val: T;
+  constructor(val: T) { this.val = val; }
+}
+
+class ErrResult<E> {
+  readonly isOk = false as const;
+  err: E;
+  constructor(err: E) { this.err = err; }
+}
+
+export type Result<T, E> = OkResult<T> | ErrResult<E>;
+
+export function okResult<T, E>(val: T): Result<T, E> {
+  return new OkResult(val);
+}
+
+export function errResult<T, E>(err: E): Result<T, E> {
+  return new ErrResult(err);
+}
+~~~
+
+.<https://www.typescriptlang.org/play/?#code/MYGwhgzhAEDyDWAlAphAriALgHgCoD5oBvAKGmgCdkwATAewDsQBPaASwgWgF5pMK0yaJGjBGETAG4y0AG5gQALmi5p5MQwkDgmOhQAU8pSoCUxPgAsOAOiM85CydAC+JVyVCQYAUQoUU6FjY3oSk5FS0jCzsnPD2AGYKEEIiGhJq0Mh+yt4ZafxoOnr6WRQ5ZkSWNqX2pU6u7sgAHgAOeph8zC1CARg4uAA00CH2CL1BBNAAPsN+4zgh0iTNbRQd8WgMOmyM0HRIqH14QyGGCsq4Jsrzx8OhMlSYaBQM0AzIAO5wB4GYZyAmaSNVrtaAbLaYHavUo3QZ3ErZYZXaCwk73cLIJ4vN6fWb+Q5YBEUQFuEgkIA> "TS Playground".
+
+We will be using `Result` in our projects.
+
+
+			Testing
+			=======
+
+  + .<https://en.wikipedia.org/wiki/Software_testing> "Automated
+    tests" are an essential aspect of .<https://agilemanifesto.org/>
+    "agile development" as it provides confidence to change code in
+    order to respond rapidly to changing requirements.
+
+  + Distinguish *faults* (bugs, defects) from *failures* which are
+    manifestations of faults.
+
+  + "Program testing can be used to show the presence of bugs, but
+    never to show their absence!":
+    .<https://www.goodreads.com/quotes/506689-program-testing-can-be-used-to-show-the-presence-of>
+    "Edsger W. Dijkstra".
+
+  + Automated testing has been around for ever as *regression testing*,
+    current resurgence emerged with .<https://en.wikipedia.org/wiki/JUnit>
+    junit.
+
+  + There may be more testing code than code in the system under test!!
+
+
+
+    	      	      Types of Automated Tests
+		      ========================
+
+
+  : Unit tests: Test isolated units of code.
+
+  : Integration tests : Test interfaces between multiple units of
+    code.
+
+  : System tests: Test complete usage scenaries for overall system.
+
+  : Non-Functional tests: Tests for non-functional aspects like
+    performance tests, stress tests, security tests.
+
+
+		    Testing Methodologies
+		    =====================
+
+
+  + *Develop code first, then write tests*: Can work, but often gets
+    difficult to make code observable enough to test thoroughly.
+    Since tests are written later, they are often an afterthought and
+    may get omitted under time pressure.
+
+  + .<https://en.wikipedia.org/wiki/Test-driven_development> "Test
+    Driven Development TDD": Write tests first, then write code.
+    Tests will initially fail since there is no implementing code.
+    Often referred to as Red-Green testing.
+
+  + .<https://en.wikipedia.org/wiki/Behavior-driven_development>
+    "Behavior Driven Development BDD": Describe tests in terms of
+    desired system behavior often in business-oriented terms.  Often
+    higher-level than unit tests.
+
+
+    		 Test Structure
+		 ==============
+
+
+  + *Tests must be isolated*; i.e. each test should be independent
+    of other tests.
+
+  + A *test collaborator* is an external object required for
+    testing the object under test.  
+
+  + A .<https://en.wikipedia.org/wiki/Test_fixture#Software> "test
+    fixture" is used to set up environment for each test case.
+
+  + A typical automated .<https://en.wikipedia.org/wiki/Test_case>
+    "test case" consists of the following three steps:
+
+      # *Test setup*: set up the preconditions for the test case.
+        This may require setting up an environment containing the test
+        collaborators.
+
+      # *Perform test*: execute the code being tested and
+        validate the result.
+
+      # *Test teardown*: cleanup after test, destroy all test
+         collaborators.
+
+  + Multiple test cases may often be grouped into
+    .<https://en.wikipedia.org/wiki/Test_suite> "test suites".
+
+  + Testing libraries are typically included among the package
+    development `-D` dependencies. 
+
+  + Less necessary to include testing libraries as node comes with its
+    own testing framework.  For this course, we will use the node
+    framework (has some relatively minor issues: poor `only` support).
+
+
+		Structuring Tests
+		=================
+
+
+ + A test suite consists of:
+
+   ~~~
+   //suite
+   describe("suite description", () => {
+
+     beforeEach(() => {
+       //set up fixture
+     });
+
+     afterEach(() => {
+       //tear down fixture
+     });
+
+     it("test case description", () => {
+        //set up and call code to be tested
+	//correctness assertions for result
+     });
+
+     //more test cases in test suite
+     ...
+
+     it(..., () => {
+       ...
+     });
+
+   });
+   ~~~
+
+.<code/tests-example.js?lang=js> "Tests Example".
+
+
+    		      Test Doubles
+		      ============
+
+  + Setting up test collaborators can often be problematic,
+    especially when a collaborator represents side-effects
+    like I/O or database access.
+
+  + .<https://en.wikipedia.org/wiki/Test_double> "Test doubles" allow
+    using synthetic collaborators instead of real collaborators.
+    .<https://www.c-sharpcorner.com/article/stub-vs-fake-vs-spy-vs-mock/>
+    "Types of test doubles" include (terms often used inconsistently):
+
+     : *Stub* :
+       Provides a fixed value to the test case.  For example,
+       a collaborator which reads from the user can be
+       replaced by a stub which simply returns a fixed input.
+
+     : *Fake* :
+       Provide different values based on inputs.  
+       May be a restricted version of the actual collaborator.
+
+     : *Spy* :
+       Retain history of use. May answer questions like how
+       many times it was called.  Can also be a fake.
+
+     : *Mock* :
+       Full replacement for collaborator.
+
+  + There are many mocking frameworks available like
+    .<https://site.mockito.org/> mockito.
+
+  + Can avoid the need for extensive mocking by making most code
+    pure.
+
+
+			Avoid Flaky Tests
+			=================
+
+A .<https://www.datadoghq.com/knowledge-center/flaky-tests/> "flaky
+test" both passes and fails without changing any system or test code.
+Possible causes:
+
+  + Test depends on results of another test.  Tests should not depend
+    on their order.
+
+    Some testing frameworks prevent this by running tests in random
+    orders.
+
+  + Dependency on the test environment like filesystem, network.
+
+  + Time dependencies like time-of-day, timezone, whether it is
+    a special day with transitions between daylight savings and standard
+    time.
+
+
+
+    	    	   Gotchas
+		   =======
+
+  + .~ return with return-expression on the next line will
+    result in .~undefined~ being returned.  If inconvenient
+    to begin return-expression on same line as .~ return
+    keyword, use:
+
+    ~~~
+    return (
+      longExpr
+    );
+    ~~~
+
+  + Problems in TS when using `as` type assertion at the start of a line.
+    Something like
+
+    ```
+    someLongExpression
+      as number
+    ```
+
+    results in a syntax error.  Use something like:
+
+    ```
+    someLongExpression as
+      number
+    ```
+
+  + Never use `==` and `!=` for checking equality.  Surprising
+    type conversions.  Always use `===` and `!==`; no conversions.
+
+    ~~~
+    > null == undefined
+    true
+    > null === undefined
+    false
+    > '' == 0
+    true
+    > '' === 0
+    false
+    >
+    ~~~
+
+			Gotcha's from C Legacy
+			======================
+
+  + Need .~ break after .~ case to avoid fall-thru.
+
+    ~~~
+      switch (type) {
+        case 'number':
+	  x = 1;
+	  //need a break statement here
+	case 'string';
+	  x = 42;
+	  break;
+      }
+    ~~~
+
+  + Integer literals starting with leading 0 are treated as octal;
+    use `0o` prefix instead:
+
+    .code(lang=js)
+    ~~~
+    >  010
+    8        //surprise!
+    > 0o10
+    8        //not surprising
+    ~~~
+

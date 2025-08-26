@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Practical Considerations</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link href="../../assets/styles/article.css" rel="stylesheet" type="text/css" /> 
+</head>
+
+<body class=umt-slides>
+
+    <nav id="course-nav">
+      <ul>
+      </ul>
+    </nav>
+    
+    <div class="umt-content">
+      <div><section data-level="h1"><h1>Practical Considerations</h1><section data-level="h2"><h2>Overview</h2><ul><li><p>Pure functions.
+</p></li><li><p>Error handling.
+</p></li><li><p>IDs.
+</p></li><li><p>Testing.
+</p></li><li><p>TypeScript Compiler
+</p></li><li><p>Node Package Manager npm.
+</p></li></ul></section><section data-level="h2"><h2>Pure Functions</h2><p>A <strong>pure function</strong> only computes a result which depends only on its
+parameters.
+</p><ul><li><p>It does not change any of its parameters.
+</p></li><li><p>It does not have any <strong>side-effects</strong>: no changes to non-local
+    state; <strong>no I/O</strong>.
+</p></li><li><p>It cannot access any non-local variables.
+</p></li></ul></section><section data-level="h2"><h2>Advantages of Pure Functions</h2><ul><li><p>Code which uses pure functions are
+    
+    <a href="https://en.wikipedia.org/wiki/Referential_transparency">referentially transparent</a>: i.e. the same expression always
+    results in the same result.
+</p><p>    It will always be the case that <code>assertEqual(f(x), f(x))</code>
+    if <code>f()</code> is pure.
+</p></li><li><p>Easy to understand as each function can be understood in isolation.
+</p></li><li><p>Possible to cache function results.
+</p></li><li><p>Easy to test as it is not necessary to mock I/O like databases.
+</p></li></ul></section><section data-level="h2"><h2>Disadvantages of Pure Functions</h2><ul><li><p>A program without side-effects is pretty useless.
+</p></li><li><p>Does not fit in with OO, which is built around objects
+    having mutable state.
+</p></li><li><p>Necessary to pass arguments via intermediate functions
+    which have no interest in them.
+</p></li><li><p>Cannot update data structures: only build new versions.  No
+    writable arrays; need to use
+    
+    <a href="https://en.wikipedia.org/wiki/Persistent_data_structure">persistent data-structures</a>.
+</p></li></ul></section><section data-level="h2"><h2>Mutability</h2><ul><li><p><code class="hljs language-javascript">z = z + 1</code> is <strong>destructive assignment</strong>; previous value of <code class="hljs language-javascript">z</code> is
+    lost.
+</p></li><li><p><code class="hljs language-javascript">arr.push(22)</code> mutates <code class="hljs language-javascript">arr</code> but <code class="hljs language-javascript">arr.concat(22)</code> does not
+    mutate <code class="hljs language-javascript">arr</code>.
+</p></li><li><p><code class="hljs language-javascript">arr.sort()</code> mutates <code class="hljs language-javascript">arr</code>.
+</p></li><li><p>Reasoning about programs with mutable state is difficult.
+</p></li><li><p>Try to minimize use of mutability.  Specifically, avoid mutation
+    visible outside a function so that the function remains pure even
+    though it may use mutation internally.
+</p></li></ul></section><section data-level="h2"><h2>Pure Functions in the Real World</h2><ul><li><p>Try to keep core of an application pure, keep impure
+    code restricted to the edges of the application.
+</p></li><li><p>I restrict mutation to local variables within a function, unless I
+    am programming in an OO-style when I may mutate <code class="hljs language-javascript">this</code>.
+</p></li><li><p>Sometimes it is necessary to access global information like
+    configuration information all over the program.  Often dealt with
+    by passing some kind of read-only context parameter between
+    functions.  However, can also use a non-local access as long as
+    the access is read-only; think of it as an implicit parameter.
+</p></li><li><p>Pure functional languages like Haskell support patterns to make
+    this easier.
+</p></li></ul></section><section data-level="h2"><h2>System Architecture</h2><p>  <div class="center">
+  <img src="figs/pure-impure-code.png">
+  </div>
+</p></section><section data-level="h2"><h2>Error Architectures Alternatives</h2><p>Important to design error handling from the start of a project.
+</p><ul><li><p>Ignore errors!!  Totally unacceptable.
+</p></li><li><p>When code encounters an error, it outputs error message directly.
+    <strong>Totally unacceptable</strong> as all code becomes I/O dependent.
+</p></li><li><p>Report errors by throwing an exception.  Violates principal of
+    <em>reserving exceptions for exceptional situations</em>.  Makes
+    an otherwise pure function impure.
+</p></li><li><p>Return errors by side-effecting arguments; resulting function impure.
+</p></li><li><p>Report errors with some kind of special error return value.
+</p></li><li><p>Combine error and success return values and provide a way of
+    easily continuing the happy path, with short-circuit on errors.
+    Again, languages like Haskell provide this.
+</p></li></ul></section><section data-level="h2"><h2>Types of Errors</h2><p>Distinguish between recoverable errors and panics which terminate the
+current request or the entire program.
+</p><ul><li><p>A panic error corresponds to an unexpected condition usually
+    indicative of a program bug.
+</p><p>    For example, if a value is <code class="hljs language-javascript">null</code> when it is not supposed
+    to be so, then that is a program bug.  It is usually best
+    to terminate the program (or possibly a request).
+</p><p>    Do not attempt to continue program if unexpected condition
+    occurs:  Do not:
+</p><pre class="hljs language-javascript">    //desperate attempt to continue
+    if (value === null) return 0;  
+</pre><p>    Okay:
+</p><pre class="hljs language-javascript">    //should not get removed
+    console.assert(value !== null); 
+</pre><p>    or better:
+</p><pre class="hljs language-javascript">    if (value === null) panic(`value is null`);
+</pre></li><li><p>Other errors may be recoverable.  So for example, running out of
+    memory may be a recoverable error if the programmer can control
+    the code sufficiently to cause memory deallocation.
+</p></li><li><p>A database or network error may disappear when retried.
+</p></li><li><p>User errors are definitely not panics, they should simply
+    be reported back to the user.
+</p></li></ul></section><section data-level="h2"><h2>API Validation</h2><ul><li><p>Clearly identify boundaries between trusted and untrusted code.
+</p></li><li><p>Always validate parameters to functions which may be called by
+    untrusted code.
+</p></li><li><p>Do not validate parameters to functions which can only be called
+    by trusted code; i.e. validate parameters to public functions, do
+    not validate parameters to private functions.
+</p></li></ul></section><section data-level="h2"><h2> <span id="ids">IDs</span></h2><p>IDs are used to identify entities.
+</p><ul><li><p>IDs should be unique for a particular namespace of entities.
+</p></li><li><p>If the entities need to be secure, then the IDs should be hard
+    to guess.  
+</p></li><li><p>Usually, IDs should be opaque strings; opaque means that users of
+    the IDs should not care about the structure of the strings.
+</p><p>    If efficiency is particularly important, they may be integers
+    (this may be the case for applications like games or when the
+    implementation language is a language like C with poor support for
+    strings).  See
+     <a href="https://developer.twitter.com/en/docs/twitter-ids">Twitter's
+    discussion</a> of IDs.  The downside of using integers are
+     <a href="https://news.ycombinator.com/item?id=14539770">embarrassing
+    episodes</a> if the integers IDs overflow.
+</p></li><li><p>It is usually a bad idea to expose database IDs as external IDs;
+    doing so makes it difficult to migrate to a different database
+    instance or use a different database system.
+</p></li></ul></section><section data-level="h2"><h2>Unique and Secure IDs</h2><p>A possible scheme to generate unique and secure IDs:
+</p><ul><li><p>An ID is generated as a string of the form
+    <code>`${counter}_${rand}`</code>.
+</p></li><li><p><code>counter</code> is a counter which is incremented whenever creating a
+    new ID.  It follows that <code>counter</code> must be stored across the
+    lifetime of the system.  The <code>counter</code> portion of the ID
+    guarantees that IDs are unique.
+</p></li><li><p><code>rand</code> is a random integer generated using a secure random number
+    generator.  The <code>rand</code> portion of the ID makes IDs hard to guess
+    and secure.
+</p></li><li><p>So IDs may look like <code>&quot;0_31324204&quot;</code> or <code>&quot;42_04394134&quot;</code>.
+</p></li><li><p>During development, it may be useful to restrict the random part
+    of the ID to say 2 digits, resulting in IDs like <code>&quot;0_31&quot;</code> or
+    <code>&quot;42_04&quot;</code>.
+</p></li></ul></section><section data-level="h2"><h2>UUIDs</h2><p>The previous scheme requires persisting the <code>counter</code>.  An alternate
+scheme for generating ID's is to use a  <a href="https://en.wikipedia.org/wiki/Universally_unique_identifier">Universally Unique Identifier</a> (UUID).
+</p><ul><li><p>UUIDs are 128-bit numbers: 16 octets written in groups 8-4-4-4-12;
+    Example <code>12345678-1abc-def0-a234-56789abcdef0</code>.
+</p></li><li><p>Most languages will come with a library function for generating
+    UUIDs.
+</p></li><li><p>Uniqueness guaranteed by using UUID v1.  However, it may be guessable,
+    hence not good for security.
+</p></li><li><p>If generated IDs must be secure, then use
+    
+    <a href="https://versprite.com/blog/universally-unique-identifiers/">UUID v4</a> using a cryptographically secure random number
+    generator.  Tiny chance (one in \(2^{122}\)) of non-uniqueness.
+</p></li></ul></section><section data-level="h2"><h2>TypeScript Compiler</h2><p>TypeScript compiler tsc compiles TypeScript to JavaScript.  Governed by
+<code>tsconfig.json</code> or command-line options:
+</p><ul><li><p><code>target</code> specified version of JS to be generated.
+</p></li><li><p><code>module</code> specifies module system to be used.
+</p></li><li><p>Other options allow selecting source files, destination folder/file.
+</p></li><li><p>Unlike strict JSON, <code>tsconfig.json</code> allows comments and trailing
+    commas.
+</p></li><li><p>
+    <a href="https://www.typescriptlang.org/docs/handbook/compiler-options.html">Numerous options</a>.
+</p></li><li><p> <a href="code/tsconfig.json?lang=json">Example tsconfig.json</a> template
+    generated using <code>tsc --init</code>.
+</p></li></ul></section><section data-level="h2"><h2>Node Package Manager</h2><ul><li><p>Track dependencies of project transitively.
+</p></li><li><p>Handles multiple versions of same package.
+</p><ol><li><p>Assume project requires v1 of packages A and B.
+</p></li><li><p>Package A requires v1 of package C.
+</p></li><li><p>Package B requires v2 of package C.
+</p></li></ol><p>    npm sets things up so as to have both v1 and v2 coexistent
+    at runtime.  This can occasionally cause trouble, but usually
+    works seamlessly.
+</p></li></ul></section><section data-level="h2"><h2>npm Dependencies</h2><ul><li><p>Distinguish different types of dependencies:
+</p><ul><li><p><strong>Runtime Dependencies</strong> needed for running the program.
+</p></li><li><p><strong>Development Dependencies</strong> needed only during development
+        (use option <code>-D</code> or <code>--save-dev</code>).
+</p><ul><li><p>Build dependencies like <code>tsc</code>, <code>parcel</code> or <code>webpack</code>.
+</p></li><li><p>Testing dependencies like <code>mocha</code> and <code>chai</code>.
+</p></li></ul></li></ul></li></ul></section><section data-level="h2"><h2>Config File package.json</h2><ul><li><p>Config file <code>package.json</code> is strict JSON: hence no comments
+    allowed!!
+</p></li><li><p>Sample  <a href="../../lib/node-utils/package.json?lang=json">package.json</a> for
+    <code>cs544-node-utils</code> library.
+</p></li><li><p><code>npm install PACKAGE</code> will install <code>PACKAGE</code> and all its
+    dependencies as runtime dependencies in the <code>node_modules</code>
+    directory.  
+</p></li><li><p><code>npm install -D PACKAGE</code> will install <code>PACKAGE</code> and all its
+    dependencies as development dependencies in the <code>node_modules</code>
+    directory.
+</p></li><li><p>Above commands will create a <code>package-lock.json</code> which specifies
+    the exact versions of the dependencies found.
+</p></li><li><p><code>npm install</code> will install all dependencies from <code>package.json</code>.
+    Unfortunately, it 
+    
+    <a href="https://stackoverflow.com/questions/45022048/why-does-npm-install-rewrite-package-lock-json">does not respect package-lock.json</a>.
+</p></li><li><p>I use <code>npm ci</code> to get exactly the same versions as
+    <code>package-lock.json</code>.
+</p></li></ul></section><section data-level="h2"><h2>Bundlers</h2><ul><li><p>A web application consists of many different artifacts: HTML
+    content, JavaScript, CSS, images.
+</p></li><li><p>Without a bundler, loading each artifact requires a separate
+    network request which is expensive.
+</p></li><li><p>Bundlers like webpack, parcel and rollup allow bundling artifacts
+    into bundles so that the application can be loaded using fewer
+    network requests.
+</p></li><li><p>It may be the case that not all the code in a JavaScript
+    artifact is actually used by the application.
+</p></li><li><p>Some bundlers use <strong>tree shaking</strong> to ensure that code not needed
+    by the application is not included in the bundle.
+</p></li><li><p>Methods are tied to an object and are difficult to tree-shake.
+    OTOH, functions are easier to tree-shake.
+</p></li></ul></section><section data-level="h2"><h2>Result Type</h2><p>Package success and error values together (inspired by Rust):
+</p><ul><li><p>Have processing functions return a <code>result</code> having type <code class="hljs language-javascript">Result&lt;T, E></code>
+    having one of two properties:
+</p><ul><li><p>If <code>result.isOk</code> is true, then <code>result.val: T</code> provides
+        success result.
+</p></li><li><p>If <code>result.isOk</code> is false,  then <code>result.err: E</code> provides
+        an error result.
+</p></li></ul></li><li><p>Create a success <code>Result&lt;T></code> using <code>okResult(val: T)</code>.
+</p></li><li><p>Create an error <code>Result&lt;T></code> using <code>errResult(err: E)</code>.
+</p></li></ul></section><section data-level="h2"><h2>Implementing <code>Result</code></h2><pre class="hljs language-js">class OkResult&lt;T> {
+  readonly isOk = true as const;
+  val: T;
+  constructor(val: T) { this.val = val; }
+}
+
+class ErrResult&lt;E> {
+  readonly isOk = false as const;
+  err: E;
+  constructor(err: E) { this.err = err; }
+}
+
+export type Result&lt;T, E> = OkResult&lt;T> | ErrResult&lt;E>;
+
+export function okResult&lt;T, E>(val: T): Result&lt;T, E> {
+  return new OkResult(val);
+}
+
+export function errResult&lt;T, E>(err: E): Result&lt;T, E> {
+  return new ErrResult(err);
+}
+</pre><p> <a href="https://www.typescriptlang.org/play/?#code/MYGwhgzhAEDyDWAlAphAriALgHgCoD5oBvAKGmgCdkwATAewDsQBPaASwgWgF5pMK0yaJGjBGETAG4y0AG5gQALmi5p5MQwkDgmOhQAU8pSoCUxPgAsOAOiM85CydAC+JVyVCQYAUQoUU6FjY3oSk5FS0jCzsnPD2AGYKEEIiGhJq0Mh+yt4ZafxoOnr6WRQ5ZkSWNqX2pU6u7sgAHgAOeph8zC1CARg4uAA00CH2CL1BBNAAPsN+4zgh0iTNbRQd8WgMOmyM0HRIqH14QyGGCsq4Jsrzx8OhMlSYaBQM0AzIAO5wB4GYZyAmaSNVrtaAbLaYHavUo3QZ3ErZYZXaCwk73cLIJ4vN6fWb+Q5YBEUQFuEgkIA">TS Playground</a>.
+</p><p>We will be using <code>Result</code> in our projects.
+</p></section><section data-level="h2"><h2>Testing</h2><ul><li><p> <a href="https://en.wikipedia.org/wiki/Software_testing">Automated
+    tests</a> are an essential aspect of 
+    <a href="https://agilemanifesto.org/">agile development</a> as it provides confidence to change code in
+    order to respond rapidly to changing requirements.
+</p></li><li><p>Distinguish <strong>faults</strong> (bugs, defects) from <strong>failures</strong> which are
+    manifestations of faults.
+</p></li><li><p><em>Program testing can be used to show the presence of bugs, but
+    never to show their absence!</em>:
+    
+    <a href="https://www.goodreads.com/quotes/506689-program-testing-can-be-used-to-show-the-presence-of">Edsger W. Dijkstra</a>.
+</p></li><li><p>Automated testing has been around for ever as <strong>regression testing</strong>,
+    current resurgence emerged with 
+    <a href="https://en.wikipedia.org/wiki/JUnit">junit.</a>
+</p></li><li><p>There may be more testing code than code in the system under test!!
+</p></li></ul></section><section data-level="h2"><h2>Types of Automated Tests</h2><dl><dt> Unit tests</dt><dd><p>Test isolated units of code.
+</p></dd><dt> Integration tests </dt><dd><p>Test interfaces between multiple units of
+    code.
+</p></dd><dt> System tests</dt><dd><p>Test complete usage scenaries for overall system.
+</p></dd><dt> Non-Functional tests</dt><dd><p>Tests for non-functional aspects like
+    performance tests, stress tests, security tests.
+</p></dd></dl></section><section data-level="h2"><h2>Testing Methodologies</h2><ul><li><p><strong>Develop code first, then write tests</strong>: Can work, but often gets
+    difficult to make code observable enough to test thoroughly.
+    Since tests are written later, they are often an afterthought and
+    may get omitted under time pressure.
+</p></li><li><p> <a href="https://en.wikipedia.org/wiki/Test-driven_development">Test
+    Driven Development TDD</a>: Write tests first, then write code.
+    Tests will initially fail since there is no implementing code.
+    Often referred to as Red-Green testing.
+</p></li><li><p>
+    <a href="https://en.wikipedia.org/wiki/Behavior-driven_development">Behavior Driven Development BDD</a>: Describe tests in terms of
+    desired system behavior often in business-oriented terms.  Often
+    higher-level than unit tests.
+</p></li></ul></section><section data-level="h2"><h2>Test Structure</h2><ul><li><p><strong>Tests must be isolated</strong>; i.e. each test should be independent
+    of other tests.
+</p></li><li><p>A <strong>test collaborator</strong> is an external object required for
+    testing the object under test.  
+</p></li><li><p>A  <a href="https://en.wikipedia.org/wiki/Test_fixture#Software">test
+    fixture</a> is used to set up environment for each test case.
+</p></li><li><p>A typical automated 
+    <a href="https://en.wikipedia.org/wiki/Test_case">test case</a> consists of the following three steps:
+</p><ol><li><p><strong>Test setup</strong>: set up the preconditions for the test case.
+        This may require setting up an environment containing the test
+        collaborators.
+</p></li><li><p><strong>Perform test</strong>: execute the code being tested and
+        validate the result.
+</p></li><li><p><strong>Test teardown</strong>: cleanup after test, destroy all test
+         collaborators.
+</p></li></ol></li><li><p>Multiple test cases may often be grouped into
+     <a href="https://en.wikipedia.org/wiki/Test_suite">test suites</a>.
+</p></li><li><p>Testing libraries are typically included among the package
+    development <code>-D</code> dependencies. 
+</p></li><li><p>Less necessary to include testing libraries as node comes with its
+    own testing framework.  For this course, we will use the node
+    framework (has some relatively minor issues: poor <code>only</code> support).
+</p></li></ul></section><section data-level="h2"><h2>Structuring Tests</h2><ul><li><p>A test suite consists of:
+</p><pre class="hljs language-javascript">   //suite
+   describe(&quot;suite description&quot;, () => {
+
+     beforeEach(() => {
+       //set up fixture
+     });
+
+     afterEach(() => {
+       //tear down fixture
+     });
+
+     it(&quot;test case description&quot;, () => {
+        //set up and call code to be tested
+	//correctness assertions for result
+     });
+
+     //more test cases in test suite
+     ...
+
+     it(..., () => {
+       ...
+     });
+
+   });
+</pre></li></ul><p> <a href="code/tests-example.js?lang=js">Tests Example</a>.
+</p></section><section data-level="h2"><h2>Test Doubles</h2><ul><li><p>Setting up test collaborators can often be problematic,
+    especially when a collaborator represents side-effects
+    like I/O or database access.
+</p></li><li><p> <a href="https://en.wikipedia.org/wiki/Test_double">Test doubles</a> allow
+    using synthetic collaborators instead of real collaborators.
+    
+    <a href="https://www.c-sharpcorner.com/article/stub-vs-fake-vs-spy-vs-mock/">Types of test doubles</a> include (terms often used inconsistently):
+</p><dl><dt> <strong>Stub</strong> </dt><dd><p>       Provides a fixed value to the test case.  For example,
+       a collaborator which reads from the user can be
+       replaced by a stub which simply returns a fixed input.
+</p></dd><dt> <strong>Fake</strong> </dt><dd><p>       Provide different values based on inputs.  
+       May be a restricted version of the actual collaborator.
+</p></dd><dt> <strong>Spy</strong> </dt><dd><p>       Retain history of use. May answer questions like how
+       many times it was called.  Can also be a fake.
+</p></dd><dt> <strong>Mock</strong> </dt><dd><p>       Full replacement for collaborator.
+</p></dd></dl></li><li><p>There are many mocking frameworks available like
+     <a href="https://site.mockito.org/">mockito.</a>
+</p></li><li><p>Can avoid the need for extensive mocking by making most code
+    pure.
+</p></li></ul></section><section data-level="h2"><h2>Avoid Flaky Tests</h2><p>A  <a href="https://www.datadoghq.com/knowledge-center/flaky-tests/">flaky
+test</a> both passes and fails without changing any system or test code.
+Possible causes:
+</p><ul><li><p>Test depends on results of another test.  Tests should not depend
+    on their order.
+</p><p>    Some testing frameworks prevent this by running tests in random
+    orders.
+</p></li><li><p>Dependency on the test environment like filesystem, network.
+</p></li><li><p>Time dependencies like time-of-day, timezone, whether it is
+    a special day with transitions between daylight savings and standard
+    time.
+</p></li></ul></section><section data-level="h2"><h2>Gotchas</h2><ul><li><p> <code class="hljs language-javascript">return</code> with return-expression on the next line will
+    result in <code class="hljs language-javascript">undefined</code> being returned.  If inconvenient
+    to begin return-expression on same line as  <code class="hljs language-javascript">return</code>
+    keyword, use:
+</p><pre class="hljs language-javascript">    return (
+      longExpr
+    );
+</pre></li><li><p>Problems in TS when using <code>as</code> type assertion at the start of a line.
+    Something like
+</p><pre>    someLongExpression
+      as number
+</pre><p>    results in a syntax error.  Use something like:
+</p><pre>    someLongExpression as
+      number
+</pre></li><li><p>Never use <code>==</code> and <code>!=</code> for checking equality.  Surprising
+    type conversions.  Always use <code>===</code> and <code>!==</code>; no conversions.
+</p><pre class="hljs language-javascript">    > null == undefined
+    true
+    > null === undefined
+    false
+    > '' == 0
+    true
+    > '' === 0
+    false
+    >
+</pre></li></ul></section><section data-level="h2"><h2>Gotcha's from C Legacy</h2><ul><li><p>Need  <code class="hljs language-javascript">break</code> after  <code class="hljs language-javascript">case</code> to avoid fall-thru.
+</p><pre class="hljs language-javascript">      switch (type) {
+        case 'number':
+	  x = 1;
+	  //need a break statement here
+	case 'string';
+	  x = 42;
+	  break;
+      }
+</pre></li><li><p>Integer literals starting with leading 0 are treated as octal;
+    use <code>0o</code> prefix instead:
+</p><pre class="hljs language-js">    >  010
+    8        //surprise!
+    > 0o10
+    8        //not surprising
+</pre></li></ul></section></section></div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/slide-controls.mjs"></script>
+    <script type="module" src="../../assets/scripts/nav.mjs"></script> 
+    <script type="module" src="../../assets/scripts/highlight.mjs"></script>
+</body>
+</html>
+
