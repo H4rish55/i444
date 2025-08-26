@@ -602,7 +602,7 @@ undefined
 > m1 = { a1, b1, d1: 99}  //shorthand literal notation
 { a1: 22, b1: 33, d1: 99 }
 >
-//can also declare using utility type Record<KeyType, ValueType>:
+//can also use utility type Record<KeyType, ValueType>:
 > let m2: Record<string, number>;
 undefined
 > m2.a1 = 42
