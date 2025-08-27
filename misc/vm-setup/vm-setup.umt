@@ -8,90 +8,59 @@ your CS interests.
 Note that you will have exclusive access to this VM via its IP address
 which will typically start with `128.226`.  All programming work for
 this course *must* be done on your VM.  *Do not attempt to use
-remote.cs*; it will not work as the software installed there is
+remote.cs*; it will not work as the software installed there may be
 out-of-date.
 
-The VM can only be accessed using ssh from *within* the campus
-network accessed using the campus VPN.
-
-The VM runs Ubuntu 24.04.  Software which will be required by the
-course is .<./setup.sh?lang=sh> pre-installed, but it is possible that you may
-need to install additional software during the course of the semester.
+The VM runs Ubuntu 24.04.  System-wide software required by this course
+is .<./setup.sh?lang=sh> pre-installed, but it is possible that you
+may need to install additional software during the course of the
+semester.
 
 You should make sure that you perform each of the following steps:
 
+%%%
   # .<#pw-change> "Initial password change".
+%%%
+
+  # .<#init-access> "Initial VM Access".
 
   # .<#no-pw-ssh> "SSH Access Without Using a Password".
 
-  # .<#x2go-access> "X2Go access to your VM".
+  # .<#home-dir> "Setting Up Your Home Directory".
 
-  # .<#npm-sh> "Set up a npm shell".
+  # .<#x2go-access> "X2Go access to your VM".
 
   # Set up necessary git repositories on your
     VM; this is detailed in a .<./git-setup.html> "separate document".
 
 
-[This document uses the term ."workstation ." to refer to the computer
+[This document uses the term "workstation" to refer to the computer
 to which your keyboard and mouse are attached to.]
 
 
-		.=pw-change= Initial Password Change
-		====================================
 
-You should have received an email giving you the IP
-address `VM-IP` of your VM, your login id `VM-LOGIN-ID` and your initial
-password `VM-PW`.  Since your password has been exposed in an unsecure
-email, it *must be changed* ASAP.  Hence you should *immediately*
-login to your VM and change your password to some `VM-NEW-PW` of your
-choosing.
+			.=init-access= Initial VM Access
+			================================
 
-  # Ensure that your workstation is connected to the campus network,
-    possibly using the
+You should have received an email providing you the IP address of the
+VM.  Ensure that you have access to the VM:
+
+  # Connect your workstation to the
     .<https://www.binghamton.edu/its/about/teams/operations-infrastructure/network_administration/connecting_from_off_campus-ssl-vpn/index.html>
-    "campus VPN".
+    "campus VPN" (the VM can only be accessed using ssh from *within*
+    the campus VPN).
 
-  # Use ssh to connect to your VM using the provided IP address
-    `VM-IP`, `VM-LOGIN-ID` and initial password `VM-PW`.
+  # Use an ssh client on your workstation to login to your VM via the
+    IP address you received in the email.  Use your BU ID (the portion
+    of your BU email address before the `@binghamton.edu`) and password
+    to login.
 
-    If your workstation runs Linux or OS/X, you can do so using a
-    command-line `ssh` client.  If your workstation runs Windows, you
-    can use
-    .<https://docs.microsoft.com/en-us/windows/terminal/get-started>
-    "Windows Terminal" from the MS store.  There is even an
-    .<https://chrome.google.com/webstore/detail/secure-shell/iodihamcpbpeioajjeobimgagajmlibd?hl=en>
-    "ssh app" which you can install for your Chrome browser; this
-    should work for all OS's which support Chrome.
+  # You should have command-line access.  Verify by poking around,
+    running simple commands like `ls`.
 
-    [It may be the case that your VM has a name starting with a course
-    number different from the course you are registered for; it was
-    set up this way for the convenience of the sysadmin and should not
-    make any difference to you.]
+  # If you have preferences for your Linux environment, then copy
+    over the necessary startup files.
 
-  # Use the `passwd` command on your VM, to change your password
-    to `VM-NEW-PW`.
-
-Once you have logged in to the campus VPN as in (1) above, the
-following log shows how you would perform steps (2) and (3):
-
-.code(lang=sh)
-```
-# from a linux or os/x terminal (windows will differ).
-$ ssh VM-LOGIN-ID@VM-IP
-The authenticity of host 'VM-IP (VM-IP)' can't be established.
-ECDSA key fingerprint is ...
-Are you sure you want to continue connecting (yes/no)? yes
-Warning: Permanently added 'VM-IP' (ECDSA) to the list of known hosts.
-VM-LOGIN-ID@VM-IP's password: VM-PW   #will not be echoed
-Welcome to Ubuntu 22.04 ...
-...
-# at this point you should be connected to your VM.
-VM-LOGIN-ID@COURSE-VM-LOGIN-ID:~$ passwd  #passwords not echoed below
-Changing password for VM-LOGIN-ID.
-(current) UNIX password: VM-PW
-Enter new UNIX password: VM-NEW-PW
-Retype new UNIX password: VM-NEW-PW
-```
 
 		.=no-pw-ssh= SSH Access Without Using a Password
 		================================================
@@ -109,12 +78,55 @@ ssh-copy-id to copy your public key to your workstation.
 Verify that you can ssh from your workstation to your VM without
 needing to type your password.
 
+
+	   	     .=home-dir= Setting Up Your Home Directory
+		     ==========================================
+
+Some of the software used by the course is now typically installed
+within a user's home directory.  Hence that software has not been
+installed on the preconfigured VMs and you will need to install that
+software after you log into your VM for the first time.
+
+.code(lang=sh)
+~~~
+## install nodejs within $HOME
+## get nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+## install current version
+nvm install 24
+
+## install typescript under node global ($HOME above)
+npm install -g typescript
+npm install -g ts-node
+
+##install bun
+curl -fsSL https://bun.sh/install | bash
+~~~
+
+Set the shell used by npm to bash, using the following command:
+
+.code(lang=sh)
+~~~
+$ npm config set script-shell /usr/bin/bash
+~~~
+
+This will update your `~/.npmrc` and npm will use bash to run scripts in
+the future.
+
+It is also useful to set up a `tmp` directory:
+
+.code(lang=sh)
+~~~
+$ cd ~
+$ mkdir tmp
+~~~
+
     	       	  .=x2go-access= X2Go Access to your VM
 		  =====================================
 
 
 If you only use `ssh`, you obtain only basic command-line access to
-your VM.  But you will need GUI access to your VM as the course
+your VM.  But you may need GUI access to your VM as the course
 progresses and are required to verify that you have set up GUI access
 in your submission for "Project 1".  The most convenient access is
 provided by x2go.  (The end of this document lists some alternatives
@@ -133,13 +145,14 @@ in case you just cannot get x2go to work.)
     -> "New session".  Fill in the following fields:
 
        :Session name:
-          `webprog vm`
+          `CS 444 VM`
 
        :Host:
-         Your VM's IP address `VM-IP`
+         Your VM's IP address `VM-IP` (the IP address you received
+	 in the email).
 
        :Login:
-         Your login id `VM-LOGIN-ID` on your VM (if different from your
+         Your BU login id  (if different from your
 	 login id on your workstation).
 
        : Auto Login :
@@ -148,7 +161,7 @@ in case you just cannot get x2go to work.)
 	 login from your workstation to your VM).
 
        :Session type:
-         `LXDE` or `XFCE`.
+         `XFCE`.
 
 
   # You should now be able to use the above session to access your VM
@@ -159,7 +172,7 @@ in case you just cannot get x2go to work.)
 The following is a screenshot of my `x2go` configuration for accessing
 my VM from within the campus network (or VPN):
 
-.image(src="webprog-x2go-config.png")
+.image(src="444-x2go-setup.png")
 
 With the above setup, I do not need to type in a password when
 connecting to my VM.
@@ -171,18 +184,6 @@ you reconnect to your VM.  *Do not shutdown* your VM (you will need to
 restart it manually using the .<#vsphere> "VSphere Web Client" if you
 do so).
 
-		.=npm-sh= Setting Your npm Shell
-		================================
-
-To set the shell used by npm to bash, use the following command:
-
-.code(lang=sh)
-~~~
-$ npm config set script-shell /usr/bin/bash
-~~~
-
-This will update your `~/.npmrc` and npm will use bash to run scripts in
-the future.
 
     	    	 	 .=restart= Restarting your VM
 			 =============================
@@ -255,12 +256,12 @@ install` "PACKAGE" can be used to install a "PACKAGE" from the Ubuntu
 package repository.
 
 The VM has text editors/IDEs like Visual Studio `code`, `emacs`,
-`gedit`, `nano`, `sublime` and `vim` already installed.  However, you
+`gedit`, `sublime` and `vim` already installed.  However, you
 may want to use the above package manager to install a text editor or
 IDE of your choice.
 
-It is a good idea to keep the software on your VM up-to-date.  Every
-few weeks, you should update it:
+It is a good idea to keep the software on your VM up-to-date. You
+should update it every few weeks:
 
 .code(lang=sh)
 ```
@@ -287,13 +288,41 @@ Your GUI session will lock up.  You will need to escape out of it; you
 should be able to get back in within a couple of minutes.  If something
 goes wrong please use the .<#vsphere> "vsphere console" to debug.
 
+       	   	      .=vsphere= vSphere Web Client
+		      =============================
+
+You can access your VM's console using the vSphere web client.  This is
+useful if you need to power-cycle your VM:
+
+  # Go to this URL: .<http://csvb-vc.binghamton.edu> "".  (this *must*
+    be done from within the campus network).
+
+  # Click through the security warnings and click the *LAUNCH VSPHERE
+    CLIENT* button.
+  
+  # Login with your regular BU username and password.
+    Enter `BU\` before your username.  Do not check the
+    "Use Windows session authentication" checkbox if it is present.
+
+  # On the left-hand side of the interface you can expand the
+    tree. Keep expanding the levels until you see a VM whose name is based
+    on your user ID.  You should see a summary of your VM.
+
+  # Use the provided link to open a *web console* to the VM which will
+    allow you to interact with it as if you were sitting in front of
+    it using a console which runs within your web browser.
+
+Note that unlike the x2go or vnc options, the vSphere web client will
+not persist your session on your VM.
+
+
 
 			Other Remote Access Methods
 			===========================
 
 
 If, for some reason, you just cannot get x2go to connect to your VM,
-you can try using one of these other methods of obtaining GUI access
+you can try using one of these other methods for obtaining GUI access
 to your VM.
 
 			VNC Access
@@ -306,8 +335,8 @@ desktops like a Windows desktop.
 
   # Connect to your VM using `ssh`.
 
-  # Use an editor on your VM to create a script .<./vnc-xstartup>
-    ~/.vnc/xstartup to start `lxde`.  Make it executable using `chmod
+  # Use an editor on your VM to create a script .<./vnc-xstartup?lang=sh>
+    ~/.vnc/xstartup to start `xfce4`.  Make it executable using `chmod
     a+x ~/.vnc/xstartup`.
 
   # Start up a VNC server on your VM.
@@ -346,30 +375,6 @@ If you are using this method, you will need to tunnel X11 through
 `remote.cs`.  To find out what you will need to do, please start
 out by looking at a .<#tunnel> "subsequent section" of this document.
 %%%
-
-       	   	      .=vsphere= vSphere Web Client
-		      -----------------------------
-
-  # Go to this URL: .<http://csvb-vc.binghamton.edu> "".  (this *must*
-    be done from within the campus network).
-
-  # Click through the security warnings and click the *LAUNCH VSPHERE
-    CLIENT* button.
-  
-  # Login with your regular BU username and password.
-    Enter `BU\` before your username.  Do not check the
-    "Use Windows session authentication" checkbox.
-
-  # On the left-hand side of the interface you can expand the
-    tree. Keep expanding the levels until you see a VM whose name is based
-    on your user ID.  You should see a summary of your VM.
-
-  # Use the provided link to open a *web console* to the VM which will
-    allow you to interact with it as if you were sitting in front of
-    it using a console which runs within your web browser.
-
-Note that unlike the x2go or vnc options, the vSphere web client will
-not persist your session on your VM.
 
 
 %%%
@@ -429,4 +434,63 @@ a command like
    ssh -p 2222 VM-LOGIN-ID@localhost
 ```
 
+%%%
+
+%%%
+		.=pw-change= Initial Password Change
+		====================================
+
+You should have received an email giving you the IP
+address `VM-IP` of your VM, your login id `VM-LOGIN-ID` and your initial
+password `VM-PW`.  Since your password has been exposed in an unsecure
+email, it *must be changed* ASAP.  Hence you should *immediately*
+login to your VM and change your password to some `VM-NEW-PW` of your
+choosing.
+
+  # Ensure that your workstation is connected to the campus network,
+    possibly using the
+    .<https://www.binghamton.edu/its/about/teams/operations-infrastructure/network_administration/connecting_from_off_campus-ssl-vpn/index.html>
+    "campus VPN".
+
+  # Use ssh to connect to your VM using the provided IP address
+    `VM-IP`, `VM-LOGIN-ID` and initial password `VM-PW`.
+
+    If your workstation runs Linux or OS/X, you can do so using a
+    command-line `ssh` client.  If your workstation runs Windows, you
+    can use
+    .<https://docs.microsoft.com/en-us/windows/terminal/get-started>
+    "Windows Terminal" from the MS store.  There is even an
+    .<https://chrome.google.com/webstore/detail/secure-shell/iodihamcpbpeioajjeobimgagajmlibd?hl=en>
+    "ssh app" which you can install for your Chrome browser; this
+    should work for all OS's which support Chrome.
+
+    [It may be the case that your VM has a name starting with a course
+    number different from the course you are registered for; it was
+    set up this way for the convenience of the sysadmin and should not
+    make any difference to you.]
+
+  # Use the `passwd` command on your VM, to change your password
+    to `VM-NEW-PW`.
+
+Once you have logged in to the campus VPN as in (1) above, the
+following log shows how you would perform steps (2) and (3):
+
+.code(lang=sh)
+```
+# from a linux or os/x terminal (windows will differ).
+$ ssh VM-LOGIN-ID@VM-IP
+The authenticity of host 'VM-IP (VM-IP)' can't be established.
+ECDSA key fingerprint is ...
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'VM-IP' (ECDSA) to the list of known hosts.
+VM-LOGIN-ID@VM-IP's password: VM-PW   #will not be echoed
+Welcome to Ubuntu 22.04 ...
+...
+# at this point you should be connected to your VM.
+VM-LOGIN-ID@COURSE-VM-LOGIN-ID:~$ passwd  #passwords not echoed below
+Changing password for VM-LOGIN-ID.
+(current) UNIX password: VM-PW
+Enter new UNIX password: VM-NEW-PW
+Retype new UNIX password: VM-NEW-PW
+```
 %%%

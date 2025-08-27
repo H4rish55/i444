@@ -29,11 +29,12 @@
 course material. 
 </p><ul><li><p>All course material is maintained on a git repository
     hosted on a CS department machine.  You will be mirroring
-    this repository on your VM.
+    this repository on your VM in your <code>~/cs444</code>.
 </p><p>    You should access course files only via this mirror.
     <strong>DO NOT DOWNLOAD MATERIAL DIRECTLY FROM THE WEB SITE</strong>.
 </p></li><li><p>You should maintain all your personal course files on a private
-    git repository like  <a href="https://github.com">github.com.</a>
+    git repository on  <a href="https://github.com">github.com.</a>  You will be mirroring
+    this repository on your VM in your <code>~/i444</code>.
 </p></li></ul><p>This document assumes that you have already
  <a href="../vm-setup/vm-setup.html">set up your VM</a>.
 </p><p>This document provides step-by-step directions for mirroring the
@@ -64,7 +65,7 @@ $ git config --global user.email &quot;jdoe@binghamton.edu&quot;
     to see where you may have gone wrong.
 </p></li><li><p>Run the following command on <code>remote.cs</code>:
 </p><pre class="hljs language-sh">    $ git config --global --add safe.directory \
-        /home/umrigar/git-repos/cs444.git
+        /import/home/umrigar/git-repos/cs444.git
 </pre><p>    This is a workaround for a recent security enhancement in git
     to allow you to clone a directory not owned by you.
 </p></li><li><p>Terminate your connection to <code>remote.cs</code> by typing a
@@ -80,11 +81,11 @@ $ git config --global user.email &quot;jdoe@binghamton.edu&quot;
 </p></li></ol><p><strong>You should never be writing into this directory.</strong>
 </p></section><section data-level="h2"><h2>Maintaining the Course Repository Clone</h2><p>You can set up automated updates for your <code>cs444</code> course repository.
 You can also manually update it and use git to track changes.
-</p><section data-level="h3"><h3> <span id="cron">Automatically</span> Tracking cs444 Changes</h3><p>You should set up a cron job to update your <code>~/cs444</code> directory from
-the course git repository:
+</p><section data-level="h3"><h3> <span id="cron">Automatically</span> Tracking cs444 Changes</h3><p>You should set up a cron job to update your <code>~/cs444</code> directory on
+your VM from the course git repository:
 </p><pre class="hljs language-sh">$ EDITOR=YOUR_FAVORITE_EDITOR crontab -e
 </pre><p>where <code>YOUR_FAVORITE_EDITOR</code> is the command you use to start your
-preferred editor.  It should open up showing you an initial <code>crontab</code>
+preferred editor.  It should start up showing you an initial <code>crontab</code>
 file.  Add the following line at the end:
 </p><pre class="hljs language-sh">BB * * * * cd ~/cs444; git pull > /dev/null
 </pre><p>where <code>BB</code> is your B-number modulo 60.  Ensure that you have a newline
@@ -103,37 +104,36 @@ $ bin/git-changes.rb .
 ran the script (it records the time via a timestamp stored in
 <code>~/cs444/.last-login</code>). It will not produce any output the first
 time you run the script.
-</p><p>If you want to see all the commits in a particular directory like <code>hw/hw1</code>:
+</p><p>If you want to see all the commits in a particular directory like
+<code>slides/syllabus</code>:
 </p><pre class="hljs language-sh">$ cd ~/cs444
 $ git log --oneline -- slides/syllabus
 dc12cad added ta info
 ...
 a1b23f4 added slides
 $
-</pre><p>Your commit id's and messages will differ.
+</pre><p>The commit id's and messages will differ.
 </p><p>If you want to see the details of a particular commit, use:
 </p><pre class="hljs language-sh">$ git log --stat dc12cad^!
 </pre><p>To see the diff's for a particular commit-id:
 </p><pre class="hljs language-sh">$ git show dc12cad
 </pre><p>To restrict the diff's to a particular path:
-</p><pre class="hljs language-sh">$ git show dc12cad -- hw/hw1/hw1.umt
+</p><pre class="hljs language-sh">$ git show dc12cad -- slides/syllabus/syllabus.umt
 </pre></section></section><section data-level="h2"><h2>Setting Up a Github Repository</h2><p>You should maintain your personal course material within git.  You can
 set up a private repository on a git provider like
  <a href="https://github.com">github.com.</a>
 </p><section data-level="h3"><h3>Quick Start</h3><p>If you know what you are doing, this <code>tl;dr</code> section should largely suffice:
-</p><ol><li><p>Set up a personal github account and create a <strong>private</strong> <code>i444</code> or
-    <code>i444</code> git repository, depending on the course you are registered
-    for.  Choose the github options to generate a <code>.gitignore</code> for
-    <code>node</code> and initialize your repository with a <code>README</code>.
+</p><ol><li><p>Set up a personal github account and create a <strong>private</strong> <code>i444</code> git
+    repository.  Choose the github options to generate a <code>.gitignore</code>
+    for <code>node</code> and initialize your repository with a <code>README</code>.
 </p></li><li><p>Clone your github repository into your home directory on your
     VM. 
 </p></li><li><p>Use a <code>submit</code> subdirectory within the cloned directory for
     working on projects.  
 </p></li></ol><p>The following sections explain each of the above steps in detail.
-</p></section><section data-level="h3"><h3>Setting Up A Git Hub Repository Details</h3><p>You can set up a <strong>private</strong> git repository called <code>i444</code>
-or <code>i444</code> (depending on the course you are registered for) on github.
-It will be referred to as <em>iX44</em> in the sequel.  This repository can
-be used for working on course assignments like projects.
+</p></section><section data-level="h3"><h3>Setting Up A Git Hub Repository Details</h3><p>You can set up a <strong>private</strong> git repository called <code>i444</code> on github.  It
+will be referred to as <em>i444</em> in the sequel.  This repository can be
+used for working on course assignments like projects.
 </p><ol><li><p>Point a browser to  <a href="https://github.com">github.com.</a>
 </p></li><li><p>Click on <code>Sign Up</code>, and complete the form.  You may choose any
     appropriate <strong>Username</strong>, but it is strongly recommended that you
@@ -150,9 +150,7 @@ be used for working on course assignments like projects.
     box.  Submit the form to set up your new key.
 </p></li><li><p>To set up a project for the course, click on the green <strong>New</strong>
     button on your  <a href="https://github.com">github home page</a>.
-</p><ol><li><p>Fill in the repository name as <code>i444</code> or <code>i444</code>, depending on
-        the course you are registered for (this is absolutely
-        essential).
+</p><ol><li><p>Fill in the repository name as <code>i444</code>.
 </p></li><li><p>Provide a suitable description for the repository.
 </p></li><li><p>Make sure that you set up your repository as <strong>Private</strong>.
 </p></li><li><p>Select <code>Add a README file</code>.
@@ -165,8 +163,8 @@ be used for working on course assignments like projects.
 project page.  Click the green <strong>&lt;> Code</strong> button and then copy the
 <strong>SSH</strong> url into your clipboard by using the copy widget on the
 right of the url.
-</p><p>If you get an error when doing so, verify that you have correctly uploaded
-your public ssh key to github.
+</p><p>If you get an error when doing this, verify that you have correctly
+uploaded your public ssh key to github.
 </p><p>If you <code>cd</code> over to your <code>i444</code> directory and do a <code>ls -a</code> you should
 see both the <code>README.md</code> and <code>.gitignore</code> files.  Feel free to add
 names/patterns into <code>.gitignore</code> file for files which should be
