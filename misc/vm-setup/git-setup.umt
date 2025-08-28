@@ -90,7 +90,7 @@ Substitute your name and email address suitably above.
   
 
       `$ cd ~` .;
-      `$ git clone` "LOGIN"`@remote.cs.binghamton.edu:~umrigar/git-repos/cs444.git` 
+      `$ git clone -b main` "LOGIN"`@remote.cs.binghamton.edu:~umrigar/git-repos/cs444.git` 
 
     where "LOGIN" is your login-id on `remote.cs`.  All the files
     contained within the course web site should be copied into a

@@ -33,6 +33,8 @@ You should make sure that you perform each of the following steps:
   # Set up necessary git repositories on your
     VM; this is detailed in a .<./git-setup.html> "separate document".
 
+Make sure you at least scan through the rest of this document so that
+you at least know what material it contains.
 
 [This document uses the term "workstation" to refer to the computer
 to which your keyboard and mouse are attached to.]
@@ -58,8 +60,16 @@ VM.  Ensure that you have access to the VM:
   # You should have command-line access.  Verify by poking around,
     running simple commands like `ls`.
 
-  # If you have preferences for your Linux environment, then copy
-    over the necessary startup files.
+  # Verify that you have `sudo` access:
+
+    .code(lang=sh)
+    ~~~
+    $ ls /root      #should fail
+    $ sudo ls /root #should work once you provide your password
+    ~~~
+
+  # Copy over all necessary startup files if you have clear
+    preferences about how your Linux environments should be set up.
 
 
 		.=no-pw-ssh= SSH Access Without Using a Password
@@ -84,7 +94,7 @@ needing to type your password.
 
 Some of the software used by the course is now typically installed
 within a user's home directory.  Hence that software has not been
-installed on the preconfigured VMs and you will need to install that
+installed on the preconfigured VM and you will need to install that
 software after you log into your VM for the first time.
 
 .code(lang=sh)
@@ -101,6 +111,18 @@ npm install -g ts-node
 
 ##install bun
 curl -fsSL https://bun.sh/install | bash
+~~~
+
+Verify the node installation:
+
+.code(lang=sh)
+~~~
+$ node
+Welcome to Node.js v24.5.0.
+Type ".help" for more information.
+> 3*5
+15
+> 
 ~~~
 
 Set the shell used by npm to bash, using the following command:
@@ -176,6 +198,9 @@ my VM from within the campus network (or VPN):
 
 With the above setup, I do not need to type in a password when
 connecting to my VM.
+
+You may also want to use the `Input/Output` tab to set up a size for
+your x2go window which fits the resolution of your workstation screen.
 
 When disconnecting from x2go, use the *Suspend* control (the widget
 which looks like a "pause" control, with two lines) on the blue x2go

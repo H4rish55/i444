@@ -44,7 +44,9 @@ semester.
 </p></li><li><p> <a href="#x2go-access">X2Go access to your VM</a>.
 </p></li><li><p>Set up necessary git repositories on your
     VM; this is detailed in a  <a href="./git-setup.html">separate document</a>.
-</p></li></ol><p>[This document uses the term <em>workstation</em> to refer to the computer
+</p></li></ol><p>Make sure you at least scan through the rest of this document so that
+you at least know what material it contains.
+</p><p>[This document uses the term <em>workstation</em> to refer to the computer
 to which your keyboard and mouse are attached to.]
 </p><section data-level="h2"><h2> <span id="init-access">Initial</span> VM Access</h2><p>You should have received an email providing you the IP address of the
 VM.  Ensure that you have access to the VM:
@@ -58,8 +60,11 @@ VM.  Ensure that you have access to the VM:
     to login.
 </p></li><li><p>You should have command-line access.  Verify by poking around,
     running simple commands like <code>ls</code>.
-</p></li><li><p>If you have preferences for your Linux environment, then copy
-    over the necessary startup files.
+</p></li><li><p>Verify that you have <code>sudo</code> access:
+</p><pre class="hljs language-sh">    $ ls /root      #should fail
+    $ sudo ls /root #should work once you provide your password
+</pre></li><li><p>Copy over all necessary startup files if you have clear
+    preferences about how your Linux environments should be set up.
 </p></li></ol></section><section data-level="h2"><h2> <span id="no-pw-ssh">SSH</span> Access Without Using a Password</h2><p>If your workstation does not already have a public/private ssh keys
 set up, generate one using the method appropriate for your workstation's
 OS and then copy over the public key to your VM.
@@ -72,7 +77,7 @@ to generate the public/private keypair and then using
 needing to type your password.
 </p></section><section data-level="h2"><h2> <span id="home-dir">Setting</span> Up Your Home Directory</h2><p>Some of the software used by the course is now typically installed
 within a user's home directory.  Hence that software has not been
-installed on the preconfigured VMs and you will need to install that
+installed on the preconfigured VM and you will need to install that
 software after you log into your VM for the first time.
 </p><pre class="hljs language-sh">## install nodejs within $HOME
 ## get nvm
@@ -86,6 +91,13 @@ npm install -g ts-node
 
 ##install bun
 curl -fsSL https://bun.sh/install | bash
+</pre><p>Verify the node installation:
+</p><pre class="hljs language-sh">$ node
+Welcome to Node.js v24.5.0.
+Type &quot;.help&quot; for more information.
+> 3*5
+15
+> 
 </pre><p>Set the shell used by npm to bash, using the following command:
 </p><pre class="hljs language-sh">$ npm config set script-shell /usr/bin/bash
 </pre><p>This will update your <code>~/.npmrc</code> and npm will use bash to run scripts in
@@ -124,6 +136,8 @@ my VM from within the campus network (or VPN):
 </p><p><img src="444-x2go-setup.png">
 </p><p>With the above setup, I do not need to type in a password when
 connecting to my VM.
+</p><p>You may also want to use the <code>Input/Output</code> tab to set up a size for
+your x2go window which fits the resolution of your workstation screen.
 </p><p>When disconnecting from x2go, use the <strong>Suspend</strong> control (the widget
 which looks like a <em>pause</em> control, with two lines) on the blue x2go
 window. This will ensure that you can pick up where you left off when
