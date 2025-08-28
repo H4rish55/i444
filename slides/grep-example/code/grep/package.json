@@ -1,0 +1,24 @@
+{
+  "name": "grep",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/main.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "clean": "shx rm -rf dist/*",
+    "build": "tsc",
+    "postbuild": "shx chmod a+x dist/main.js",
+    "watch": "tsc --watch",
+    "exec": "./dist/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "shx": "^0.3.4",
+    "typescript": "^4.9.4"
+  }
+}

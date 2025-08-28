@@ -81,16 +81,20 @@ installed on the preconfigured VM and you will need to install that
 software after you log into your VM for the first time.
 </p><pre class="hljs language-sh">## install nodejs within $HOME
 ## get nvm
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-## install current version
-nvm install 24
+$ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+
+# start a new shell so that nvm path set up
+$ bash
+
+## install current version of node
+$ nvm install 24
 
 ## install typescript under node global ($HOME above)
-npm install -g typescript
-npm install -g ts-node
+$ npm install -g typescript
+$ npm install -g ts-node
 
 ##install bun
-curl -fsSL https://bun.sh/install | bash
+$ curl -fsSL https://bun.sh/install | bash
 </pre><p>Verify the node installation:
 </p><pre class="hljs language-sh">$ node
 Welcome to Node.js v24.5.0.
@@ -116,6 +120,9 @@ in case you just cannot get x2go to work.)
     the workstation you are using to access your VM if one is not
     already installed (note that a <code>x2goclient</code> command is available
     on <code>remote.cs</code>).
+</p><p>    On OS/X you will first need to install <code>xquartz</code> and enable a
+    security exception by going to <code>System Settings</code> -> <code>Privacy &amp;
+    Security</code> and choose <em>Open Anyway</em>.
 </p></li><li><p>Start the <code>x2goclient</code>.
 </p></li><li><p>Create a session for connecting to your VM by clicking <em>Session</em>
     -> <em>New session</em>.  Fill in the following fields:

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "allowJs": true,
+    "module": "es2020", 
+    "baseUrl": ".",
+    "target": "esnext",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "declaration": true,
+    "pretty": false,
+    "noImplicitAny": true,
+  },
+  "include": ["./src/**/*"]
+}

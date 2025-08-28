@@ -101,16 +101,20 @@ software after you log into your VM for the first time.
 ~~~
 ## install nodejs within $HOME
 ## get nvm
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-## install current version
-nvm install 24
+$ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+
+# start a new shell so that nvm path set up
+$ bash
+
+## install current version of node
+$ nvm install 24
 
 ## install typescript under node global ($HOME above)
-npm install -g typescript
-npm install -g ts-node
+$ npm install -g typescript
+$ npm install -g ts-node
 
 ##install bun
-curl -fsSL https://bun.sh/install | bash
+$ curl -fsSL https://bun.sh/install | bash
 ~~~
 
 Verify the node installation:
@@ -160,6 +164,10 @@ in case you just cannot get x2go to work.)
     the workstation you are using to access your VM if one is not
     already installed (note that a `x2goclient` command is available
     on `remote.cs`).
+
+    On OS/X you will first need to install `xquartz` and enable a
+    security exception by going to `System Settings` -> `Privacy &
+    Security` and choose "Open Anyway".
 
   # Start the `x2goclient`.
 

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Introduction  to JavaScript/TypeScript</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link href="../../assets/styles/article.css" rel="stylesheet" type="text/css" /> 
+</head>
+
+<body class=umt-slides>
+
+    <nav id="course-nav">
+      <ul>
+      </ul>
+    </nav>
+    
+    <div class="umt-content">
+      <div><section data-level="h1"><h1>Introduction  to JavaScript/TypeScript</h1><section data-level="h2"><h2>Overview</h2><ul><li><p>History.
+</p></li><li><p>Supported programming paradigms.
+</p></li><li><p>Partial list of features.
+</p></li><li><p>JS platforms.
+</p></li></ul></section><section data-level="h2"><h2>Brief History</h2><ul><li><p>JS was written by Brendan Eich within 10 days in May, 1995 at Netscape
+    Communications.  Name chosen based on marketing considerations
+    to cash in on the popularity of Java.
+</p></li><li><p>Microsoft released <code>jscript</code> in 1996.  Incompatibilities
+    introduced
+    (<code></code><a href="https://en.wikipedia.org/wiki/Embrace,_extend,_and_extinguish">embrace,
+    extend and extinguish</a>).
+</p></li><li><p>Standardized as <code>EcmaScript</code>  in June 1997  (ECMA-262).
+</p></li><li><p>JavaScript got a bad reputation and was regarded as a poor
+    programming language used for doing trivial things in the browser.
+    Complexities caused by browser incompatibilities and the browser
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model">Document Object Model</a> (DOM) were blamed on the language.
+</p></li><li><p>Changed with the emergence of
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/AJAX">Asynchronous JAvascript with Xml</a> (AJAX) in 2005.
+</p></li></ul></section><section data-level="h2"><h2>Brief History Continued</h2><ul><li><p> <a href="https://www.json.org/json-en.html">JavaScript Object Notation</a>
+    (JSON) popularized by Douglas Crockford emerged as a popular
+    alternative to XML as a specification for data interchange between
+    heterogeneous systems.
+</p></li><li><p>Renaissance in js development.  Browser incompatibilities and DOM
+    complexities hidden by the use of libraries like
+     <a href="http://prototypejs.org/">prototype,</a> 
+    <a href="https://jquery.com/">jquery</a> and  <a href="https://dojo.io/">dojo.</a>
+</p></li><li><p>Server-side  <a href="https://nodejs.org/en/">nodejs</a> released by Ryan Dahl
+    in 2009.  Popularized the use of js on the server.
+</p></li><li><p>Succession of different ECMA standards: es 3, es 5.  Currently,
+    evolving as an <code> </code>&quot;evergreen &quot; language with standard updates being
+    released yearly: es 2015 .... 2022, next version referred to
+    as <code>esnext</code>.
+</p></li><li><p>JS allows the use of a single programming language across the entire web
+    stack.  Most popular programming language in terms of deployments.
+</p></li><li><p>TS released in 2012, developed at Microsoft by Anders Hejlsberg. 
+</p></li></ul></section><section data-level="h2"><h2>Multi-Paradigm Language</h2><p>JavaScript supports programming using multiple paradigms:
+</p><ul><li><p>Imperative / Procedural.
+</p></li><li><p>Object-oriented.
+</p></li><li><p>Functional.
+</p></li></ul></section><section data-level="h2"><h2>Imperative Programming</h2><ul><li><p>Imperative programming gives a step-by-step description
+    to a computer <strong>how to solve</strong> a problem.
+</p></li><li><p>AKA <strong>procedural programming</strong> as program is a how-to
+    <em>procedure</em> to solve a problem.
+</p></li><li><p>Involved mutating shared state.
+</p></li><li><p>Maps very closely to operation of computer; relatively low
+    abstraction.
+</p></li></ul></section><section data-level="h2"><h2>Object-Oriented Programming</h2><ul><li><p>Package data and functions associated with that data
+    together into <em>objects</em>.
+</p></li><li><p>Objects can provide encapsulation.
+</p></li><li><p>Usually some kind of inheritance (JS uses a non-traditional
+    model of inheritance).
+</p></li><li><p>Classes are not essential to JS OO programming.
+</p></li></ul></section><section data-level="h2"><h2>Functional Programming</h2><p>JS supports multiple degrees of functional programming:
+</p><ul><li><p><strong>Pure functions</strong>: the result of a function depends
+    only on its arguments; it is not allowed to
+    do anything other than return a result.  It
+    cannot change any global state, including I/O.
+</p><p>    It is possible to write pure functions even
+    in a language like C.
+</p></li><li><p><strong>First-class functions</strong>.  Functions can be treated
+    like any other datatype: stored in variables,
+    passed between functions.
+</p></li><li><p> <a href="https://en.wikipedia.org/wiki/Immutable_object">Lack of
+     mutation</a>; clumsy but not impossible in JS.  Facilitated by
+     libraries like  <a href="https://immutable-js.com/">immutable.js.</a>  Forced
+     in languages like Haskell.
+</p></li></ul></section><section data-level="h2"><h2>Some JavaScript Features</h2><ul><li><p>Dynamically typed: variables are untyped, but values have types.
+    Permits the use of 
+    <a href="https://en.wikipedia.org/wiki/Duck_typing">duck typing</a>.
+</p></li><li><p>Initially interpreted, now compiled using techniques like
+    runtime compilation.
+</p></li><li><p>Borrows concepts from Scheme, Perl and Self.
+</p></li><li><p>Possible to evaluate strings representing code at runtime using
+    <code>eval()</code>.
+</p></li><li><p>Allows reentering a function invocation using
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator">generators</a>.
+</p></li><li><p>Standard library is highly asynchronous.
+</p></li></ul></section><section data-level="h2"><h2>JavaScript Platforms</h2><p>JavaScript runs on two main platforms:
+</p><ol><li><p><strong>Browser</strong>: Platform provides interfaces to numerous browser
+    technologies like the <em>Document Object Model</em> DOM and browser
+    storage.
+</p></li><li><p><strong>Server</strong>: Exemplified by <code>nodejs</code>.  Platform provides access to
+    filesystem, processes, etc.
+</p></li></ol></section></section></div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/slide-controls.mjs"></script>
+    <script type="module" src="../../assets/scripts/nav.mjs"></script> 
+    <script type="module" src="../../assets/scripts/highlight.mjs"></script>
+</body>
+</html>
+

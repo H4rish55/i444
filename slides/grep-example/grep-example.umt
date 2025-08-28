@@ -1,0 +1,103 @@
+              G r e p    E x a m p l e
+
+  	       	       Overview
+		       ========
+
+  + Crude TS equivalent of Unix command-line utility.
+
+  + Illustrates multiple TS features including modules and
+    asynchronicity which were not covered in the
+    .<../ts-overview/ts-overview.html> "TypeScript Overview".
+
+  + To keep simple, code duplication, no real error architecture.
+
+  + Command-line server-side program: fully synchronous.
+
+  + Browser based program: illustrates asynchronous code.
+
+  + Function `jgrep(regex, content)` is core of program and
+    used by both server-side and browser programs.
+
+  + `jgrep()` function is *pure*: it has no side-effects and its
+    return value depends solely on its parameters.
+
+    	      	       Server Side Program Log
+		       =======================
+
+In directory `code/grep`; truncation of long lines indicated by `...`.
+
+.code(lang=sh)
+```
+$ ./dist/main.js 
+usage: main.js REGEX FILE...
+$ ./dist/main.js '[a' src/main.ts
+bad regex '[a'
+$ ./dist/main.js 'for' src/Main.ts
+cannot read src/Main.ts: Error: ENOENT: no such ...
+$ ./dist/main.js 'for' src/main.ts
+src/main.ts:27:2:   for (const path of paths) {
+src/main.ts:36:17:     coordMatches.forEach(({lineIndex, ...
+src/main.ts:37:14:       matches.forEach(([colN, _]) => {	  
+```
+
+    	      	       Server Side Program Log Continued
+		       =================================
+
+Truncation of long lines indicated by `...`.
+
+.code(lang=sh)
+```
+$ ./dist/main.js "\(\'" src/main.ts
+src/main.ts:21:9:     abort('usage: %s REGEX FILE...',
+$ ./dist/main.js '\$\{.+\}' src/main.ts
+src/main.ts:38:21:         console.log(`${path}:...
+src/main.ts:43:31:     console.error(`cannot read ${path}:...
+```
+
+    	      	       Server Side Program Implementation
+		       ==================================
+
+
+  + .<./code/grep/src/utils.ts?lang=ts> utils.ts trivial
+    utilities used by both server-side and browser programs.
+
+  + .<./code/grep/src/jgrep.ts?lang=ts> jgrep.ts jgrep core
+    used by both server-side and browser programs.
+
+  + .<./code/grep/src/main.ts?lang=ts> main.ts main program.
+
+
+    	      	   Server-Side Main Program Startup
+		   ================================
+
+  + `#!` shebang line is a Unix feature which allows
+    script execution.
+
+  + The portion of the line after the `#!` is the absolute path for an
+    interpreter which the kernel sets up to run with the script file
+    passed in as input to the interpreter.
+
+  + Use `/usr/bin/env` as interpreter, so that it can find nodejs
+    which may be in a non-standard location.
+
+  + When nodejs starts up, it reads file as program to be interpreted.
+
+  + Normally a `#` character would cause an error in a nodejs file.
+    nodejs ignores it only when it is on the first line of a file.
+
+  + *@argv*: `process.argv` contains command-line args: `argv[0]`: path to
+    nodejs executable, `argv[1]`: path to script. ` `."Real ." script args
+    start at `argv[2]`.
+
+
+    	      	     	     Client Side Implementation
+			     ==========================
+
+  + Illustrates the use of `async` and `await` for fetching
+    remote content.
+
+  + Shows the use of anonymous functions for event handlers.
+
+  + .<./code/grep/src/grep.html> "Running app".
+
+  + .<./code/grep/src/index.ts?lang=ts> index.ts startup script.

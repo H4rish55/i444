@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Grep   Example</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link href="../../assets/styles/article.css" rel="stylesheet" type="text/css" /> 
+</head>
+
+<body class=umt-slides>
+
+    <nav id="course-nav">
+      <ul>
+      </ul>
+    </nav>
+    
+    <div class="umt-content">
+      <div><section data-level="h1"><h1>Grep   Example</h1><section data-level="h2"><h2>Overview</h2><ul><li><p>Crude TS equivalent of Unix command-line utility.
+</p></li><li><p>Illustrates multiple TS features including modules and
+    asynchronicity which were not covered in the
+     <a href="../ts-overview/ts-overview.html">TypeScript Overview</a>.
+</p></li><li><p>To keep simple, code duplication, no real error architecture.
+</p></li><li><p>Command-line server-side program: fully synchronous.
+</p></li><li><p>Browser based program: illustrates asynchronous code.
+</p></li><li><p>Function <code>jgrep(regex, content)</code> is core of program and
+    used by both server-side and browser programs.
+</p></li><li><p><code>jgrep()</code> function is <strong>pure</strong>: it has no side-effects and its
+    return value depends solely on its parameters.
+</p></li></ul></section><section data-level="h2"><h2>Server Side Program Log</h2><p>In directory <code>code/grep</code>; truncation of long lines indicated by <code>...</code>.
+</p><pre class="hljs language-sh">$ ./dist/main.js 
+usage: main.js REGEX FILE...
+$ ./dist/main.js '[a' src/main.ts
+bad regex '[a'
+$ ./dist/main.js 'for' src/Main.ts
+cannot read src/Main.ts: Error: ENOENT: no such ...
+$ ./dist/main.js 'for' src/main.ts
+src/main.ts:27:2:   for (const path of paths) {
+src/main.ts:36:17:     coordMatches.forEach(({lineIndex, ...
+src/main.ts:37:14:       matches.forEach(([colN, _]) => {	  
+</pre></section><section data-level="h2"><h2>Server Side Program Log Continued</h2><p>Truncation of long lines indicated by <code>...</code>.
+</p><pre class="hljs language-sh">$ ./dist/main.js &quot;\(\'&quot; src/main.ts
+src/main.ts:21:9:     abort('usage: %s REGEX FILE...',
+$ ./dist/main.js '\$\{.+\}' src/main.ts
+src/main.ts:38:21:         console.log(`${path}:...
+src/main.ts:43:31:     console.error(`cannot read ${path}:...
+</pre></section><section data-level="h2"><h2>Server Side Program Implementation</h2><ul><li><p> <a href="./code/grep/src/utils.ts?lang=ts">utils.ts</a> trivial
+    utilities used by both server-side and browser programs.
+</p></li><li><p> <a href="./code/grep/src/jgrep.ts?lang=ts">jgrep.ts</a> jgrep core
+    used by both server-side and browser programs.
+</p></li><li><p> <a href="./code/grep/src/main.ts?lang=ts">main.ts</a> main program.
+</p></li></ul></section><section data-level="h2"><h2>Server-Side Main Program Startup</h2><ul><li><p><code>#!</code> shebang line is a Unix feature which allows
+    script execution.
+</p></li><li><p>The portion of the line after the <code>#!</code> is the absolute path for an
+    interpreter which the kernel sets up to run with the script file
+    passed in as input to the interpreter.
+</p></li><li><p>Use <code>/usr/bin/env</code> as interpreter, so that it can find nodejs
+    which may be in a non-standard location.
+</p></li><li><p>When nodejs starts up, it reads file as program to be interpreted.
+</p></li><li><p>Normally a <code>#</code> character would cause an error in a nodejs file.
+    nodejs ignores it only when it is on the first line of a file.
+</p></li><li><p><strong>@argv</strong>: <code>process.argv</code> contains command-line args: <code>argv[0]</code>: path to
+    nodejs executable, <code>argv[1]</code>: path to script. <code> </code>&quot;Real &quot; script args
+    start at <code>argv[2]</code>.
+</p></li></ul></section><section data-level="h2"><h2>Client Side Implementation</h2><ul><li><p>Illustrates the use of <code>async</code> and <code>await</code> for fetching
+    remote content.
+</p></li><li><p>Shows the use of anonymous functions for event handlers.
+</p></li><li><p> <a href="./code/grep/src/grep.html">Running app</a>.
+</p></li><li><p> <a href="./code/grep/src/index.ts?lang=ts">index.ts</a> startup script.
+</p></li></ul></section></section></div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/slide-controls.mjs"></script>
+    <script type="module" src="../../assets/scripts/nav.mjs"></script> 
+    <script type="module" src="../../assets/scripts/highlight.mjs"></script>
+</body>
+</html>
+
