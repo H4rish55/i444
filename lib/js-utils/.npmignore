@@ -1,0 +1,7 @@
+*~
+*.bak
+src
+dist/test
+tsconfig.json
+
+
