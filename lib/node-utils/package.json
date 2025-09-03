@@ -1,0 +1,26 @@
+{
+  "name": "cs444-node-utils",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/main.js",
+  "scripts": {
+    "clean": "shx rm -rf dist",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "test": "echo no tests provided",
+    "prepack": "npm run clean && npm run build",
+    "postpack": "shx mv *.tgz .."
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "shx": "^0.4.0",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "cs444-js-utils": "https://sunybing:sunybing@zdu.binghamton.edu/cs444/lib/cs444-js-utils-0.0.1.tgz"
+  }
+}
