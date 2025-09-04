@@ -15,16 +15,18 @@
                     Brief History
                     =============
 
-  + JS was written by Brendan Eich within 10 days in May, 1995 at Netscape
-    Communications.  Name chosen based on marketing considerations
-    to cash in on the popularity of Java.
+  + JS was written by Brendan Eich within 10 days in May, 1995 at
+    Netscape Communications.  Name evolved from *Mocha* to
+    *Livescript* to *JavaScript* based on marketing considerations to
+    cash in on the popularity of Java.
 
   + Microsoft released `jscript` in 1996.  Incompatibilities
     introduced
     (``.<https://en.wikipedia.org/wiki/Embrace,_extend,_and_extinguish>"embrace,
     extend and extinguish").
 
-  + Standardized as `EcmaScript`  in June 1997  (ECMA-262).
+  + Standardized as `EcmaScript`  in June 1997  (ECMA-262) (Oracle
+    currently owns the trademark on `JavaScript`).
 
   + JavaScript got a bad reputation and was regarded as a poor
     programming language used for doing trivial things in the browser.
@@ -46,15 +48,16 @@
 
   + Renaissance in js development.  Browser incompatibilities and DOM
     complexities hidden by the use of libraries like
-    .<http://prototypejs.org/> prototype, .<https://jquery.com/>
-    jquery and .<https://dojo.io/> dojo.
+    .<http://prototypejs.org/> prototype, .<https://dojo.io/> dojo and
+    .<https://jquery.com/> jquery (only the last seems to be currently
+    maintained).
 
   + Server-side .<https://nodejs.org/en/> nodejs released by Ryan Dahl
     in 2009.  Popularized the use of js on the server.
 
   + Succession of different ECMA standards: es 3, es 5.  Currently,
     evolving as an ` `."evergreen ." language with standard updates being
-    released yearly: es 2015 .... 2022, next version referred to
+    released yearly: es 2015 .... 2025, next version referred to
     as `esnext`.
 
   + JS allows the use of a single programming language across the entire web
@@ -118,7 +121,7 @@ JS supports multiple degrees of functional programming:
 
   + *First-class functions*.  Functions can be treated
     like any other datatype: stored in variables,
-    passed between functions.
+    passed between functions.  This is widely used in JS programs.
 
   + .<https://en.wikipedia.org/wiki/Immutable_object> "Lack of
      mutation"; clumsy but not impossible in JS.  Facilitated by

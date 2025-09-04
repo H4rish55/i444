@@ -2,12 +2,12 @@ import { makeRegex } from './utils.js';
 import { jgrep, MatchInfo } from './jgrep.js';
 
 //map of interesting elements
-type Widgets = { [key: string]: HTMLElement };
+type Widgets = Record<string, HTMLElement>;
   
 function setup() : void {
   const ids = [ 'regex', 'url', 'content' ];
   const widgets : Widgets = 
-    Object.fromEntries(ids.map(id => [id, document.getElementById(id) ]));
+    Object.fromEntries(ids.map(id => [id, document.querySelector(`#${id}`) ]));
   const urlChangeHandler = async (ev: Event) => {
     const isLoaded =
       await loadContent((ev.target as HTMLInputElement).value, widgets);
@@ -37,7 +37,9 @@ async function loadContent(url: string, widgets: Widgets) : Promise<boolean> {
     return false;
   }
 }
-
+//bug: firing this for input event on #content causes #content
+//to lose focus.  Necessary to reclick mouse to continue typing
+//into #content.
 function change(widgets: Widgets) {
   clearErrors();
   const regexElement = widgets.regex as HTMLInputElement;

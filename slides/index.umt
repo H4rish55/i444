@@ -23,10 +23,11 @@ runnable version of code for that section.
 
   + .<js-intro/js-intro.html> "Introduction to JavaScript".
 
+  + .<js-basics/js-basics.html> "JavaScript Basics".
+
+
 
 %%%
-
-  + .<js-basics/js-basics.html> "JavaScript Basics".
 
   + .<destructuring/destructuring.html> "Destructuring".
 
