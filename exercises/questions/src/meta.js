@@ -4,7 +4,7 @@ const META = MetaWrapper.wrap({
   id: '',
   title: '', //'Programming for the Web: Exercises',
   nested: [
-    //require('./js/meta'),
+    require('./js/meta'),
     //require('./web/meta'),
     //require('./midterm/meta'),
     //require('./final/meta'),

@@ -1,0 +1,1 @@
+{"version":3,"file":"utils.js","sourceRoot":"","sources":["../src/utils.ts"],"names":[],"mappings":"AAAA,MAAM,UAAU,SAAS,CAAC,QAAgB;IACxC,IAAI;QACF,OAAO,IAAI,MAAM,CAAC,QAAQ,CAAC,CAAC;KAC7B;IACD,OAAO,GAAG,EAAE;QACV,OAAO,IAAI,CAAC;KACb;AACH,CAAC"}
