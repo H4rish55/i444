@@ -101,6 +101,19 @@ export class Errs {
   }
 };
 
+/** convert a Result<T, Err> containing a single error to a
+ *  Result<T, Errs> containing multiple errors.
+ */
+export function toErrs<T>(result: Result<T, Err>): Result<T, Errs> {
+  if (result.isOk !== false) {
+    return result as Result<T, Errs>;
+  }
+  else {
+    const errs = new Errs();
+    errs.errors.push(result.err);
+    return errResult(errs);
+  }
+}
 
 /** throw exception with msg and args; use when impossible conditions occur */
 export function panic(msg: string, ...args: any) : never {
