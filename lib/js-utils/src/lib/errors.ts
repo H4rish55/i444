@@ -101,6 +101,10 @@ export class Errs {
   }
 };
 
+export function errs(arg0: any, ...args: any[]): Errs {
+  return new Errs().add(arg0, ...args);
+}
+
 /** convert a Result<T, Err> containing a single error to a
  *  Result<T, Errs> containing multiple errors.
  */
