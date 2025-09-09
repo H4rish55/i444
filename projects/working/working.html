@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Working  On  Projects</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link href="../../assets/styles/article.css" rel="stylesheet" type="text/css" /> 
+</head>
+
+<body class=umt-article>
+
+    <nav id="course-nav">
+      <ul>
+      </ul>
+    </nav>
+    
+    <div class="umt-content">
+      <div><section data-level="h1"><h1>Working  On  Projects</h1><p>The following gives instructions for working on a generic project
+<code>prjN</code>.  You will need to adapt those steps for specific projects like
+<code>prj1</code>, <code>prj2</code>, etc.  If the specific project assignment provides more
+specific instructions, then those instructions override the more
+generic instructions provided below.
+</p><p>This document assumes that you have set up your <code>~/cs444</code> and <code>~/i444</code>
+directories on your VM so that they are clones of the course git
+repository and your personal github repository respectively.
+</p><section data-level="h2"><h2> <span id="start">Getting</span> Started on a Project</h2><ol><li><p>Ensure that your local copy of the <code>cs444</code> course repository is
+    up-to-date:
+</p><pre class="hljs language-sh">    $ cd ~/cs444
+    $ git pull
+</pre></li><li><p>Copy over the start up files for the project you are working on to
+    your copy of your github repository (don't forget to substitute
+    the <code>N</code> in <code>prjN</code> with the number of the project you are working on):
+</p><pre class="hljs language-sh">    $ cd ~/i444/submit	   # go to clone of github repo
+    $ git pull             # pull in any updates
+    $ cp -r ~/cs444/projects/prjN/prjN-sol .  #copy initial files
+                           # note the trailing . above
+    $ git add .            # add in provided project files to git
+    $ git commit -m 'started prjN'  #commit with suitable comment
+    $ cd prjN-sol          # go to project directory
+</pre><p>    The git commit comments specified by the <code>-m</code> option are only examples;
+    you may replace them with more suitable comments.
+</p><p>    The <code>git pull</code> will typically do nothing but is useful to avoid
+    problems committing your completed project in case you did any pushes
+    while working in a separate clone of your repository.
+</p></li><li><p>Use your editor to update the provided <code>README</code> template in the
+    <code>prjN-sol</code> directory.  Make sure that you enter your B-Number
+    starting with <code>B0</code> and that you have removed all the <code>XXX</code> from
+    the template (otherwise, the automated gradescope script may
+    reject your submission).
+</p></li><li><p>Push the <code>README</code> changes to your <code>i444</code> repository:
+</p><pre class="hljs language-sh">    $ pwd  //should be equiv to ~/i444/submit/prjN-sol
+    $ git status -s     # should show your `README`
+    $ git add .    
+    $ git commit -m 'updated README'
+    $ git push
+</pre></li><li><p>Set up this project as an npm package:
+</p><pre class="hljs language-sh">    npm init -y		     #create package.json
+</pre></li><li><p>Commit into git:
+</p><pre class="hljs language-sh">    $ git add .   #add contents of directory to git 
+    $ git commit -m 'started prj1' #commit locally
+    $ git push    #push changes to github
+</pre></li></ol></section><section data-level="h2"><h2> <span id="work">Working</span> on your Project</h2><ol><li><p>Follow the directions given in your project assignment to
+    set up typescript and any necessary library packages.
+</p><p>    If your project requires more external js modules:
+</p><pre class="hljs language-sh">    $ npm install MODULE...  #use -D if MODULE is a 
+                             #development dependency
+    $ git commit -a -m 'added dependencies'
+    $ git push
+</pre><p>    Make sure that you commit and push all changes to your github repo.  
+</p></li><li><p>Work on your project.  You should get into the habit of committing and
+    pushing frequently, making it easy for you to recover from unsuccessful
+    changes or a crashed VM.  Some git commands which may prove useful:
+</p><ul><li><p>Use <code>git status -s</code> to review staged and unstaged changes.
+       If you have a staged change which you do not want to commit,
+       remove it from the staging area using <code>git rm --cached</code> <em>PATH</em>
+       where <em>PATH</em> is the path the incorrect file.
+</p><p>       You should not be committing any files from your <code>node_modules</code>
+       or any <code>.js</code> files produced by <code>tsc</code>.  If you see those files,
+       update your <code>.gitignore</code>.
+</p><ul><li><p>Add new files, directories and changes to the git staging
+        area using <code>git add</code>.
+</p><pre class="hljs language-sh">        $ git add *.ts  #add all ts files in current dir
+        $ git add .     #all all files, dirs, changes in
+                        #current dir to git staging area
+</pre></li><li><p>Commit changes locally.
+</p><pre class="hljs language-sh">        $ git commit -m 'MSG'    #commit staging area
+                                 #with message MSG
+        $ git commit -a -m 'MSG' #commit staging area
+                                 #and all working directory
+				 #changes
+</pre></li><li><p>Push all committed local changes to your remote github repository
+        using <code>git push</code>.
+</p></li></ul></li></ul></li></ol></section><section data-level="h2"><h2> <span id="complete">Completing</span> your Project</h2><ol><li><p>Once your project is complete, ensure that you have
+    committed all your changes.
+</p><pre class="hljs language-sh">    $ git status -s  # should typically show nothing
+                     # or show files you are intentionally not committing
+    $ git commit -m 'completed prjN'  # if there are uncomitted files
+    $ git push       # if there are unpushed files
+</pre><p>    You should use the github web interface to verify that the
+    project has been updated correctly in github.
+</p></li></ol></section><section data-level="h2"><h2> <span id="submit">Submitting</span> your Project</h2><p>You will submit your project as a zip file on gradescope.
+</p><ol><li><p>Create a zip file for your lab submission:
+</p><pre class="hljs language-sh">    $ cd ~/i444/submit
+    $ ~/cs444/bin/do-zip.sh prjN-sol
+</pre><p>    This should create the file <code>~/i444/submit/prjN-sol.zip</code>.
+</p><p>    Note that all files in <code>prjN-sol</code> with which you were initially
+    provided <strong>must</strong> be included in the zip file, whether you modified
+    them or not.
+</p><p>    You should not be submitting any files from your <code>node_modules</code> or
+    any <code>.js</code> files produced by <code>tsc</code>.  Nor should any files provided
+    in the project <code>extras</code> directory (if any) be submitted.  If you
+    see those files or any other garbage files being added to the zip
+    file, then update the patterns in the provided <code>.zipignore</code> to
+    ensure that they do not go into the zip file and rerun the above
+    command.  It is important that you ensure that you do not submit
+    garbage files as you may lose credit if you do so.
+</p><p>    If you are sufficiently paranoid (in general, you should be
+    paranoid when working with computers <code>:-(</code> ), you will verify that
+    it is possible to run your project using only the files in your
+    zip file.
+</p><ol><li><p>Unpack your zip file into a temporary directory:
+</p><pre class="hljs language-sh">    	 $ mkdir -p ~/tmp
+    	 $ cd ~/tmp
+    	 $ unzip ~/i444/submit/prjN-sol.zip
+    	 # you should see the list of files being unzipped
+    	 $ cd prjN-sol
+    	 $ npm ci     # download all necessary modules
+</pre><p>    	 Now run your project and/or project tests.  If things do not
+    	 work, find out why, fix and create a new zip file.
+</p></li><li><p>If everything is ok, clean up.
+</p><pre class="hljs language-sh">    	 $ cd ~/tmp
+    	 $ rm -rf prjN-sol  #rm unzipped project
+</pre></li></ol></li><li><p>Login to  <a href="https://brightspace.binghamton.edu">brightspace</a> in a
+    browser running on your VM and access this course.  Then go to
+    gradescope using the link you will find under the <code>Course Tools</code>
+    menu.  (It is important that you access gradescope using only the
+    brightspace link; do not login to gradescope directly).
+</p></li><li><p>Submit the above zip file using the link you will find for <code>prjN</code>.
+</p><ol><li><p>Click on the <code>Drag and Drop</code> box to browse the files on your VM
+        machine.
+</p></li><li><p>Browse over to <code>~/i444/submit</code> and select <code>prjN-sol.zip</code>.
+</p></li></ol><p>    Submitting this file will run the autograder.  It will ensure that
+    you have submitted all required files (minimally the <code>README</code>) and
+    may also run tests pertinent to <code>prjN</code>.
+</p><p>    If you discover errors in your project after your initial
+    submission, you can resubmit; the last submission will be
+    treated as the official project submission for determining
+    the submission time.
+</p></li></ol></section></section></div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/slide-controls.mjs"></script>
+    <script type="module" src="../../assets/scripts/nav.mjs"></script> 
+    <script type="module" src="../../assets/scripts/highlight.mjs"></script>
+</body>
+</html>
+

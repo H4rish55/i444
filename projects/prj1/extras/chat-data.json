@@ -1,0 +1,74 @@
+{
+  "users": [
+    { "firstName": "John", "lastName": "Smith",
+      "chatName": "jsmith", "email": "jsmith@zz.com"
+    },
+    { "firstName": "Jane", "lastName": "Doe",
+      "chatName": "jdoe", "email": "jdoe@zz.com"
+    },
+    { "firstName": "Sally", "lastName": "Pierce",
+      "chatName": "spierce", "email": "spierce@zz.com"
+    },
+    { "firstName": "Tony", "lastName": "Stark",
+      "chatName": "tstark", "email": "tstark@zz.com"
+    },
+    { "firstName": "Dave", "lastName": "Roberts",
+      "chatName": "droberts", "email": "droberts@zz.com"
+    }
+  ],
+  "rooms": [
+    { "roomName": "typescript", "descr": "All about TypeScript" },
+    { "roomName": "rust", "descr": "Discuss the Rust programming language" }
+  ],
+  "chatMsgs": [
+    { "roomName": "typescript", "chatName": "jsmith",
+      "msg": "Hello, my name is John and I'm interested in TypeScript"
+    },
+    { "roomName": "typescript", "chatName": "jdoe",
+      "msg": "I am Jane and I'm interested in TypeScript too"
+    },
+    { "roomName": "typescript", "chatName": "jsmith",
+      "msg": "Do you have much experience in TypeScript?"
+    },
+    { "roomName": "typescript", "chatName": "jdoe",
+      "msg": "No, I'm just getting started"
+    },
+    { "roomName": "typescript", "chatName": "jsmith",
+      "msg": "From what I've seen, type narrowing is cool!"
+    },
+    { "roomName": "typescript", "chatName": "jdoe",
+      "msg": "What is type narrowing?"
+    },
+    { "roomName": "typescript", "chatName": "jsmith",
+      "msg": "Initially, the TS compiler may not know much about a type of a variable.  But as the variable is used under more and more conditions, the compiler infers more information about the type.  For example, if I have a Shape type which is the union of two structures { kind: 'Circle', radius: number } | { kind: 'Rect', width: number, height: number }, then given a variable shape: Shape, the compiler would produce an error on the expression shape.radius (shape may be a Rect and not have a radius), but if we use shape.radius under a conditional like if (shape.kind === 'Circle'), then shape.radius would work."
+    },
+    { "roomName": "typescript", "chatName": "jdoe",
+      "msg": "That's cool!!"
+    },
+
+    { "roomName": "rust", "chatName": "jsmith",
+      "msg": "Hello, my name is John and I'm interested in Rust"
+    },
+    { "roomName": "rust", "chatName": "spierce",
+      "msg": "I'm interested in Rust too (I'm Sally)"
+    },
+    { "roomName": "rust", "chatName": "jsmith",
+      "msg": "Do you have much experience in Rust? I'm a total newby!!"
+    },
+    { "roomName": "rust", "chatName": "spierce",
+      "msg": "I've played around with it for a few months.  It's pretty cool!  It avoids a lot of the problems you get in other low-level languages like C and C++."
+    },
+    { "roomName": "rust", "chatName": "jsmith",
+      "msg": "Cool!  I'm probably going to be asking you a lot of dumb questions!!"
+    },
+    { "roomName": "rust", "chatName": "spierce",
+      "msg": "I'll probably learn a lot myself by trying to answer your \"dumb\" questions!"
+    },
+    { "roomName": "rust", "chatName": "spierce",
+      "msg": "What I really like about Rust is that once you achieve enlightenment with the borrow-checker, you start designing your programs much better.  Arguably even better than in a GC'd language like Java or Python where the garbage collector sweeps a lot of bad design under the rug!"
+    },
+    { "roomName": "rust", "chatName": "jsmith",
+      "msg": "I hope I can achieve enlightenment!"
+    }
+  ]
+}

@@ -25,11 +25,10 @@ runnable version of code for that section.
 
   + .<js-basics/js-basics.html> "JavaScript Basics".
 
+  + .<destructuring/destructuring.html> "Destructuring".
 
 
 %%%
-
-  + .<destructuring/destructuring.html> "Destructuring".
 
   + .<regex/regex.html> "Regex".
 

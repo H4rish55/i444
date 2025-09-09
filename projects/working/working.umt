@@ -47,8 +47,9 @@ repository and your personal github repository respectively.
 
   # Use your editor to update the provided `README` template in the
     `prjN-sol` directory.  Make sure that you enter your B-Number
-    starting with `B0` and that you have removed all the `XXX`
-    from the template.
+    starting with `B0` and that you have removed all the `XXX` from
+    the template (otherwise, the automated gradescope script may
+    reject your submission).
 
   # Push the `README` changes to your `i444` repository:
 
@@ -87,7 +88,8 @@ repository and your personal github repository respectively.
 
     .code(lang=sh)
     ```
-    $ npm install MODULE...
+    $ npm install MODULE...  #use -D if MODULE is a 
+                             #development dependency
     $ git commit -a -m 'added dependencies'
     $ git push
     ```
@@ -224,8 +226,9 @@ You will submit your project as a zip file on gradescope.
     may also run tests pertinent to `prjN`.
 
     If you discover errors in your project after your initial
-    submission, you can resubmit; the project submission time
-    will be the time of the last submit.
+    submission, you can resubmit; the last submission will be
+    treated as the official project submission for determining
+    the submission time.
 
 
 

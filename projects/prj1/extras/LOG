@@ -1,0 +1,331 @@
+# get a usage message
+$ ./dist/index.js
+index.js DB_URL CMD ...
+for CMD in
+     make-user chat-name=CHAT_NAME email=EMAIL first-name=FIRST_NAME 
+                last-name=LAST_NAME 
+                Make a new user and print its newly created ID. 
+      get-user user-key=USER_KEY 
+                Output all info for chat-user specified by USER_KEY, 
+                which must be legal JSON for a key-value pair for id, 
+                chatName or email keys 
+   update-user id=ID [KEY=VAL] for KEY in 
+                chat-name, email, first-name, last-name 
+                Update user specified by ID with KEY=VAL params 
+     make-room descr=DESCR room-name=ROOM_NAME 
+                Make a new char-room and print its newly created ID. 
+      get-room room-key=ROOM_KEY 
+                Output all info for chat-room specified by ROOM_KEY, 
+                which must be legal JSON for a key-value pair for id 
+                or roomName keys 
+ make-chat-msg chat-name=CHAT_NAME msg=MSG room-name=ROOM_NAME 
+                Add a new chat-message MSG to chat-room ROOM_NAME on 
+                behalf of user CHAT_NAME 
+find-chat-msgs room-name=ROOM_NAME [KEY=VAL] for KEY in 
+                id, chat-name, words, earliest, latest, offset, limit 
+                Find all chat messages which satisfy the parameters. 
+     load-data path=PATH 
+                Replace all data with data read from JSON PATH 
+         clear 
+                Clear out all data. 
+          help 
+                Print this message 
+
+# load data from JSON data file chat-data.json
+$ ./dist/index.js mongodb://localhost:27017/chats \
+                  load-data path=extras/chat-data.json
+{
+  "userCount": 5,
+  "roomCount": 2,
+  "msgCount": 16
+}
+
+# create a new user
+$ ./dist/index.js mongodb://localhost:27017/chats \
+                  add-user first-name="Jim" last-name="Smith" \
+                  chat-name="jsmith" email="jsmith@zz.com"
+unknown command add-user
+
+# try again, but we already loaded a jsmith from JSON file!
+$ ./dist/index.js mongodb://localhost:27017/chats \
+                  make-user first-name="Jim" last-name="Smith" \
+                  chat-name="jsmith" email="jsmith@zz.com"
+E_EXISTS: user email or chatName already exists
+
+# try yet again!
+$ ./dist/index.js mongodb://localhost:27017/chats \
+                  make-user first-name="Jim" last-name="Smith" \
+                  chat-name="jsmith1" email="jsmith1@zz.com"
+"25_99"
+
+# retrieve added user by id; note the clumsy JSON syntax for user-key
+$ ./dist/index.js mongodb://localhost:27017/chats \
+                  get-user user-key='{"id":"25_99"}'
+{
+  "firstName": "Jim",
+  "lastName": "Smith",
+  "chatName": "jsmith1",
+  "email": "jsmith1@zz.com",
+  "creationTime": "2025-09-09T14:24:07.107Z",
+  "lastUpdateTime": "2025-09-09T14:24:07.107Z",
+  "id": "25_99"
+}
+
+# create a new chat room
+$ ./dist/index.js mongodb://localhost:27017/chats
+                  make-room room-name="typescript" \
+		  descr="Advanced TypeScript Topics"
+E_EXISTS: chat room typescript already exists
+
+# try again
+$ ./dist/index.js mongodb://localhost:27017/chats \
+                  make-room room-name="advanced-typescript" \
+		  descr="Advanced TypeScript Topics"
+"27_44"
+
+# retrieve it by id
+$ ./dist/index.js mongodb://localhost:27017/chats \
+                  get-room room-key='{"id":"27_44"}'
+{
+  "roomName": "advanced-typescript",
+  "descr": "Advanced TypeScript Topics",
+  "creationTime": "2025-09-09T14:25:58.615Z",
+  "lastUpdateTime": "2025-09-09T14:25:58.615Z",
+  "id": "27_44"
+}
+
+# retrieve it, but provide a bad ID
+$ ./dist/index.js mongodb://localhost:27017/chats \
+  		  get-room room-key='{"id":"27_441"}'
+E_NOT_FOUND: no room having id '27_441'
+
+# retrieve it by roomName
+./dist/index.js mongodb://localhost:27017/chats get-room room-key='{"roomName":"advanced-typescript"}'
+{
+  "roomName": "advanced-typescript",
+  "descr": "Advanced TypeScript Topics",
+  "creationTime": "2025-09-09T14:25:58.615Z",
+  "lastUpdateTime": "2025-09-09T14:25:58.615Z",
+  "id": "27_44"
+}
+
+# show most recent messages for typescript chat-room
+$ ./dist/index.js mongodb://localhost:27017/chats
+  		  find-chat-msgs room-name=typescript
+[
+  {
+    "msg": "That's cool!!",
+    "creationTime": "2025-09-09T14:21:30.537Z",
+    "id": "15_67",
+    "roomName": "typescript",
+    "chatName": "jdoe"
+  },
+  {
+    "msg": "Initially, the TS compiler may not know much about a type of a variable.  But as the variable is used under more and more conditions, the compiler infers more information about the type.  For example, if I have a Shape type which is the union of two structures { kind: 'Circle', radius: number } | { kind: 'Rect', width: number, height: number }, then given a variable shape: Shape, the compiler would produce an error on the expression shape.radius (shape may be a Rect and not have a radius), but if we use shape.radius under a conditional like if (shape.kind === 'Circle'), then shape.radius would work.",
+    "creationTime": "2025-09-09T14:21:30.535Z",
+    "id": "14_47",
+    "roomName": "typescript",
+    "chatName": "jsmith"
+  },
+  {
+    "msg": "What is type narrowing?",
+    "creationTime": "2025-09-09T14:21:30.533Z",
+    "id": "13_72",
+    "roomName": "typescript",
+    "chatName": "jdoe"
+  },
+  {
+    "msg": "From what I've seen, type narrowing is cool!",
+    "creationTime": "2025-09-09T14:21:30.531Z",
+    "id": "12_65",
+    "roomName": "typescript",
+    "chatName": "jsmith"
+  },
+  {
+    "msg": "No, I'm just getting started",
+    "creationTime": "2025-09-09T14:21:30.529Z",
+    "id": "11_87",
+    "roomName": "typescript",
+    "chatName": "jdoe"
+  }
+]
+
+# only those containing the word "cool"
+$ ./dist/index.js mongodb://localhost:27017/chats
+  		  find-chat-msgs room-name=typescript words=cool
+[
+  {
+    "msg": "That's cool!!",
+    "creationTime": "2025-09-09T14:21:30.537Z",
+    "id": "15_67",
+    "roomName": "typescript",
+    "chatName": "jdoe"
+  },
+  {
+    "msg": "From what I've seen, type narrowing is cool!",
+    "creationTime": "2025-09-09T14:21:30.531Z",
+    "id": "12_65",
+    "roomName": "typescript",
+    "chatName": "jsmith"
+  }
+]
+
+# provide paging params, note overlap with previous results
+$ ./dist/index.js mongodb://localhost:27017/chats
+  		  find-chat-msgs room-name=typescript \
+		  offset=2 limit=5
+[
+  {
+    "msg": "What is type narrowing?",
+    "creationTime": "2025-09-09T14:21:30.533Z",
+    "id": "13_72",
+    "roomName": "typescript",
+    "chatName": "jdoe"
+  },
+  {
+    "msg": "From what I've seen, type narrowing is cool!",
+    "creationTime": "2025-09-09T14:21:30.531Z",
+    "id": "12_65",
+    "roomName": "typescript",
+    "chatName": "jsmith"
+  },
+  {
+    "msg": "No, I'm just getting started",
+    "creationTime": "2025-09-09T14:21:30.529Z",
+    "id": "11_87",
+    "roomName": "typescript",
+    "chatName": "jdoe"
+  },
+  {
+    "msg": "Do you have much experience in TypeScript?",
+    "creationTime": "2025-09-09T14:21:30.527Z",
+    "id": "10_16",
+    "roomName": "typescript",
+    "chatName": "jsmith"
+  },
+  {
+    "msg": "I am Jane and I'm interested in TypeScript too",
+    "creationTime": "2025-09-09T14:21:30.525Z",
+    "id": "9_10",
+    "roomName": "typescript",
+    "chatName": "jdoe"
+  }
+]
+
+# misspell room-name
+$ ./dist/index.js mongodb://localhost:27017/chats
+  		  find-chat-msgs room-name='advanced typescript'
+E_NOT_FOUND: no room having roomName 'advanced typescript'
+
+# there are no messages
+$ ./dist/index.js mongodb://localhost:27017/chats \
+  		  find-chat-msgs room-name='advanced-typescript'
+[]
+
+# try to post a message from an unknown user
+$ ./dist/index.js mongodb://localhost:27017/chats \
+  		  make-chat-msg room-name='advanced-typescript' \
+		  chat-name=sdoe msg='Hello, anyone there?'
+E_NOT_FOUND: no user with chatName 'sdoe'
+
+# try again
+./dist/index.js mongodb://localhost:27017/chats \
+		make-chat-msg room-name='advanced-typescript' \
+		chat-name=jsmith msg='Hello, anyone there?'
+"28_46"
+
+# now search for messages in advanced-typescript room, we see the
+# message we just posted.
+$ ./dist/index.js mongodb://localhost:27017/chats
+  		  find-chat-msgs room-name='advanced-typescript'
+[
+  {
+    "msg": "Hello, anyone there?",
+    "creationTime": "2025-09-09T14:38:11.077Z",
+    "id": "28_46",
+    "roomName": "advanced-typescript",
+    "chatName": "jsmith"
+  }
+]
+
+# search for message by ID
+$ ./dist/index.js mongodb://localhost:27017/chats \
+  		  find-chat-msgs room-name='advanced-typescript' id=28_46
+[
+  {
+    "msg": "Hello, anyone there?",
+    "creationTime": "2025-09-09T14:38:11.077Z",
+    "id": "28_46",
+    "roomName": "advanced-typescript",
+    "chatName": "jsmith"
+  }
+]
+
+# find user-info for user having chatName "jsmith"
+$ ./dist/index.js mongodb://localhost:27017/chats
+  		  get-user user-key='{"chatName": "jsmith"}'
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "chatName": "jsmith",
+  "email": "jsmith@zz.com",
+  "creationTime": "2025-09-09T14:21:30.514Z",
+  "lastUpdateTime": "2025-09-09T14:21:30.514Z",
+  "id": "1_44"
+}
+
+# update the user to change the chatName to "john-smith"
+$ ./dist/index.js mongodb://localhost:27017/chats
+  		  update-user id="1_44" chat-name="john-smith"
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "chatName": "john-smith",
+  "email": "jsmith@zz.com",
+  "creationTime": "2025-09-09T14:21:30.514Z",
+  "lastUpdateTime": "2025-09-09T15:41:51.132Z",
+  "id": "1_44"
+}
+
+# show that chat-name has changed in existing messages
+$ ./dist/index.js mongodb://localhost:27017/chats
+  		  find-chat-msgs room-name=typescript
+[
+  {
+    "msg": "That's cool!!",
+    "creationTime": "2025-09-09T14:21:30.537Z",
+    "id": "15_67",
+    "roomName": "typescript",
+    "chatName": "jdoe"
+  },
+  {
+    "msg": "Initially, the TS compiler may not know much about a type of a variable.  But as the variable is used under more and more conditions, the compiler infers more information about the type.  For example, if I have a Shape type which is the union of two structures { kind: 'Circle', radius: number } | { kind: 'Rect', width: number, height: number }, then given a variable shape: Shape, the compiler would produce an error on the expression shape.radius (shape may be a Rect and not have a radius), but if we use shape.radius under a conditional like if (shape.kind === 'Circle'), then shape.radius would work.",
+    "creationTime": "2025-09-09T14:21:30.535Z",
+    "id": "14_47",
+    "roomName": "typescript",
+    "chatName": "john-smith"
+  },
+  {
+    "msg": "What is type narrowing?",
+    "creationTime": "2025-09-09T14:21:30.533Z",
+    "id": "13_72",
+    "roomName": "typescript",
+    "chatName": "jdoe"
+  },
+  {
+    "msg": "From what I've seen, type narrowing is cool!",
+    "creationTime": "2025-09-09T14:21:30.531Z",
+    "id": "12_65",
+    "roomName": "typescript",
+    "chatName": "john-smith"
+  },
+  {
+    "msg": "No, I'm just getting started",
+    "creationTime": "2025-09-09T14:21:30.529Z",
+    "id": "11_87",
+    "roomName": "typescript",
+    "chatName": "jdoe"
+  }
+]
+
+$ 

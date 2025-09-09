@@ -1,0 +1,34 @@
+#!/usr/bin/env bun
+
+import { $ } from 'bun';
+import Path from 'path';
+
+const userIdIndex = 1;
+const dataStartIndex = 4;
+
+async function go(logDefs) {
+  const cwd = process.cwd();
+  const defs = await import(Path.join(cwd, logDefs));
+  console.log(defs);
+  // const lines = csv.split(/\r?\n/);
+  // const hdrs0 = lines[0].split(',');
+  // const dataHdrs = hdrs0
+  //   .slice(dataStartIndex)
+  //   .map(h => `Late-${h[0].toUpperCase()}${h.slice(1)} Points Grade`);
+  // const hdrs1 = ['username'].concat(dataHdrs).concat(['End-of-Line Indicator']);
+  // const out = [hdrs1];
+  // for (const line of lines.slice(1)) {
+  //   const data0 = line.split(',');
+  //   const data1 = [data0[userIdIndex]]
+  // 		    .concat(data0.slice(dataStartIndex))
+  //                   .concat(['#']);
+  //   out.push(data1);
+  // }
+  // out.forEach(rec => console.log(rec.join(',')));
+}
+
+if (process.argv.length !== 3) {
+  console.error(`usage: ${Path.basename(process.argv[1])} JS_LOG_DEFS`);
+  process.exit(1);
+}
+await go(process.argv[2]);

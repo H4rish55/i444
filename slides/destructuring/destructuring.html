@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Destructuring</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link href="../../assets/styles/article.css" rel="stylesheet" type="text/css" /> 
+</head>
+
+<body class=umt-slides>
+
+    <nav id="course-nav">
+      <ul>
+      </ul>
+    </nav>
+    
+    <div class="umt-content">
+      <div><section data-level="h1"><h1>Destructuring</h1><section data-level="h2"><h2>Overview</h2><ul><li><p>Very sweet syntactic sugar.
+</p></li><li><p>Object and array literals are used on the RHS of <code>=</code> in
+    declarations or assignments for construction of JavaScript objects
+    and arrays.  Destructuring allows the use of similar notation on
+    the LHS of <code>=</code> for accessing the elements of an object or array.
+</p></li><li><p>Many modern programming languages have similar syntax.
+</p></li><li><p> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment">MDN reference</a>.
+</p></li></ul></section><section data-level="h2"><h2>Basic Examples</h2><pre class="hljs language-javascript">> let [a, b] = [42, 22, 33, 44]
+undefined
+> [a, b]
+[ 42, 22 ]
+> {a, b} = { b: 42, c: 22, a: 33, d: 44 }
+{ b: 42, c: 22, a: 33, d: 44 }
+> [a, b]
+[ 33, 42 ]
+> function f([a, b], {c, d}) {
+    console.log(a, b, c, d);
+  }
+undefined
+> f([33, 2, 44, 55], { a: 2, b: 3, c: 42 })
+33 2 42 undefined
+undefined
+>
+</pre></section><section data-level="h2"><h2>Array Destructuring Examples</h2><pre class="hljs language-javascript">> let [a, b] = [22, 42]
+undefined
+> [a, b]
+[ 22, 42 ]
+> [a, b] = [b, a] //exchange without temporary
+[ 42, 22 ]
+> [a, b]
+[ 42, 22 ]
+> [a, , , b] = [1, 2, 3, 4] //ignored values
+[ 1, 2, 3, 4 ]
+> [a, b]
+[ 1, 4 ]
+</pre></section><section data-level="h2"><h2>Array Destructuring Examples Continued</h2><pre class="hljs language-javascript">> let [ x, y = 99] = [42] //default value of 99 for y
+undefined
+> [x, y]
+[ 42, 99 ]
+> let [ x1, y1 = 99] = [42, 22] //default not used
+undefined
+> [x1, y1]
+[ 42, 22 ]
+>
+</pre></section><section data-level="h2"><h2>Array Destructuring Examples Continued</h2><pre class="hljs language-javascript">[a, ...b] = [1, 2, 3, 4] //rest parameters
+[ 1, 2, 3, 4 ]
+> [a, b]
+[ 1, [ 2, 3, 4 ] ]
+> [a, b] = [a, ...b] //spreading b
+[ 1, 2, 3, 4 ]
+> [a, b]
+[ 1, 2 ]
+</pre></section><section data-level="h2"><h2>Object Destructuring Examples</h2><pre class="hljs language-javascript">let { p, q } = { p: 22, q: 42 }
+undefined
+> [p, q]
+[ 22, 42 ]
+{ p, ...rest } = { a: 22, p: 42, b: 33 } //rest params
+{ a: 22, p: 42, b: 33 }
+> [p, rest]
+[ 42, { a: 22, b: 33 } ]
+> {p = 33, q = 42 } = { q: 99, a: 44 } //default value
+{ q: 99, a: 44 }
+> [p, q]
+[ 33, 99 ]
+</pre></section><section data-level="h2"><h2>Object Destructuring Examples Continued</h2><pre class="hljs language-javascript">//var names different from property names
+> { a: p, b: q } = { p: 1, a: 2, q: 3, b: 4 }
+{ p: 1, a: 2, q: 3, b: 4 }
+> [p, q]
+[ 2, 4 ]
+//var names different from property names with defaults
+{ a: p = 22, b: q = 99 } = { a:11 }
+{ a: 11 }
+> [p, q]
+[ 11, 99 ]
+> 
+</pre></section><section data-level="h2"><h2>Combining Object and Array Destructuring</h2><pre class="hljs language-javascript">> { a: [p, ...q], b: c } = {a: [1, 2, 3], b: 42}
+{ a: [ 1, 2, 3 ], b: 42 }
+> [p, q, c]
+[ 1, [ 2, 3 ], 42 ]
+> [ { a, ...b}, c] = [ {a: 2, b: 9, x: 22}, { a: 1}]
+[ { a: 2, b: 9, x: 22 }, { a: 1 } ]
+> [a, b, c]
+[ 2, { b: 9, x: 22 }, { a: 1 } ]
+>
+</pre></section><section data-level="h2"><h2>Function Parameters Destructuring</h2><pre class="hljs language-javascript">> function f({a, b}) { console.log(a, b); }
+undefined
+> f({x: 22, b: 2, a: 99, y:2})
+99 2
+undefined
+> function f([a, ...b], { c: x, ...y }) {
+    console.log(a, b, x, y);
+  }
+undefined
+> f([1, 2, 3, 4], { c: 42, d: 22, e: 44 })
+1 [ 2, 3, 4 ] 42 { d: 22, e: 44 }
+undefined
+> (({a=44, b=33}, c) => a + b + c)({a: 22}, 5)
+60
+</pre></section><section data-level="h2"><h2>Function Options Parameter Without Destructuring</h2><p>Common to have some kind of <code>options</code> parameter to a function,
+where each option has a default value which can be overridden
+by the caller.
+</p><pre class="hljs language-javascript">//without destructured formal param
+function doOutput(text, opts={}) {
+  const inFormat = opts.inFormat || 'text';
+  const outFormat = opts.outFormat || `html`;
+  const lineLength = opts.lineLength || 60;
+  ...
+}
+
+...
+doOutput('123 the'); //all default options
+doOutput('123 the', { outFormat: 'latex' });
+</pre></section><section data-level="h2"><h2>Function Options Parameter With Destructuring</h2><pre class="hljs language-javascript">//with destructured formal param
+function doOutput(text, {
+  inFormat = 'text',
+  outFormat = 'html',
+  lineLength = 60} = {}) {
+  ...
+}
+...
+
+//calls as before
+</pre></section><section data-level="h2"><h2>Removing Defaults From Function</h2><p>Using destructuring in function header ok for small number of
+options; otherwise it clutters up the function header.  I often
+prefer the following idiom:
+</p><pre class="hljs language-javascript">function doOutput(text, options={})
+  //Object.assign() copies properties from subsequent args
+  //into first arg with later args winning.
+  const opts = Object.assign({}, OPTIONS, options);
+  //destructure opts as necessary
+  ...
+}
+const OPTIONS = {
+  inFormat: 'text',
+  outFormat: 'html',
+  lineLength: 60,
+  ...
+};
+</pre></section><section data-level="h2"><h2>Passing Large Number of Parameters as Object</h2><p>CSS box model is characterized by a large number of parameters:
+</p><pre class="hljs language-javascript">    const box = {
+      contentWidth, contentHeight,
+      paddingTop, paddingRight, paddingBottom,
+      paddingLeft, borderTop, borderRight,
+      borderBottom, borderLeft, marginTop,
+      marginRight, marginBottom, marginLeft,
+    };
+    //function only declares params of interest
+    function boxWidth({borderLeft, paddingLeft,
+                       contentWidth, paddingRight,
+		       borderRight}) {
+      return borderLeft + paddingLeft +
+        contentWidth + paddingRight + borderRight;
+    }
+    boxWidth(box);
+</pre></section></section></div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/slide-controls.mjs"></script>
+    <script type="module" src="../../assets/scripts/nav.mjs"></script> 
+    <script type="module" src="../../assets/scripts/highlight.mjs"></script>
+</body>
+</html>
+

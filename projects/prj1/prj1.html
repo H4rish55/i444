@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Project  1</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link href="../../assets/styles/article.css" rel="stylesheet" type="text/css" /> 
+</head>
+
+<body class=umt-article>
+
+    <nav id="course-nav">
+      <ul>
+      </ul>
+    </nav>
+    
+    <div class="umt-content">
+      <div><section data-level="h1"><h1>Project  1</h1><p><strong>Due</strong>: Sep 30, before midnight.
+</p><p><strong>Important Reminder</strong>: As per the course  <a href="../../misc/academic-honesty/academic-honesty-policy.html">Academic Honesty Statement</a>,
+cheating of any kind will minimally result in your letter grade
+for the entire course being reduced by one level.
+</p><p>This document first provides the aims of this project, followed by a
+discussion of its background including relevance to future projects.
+It then lists the requirements as explicitly as possible.  It then
+hints at how these requirements can be met.
+</p><section data-level="h2"><h2>Aims</h2><p>The aims of this project are as follows:
+</p><ul><li><p>To verify that you have GUI access to your VM.
+</p></li><li><p>To familiarize you with the development environment on your VM.
+</p></li><li><p>To encourage you to use advanced features of JavaScript and
+    TypeScript in your code.
+</p></li><li><p>To give you superficial exposure to a no-sql database.
+</p></li></ul></section><section data-level="h2"><h2>Background</h2><p>This project introduces a data model for a chat application and
+requires you to persist that data model in a mongo database.
+</p><p>Specifically, the chat application is modeled as the three entities
+shown below:
+</p><p><img src="figs/data-model.png" height="500">
+</p><dl><dt> <code>User</code> </dt><dd><p>    This entity represents a user of the chat application.  A user has
+    typical associated information like <code>firstName</code>, <code>lastName</code> and
+    <code>email</code>.  A user also has a <code>chatName</code> which is the handle by
+    which they are identified externally.
+</p></dd><dt> <code>ChatRoom</code> </dt><dd><p>    Serves to gather related chat messages together.  It is identified
+    externally by a <code>roomName</code> room-name and a <code>descr</code> description.
+</p></dd><dt> <code>ChatMsg</code> </dt><dd><p>    This is the entity which provides the raison d'etre for the
+    application and represents a chat message posted by a user in a chat-room.
+</p></dd></dl><p>It is worth emphasizing that the above data model is merely the
+external view as seen by the users of the application.  In particular,
+the associations must be preserved even if a user's <code>chatName</code> and a
+room's <code>roomName</code> change.
+</p><p>The details of the data model are given in  <a href="prj1-sol/src/lib/chat-types.ts?lang=ts">chat-types.ts</a>.
+</p><section data-level="h3"><h3>Future Projects</h3><p>In future projects, we will be extending this project in steps:
+</p><ul><li><p><strong>Project 2</strong>: Completing validation leftover from this project and
+    exposing an API via web services.  Specifically, many of the types
+    in  <a href="prj1-sol/src/lib/chat-types.ts?lang=ts">chat-types.ts</a> will
+    be generated automatically from the validation requirements.
+</p></li><li><p><strong>Project 3</strong>: Use the web services and
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events">server-sent events</a> to get the guts of the application working in
+    a browser.
+</p></li><li><p><strong>Projects 4</strong> Completing the browser UI using a modern web framework
+    like  <a href="https://react.dev/">React.</a>
+</p></li></ul></section></section><section data-level="h2"><h2> <span id="require">Requirements</span></h2><p>You must upload a  <a href="https://linux.die.net/man/1/zip">zip</a>-archive to
+gradescope which unpacks into a <code>prj1-sol</code> directory, such that typing
+<code>npm ci</code> within that directory followed by <code>npm run test</code> is
+sufficient to run tests for your project.
+</p><p>Specifically, the <code>prj1-sol</code> directory must directly contain a
+<code>README</code>, <code>package.json</code>, <code>package-lock.json</code>, <code>tsconfig.json</code> and
+<code>vm.png</code> files.  It should not contain any <code>node_modules</code> or <code>dist</code>
+directories.
+</p><p>You should not use any packages other than those mentioned explicitly
+in the rest of this document.  (One specific exception: you may use
+a UUID package if you decide to use UUID's to represent ID's).
+</p><p>What you specifically need to do is add code to the provided
+ <a href="./prj1-sol/src/lib/chat.ts?lang=ts">chat.ts</a> and
+ <a href="./prj1-sol/src/lib/chat-dao.ts?lang=ts">chat-dao.ts</a> source files so
+as to implement the <code>Chat</code> interface documented in
+ <a href="./prj1-sol/src/lib/chat-types.ts?lang=ts">chat-types.ts.</a>  The
+implementation should pass all provided tests.  Additionally, you
+are required to implement three additional tests.
+</p><p>Your project is required to report all errors with an error code and
+suitable human readable message, though there is one notable
+exception:
+</p><ul><li><p>Entities which should exist not but do not: <code>E_NOT_FOUND</code>.
+</p></li><li><p>Entities which should not exist but do exist: <code>E_EXISTS</code>.
+</p></li><li><p>Database errors <code>E_DB</code>.
+</p></li><li><p>The one exception: you are not required to detect <code>E_BAD_VAL</code>
+    errors like a malformed email address.  Those kind of errors will
+    be handled in your next project.
+</p></li></ul><p>The specific requirements on the API do not list specific error
+code so as to allow you to decide what errors can occur (unfortunately,
+the provided tests provide some answers).
+</p><p>All ID's generated by your project should usually be unique and hard
+to guess.
+</p><p>The requirements on the project will be clearer by looking at
+an  <a href="extras/LOG?lang=sh">annotated log</a>.
+</p><p>Additionally, in order to avoid pain points in future projects, your
+<code>submit/prj1-sol</code> <strong>must</strong> contain a top-level <code>vm.png</code> image file to
+verify that you have set up your VM correctly.  Specifically, the
+image must show an x2go client window running on your VM.  The
+captured x2go window must show a terminal window containing the output
+of the following commands:
+</p><pre class="hljs language-sh">$ hostname; hostname -I
+$ ls ~/cs444
+$ ls ~/i444
+$ crontab -l | tail -3
+</pre></section><section data-level="h2"><h2>Provided Files</h2><p>The  <a href="./prj1-sol">prj1-sol</a> directory contains a start for your
+project.
+</p><ul><li><p>The  <a href="prj1-sol/src/lib">src/lib</a> directory contains the files
+    which implement the guts of the project.
+</p><dl><dt>  <a href="./prj1-sol/src/lib/chat.ts?lang=ts">chat.ts</a> and
+         <a href="./prj1-sol/src/lib/chat-dao.ts?lang=ts">chat-dao.ts</a> </dt><dd><p>These
+        skeleton files constitute the guts of your project.  The
+        former wraps the latter.  You will need to flesh out the
+        skeletons, adding code as per the documentation.  You should
+        feel free to add any auxiliary type, function or method
+        definitions as required.
+</p></dd><dt>  <a href="prj1-sol/src/lib/chat-types.ts?lang=ts">chat-types.ts</a> </dt><dd><p>        A file providing a data types and type utility functions for
+        this project.  Understanding this file is critical to this
+        project.
+</p><p>        You should not need to modify this file.
+</p></dd></dl></li><li><p>The  <a href="prj1-sol/src">src</a> directory contains a command-line programs
+    which allow you to exercise the API via the command-line.
+    Specifically,  <a href="prj1-sol/src/index.ts?lang=ts">index.ts</a> and
+     <a href="prj1-sol/src/main.ts?lang=ts">main.ts</a> provide the command-line
+    functionality.
+</p></li><li><p>The  <a href="prj1-sol/src/test">test</a> directory contains tests for this
+    project.  Specifically,
+     <a href="prj1-sol/src/test/mem-db-server.ts?lang=ts">mem-db-server.ts</a> is
+    a wrapper around
+    
+    <a href="https://github.com/typegoose/mongodb-memory-server">mongodb-memory-server</a> provides an in-memory implementation of
+    mongodb well suited for testing.  The actual tests are in
+     <a href="prj1-sol/src/test/tst-chat.ts?lang=ts">tst-chat.ts.</a>
+</p><p>    You will need to modify the latter file in order to implement
+    several tests which have been marked <code>.todo()</code>.
+</p><p>     Note that the TA may choose to grade your project with
+     additional or different tests.
+</p></li><li><p>The  <a href="prj1-sol">prj1-sol</a> directory contains top-level
+    project files:
+</p><dl><dt>  <a href="./prj1-sol/tsconfig.json?lang=json">tsconfig.json</a></dt><dd><p>        A configuration file for typescript.  You may modify
+        this file if necessary.
+</p></dd><dt>  <a href="./prj1-sol/.gitignore">.gitignore</a> </dt><dd><p>        A <code>.gitignore</code> file set up to prevent committing the
+        <code>node_modules</code> directory (containing downloaded packages),
+        <code>dist</code> directory (containing compiled code) and emacs <code>*~</code>
+        backup files into git.
+</p></dd><dt>  <a href="./prj1-sol/.zipignore">.zipignore</a> </dt><dd><p>        A <code>.zipignore</code> file for use by the
+         <a href="../../bin/do-zip.sh?lang=sh">do-zip.sh</a> shell script to avoid
+        including the garbage files like the <code>node_modules</code> directory
+        (containing downloaded packages), <code>dist</code> directory (containing
+        compiled code) and emacs <code>*~</code> backup files.
+</p></dd><dt>  <a href="./prj1-sol/README">README</a></dt><dd><p>        A README file which must be submitted along with your project.
+        It contains an initial header which you must complete (replace
+        the dummy entries with your name, B-number and email address
+        at which you would like to receive project-related email).
+        After the header you may include any content which you would
+        like read during the grading of your project.
+</p></dd></dl></li><li><p>The course  <a href="../../lib">directory</a> provides two libraries:
+</p><dl><dt>  <a href="../../lib/node-utils">cs444-node-utils</a> </dt><dd><p>      Utilities useful for the node command-line.
+</p></dd><dt>  <a href="../../lib/js-utils">cs444-js-utils</a> </dt><dd><p>General JavaScript
+      utilities.  In particular this library provides the
+       <a href="../../lib/js-utils/src/lib/errors.ts?lang=ts">error handling</a>
+      discussed in class and used extensively in this and future
+      projects.
+</p></dd></dl></li></ul><p>The  <a href="extras">directory</a> contains an  <a href="extras/LOG?lang=sh">annotated LOG</a>.
+</p></section><section data-level="h2"><h2>Before You Begin</h2><p>The following information may be useful to consider before starting
+work on your project.
+</p><section data-level="h3"><h3>TypeScript</h3><p>Leverage the use of TS as much as possible to document
+and validate your code.  Do not try to work around type
+checking by declaring variables to have type <code>any</code>.  Some
+points worth emphasizing:
+</p><ul><li><p>Remember that TS types exists only at compile time and
+    disappear completely at runtime.
+</p></li><li><p>TS types and JavaScript values do not intersect.
+</p></li><li><p>It is possible to get the TS type of a JavaScript
+    value using the <code>typeof</code> operator.  For example:
+</p><pre class="hljs language-ts">    const obj = { a: 33, b: 44, c: 55 };
+
+    //following equiv to type Keys = 'a' | 'b' | 'c';
+    type Keys = keyof typeof obj; 
+</pre></li><li><p>TS is extremely competent at inferring types, but it occasionally
+    loses type information and you will need to assist it with explicit
+    declarations or casts using <code>as</code>.
+</p></li><li><p>Another situation where you can help TS is asserting that a value
+    is not <code>null</code> or <code>undefined</code> using a postfix <code>!</code>
+    
+    <a href="https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#non-null-assertion-operator-postfix-">non-null assertion</a>, as in:
+</p><pre class="hljs language-javascript">    let date?: Date;
+
+
+    if (...) {
+      //code logic ensures that date cannot be null.
+      //use the ! assertion to let TS know
+      const dateStr = date!.toString();
+      ...
+    }
+</pre></li><li><p>Make use of the 
+    <a href="https://www.typescriptlang.org/play?#code/FDI">TypeScript Playground</a> for experimenting with TS code.  Understand
+    
+    <a href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html">type narrowing</a> and make use of 
+    
+    <a href="https://www.typescriptlang.org/docs/handbook/utility-types.html">TypeScript's utility types</a>.
+</p></li><li><p>If possible, use an editor like VS <code>code</code> (available on your VM)
+    which is already set up to understand TS.  Mousing over
+    an expression will show its type.
+</p><p>    If your editor does not understand TS, then use the following
+    workaround to force <code>tsc</code> to reveal what it has inferred about
+    the type of some expression <code>expr</code>:
+</p><pre class="hljs language-ts">    const x : never = expr
+</pre><p>    This will produce an error along the form of &quot;it is impossible
+    to assign <code>expr</code> of type <code>T</code> to type <code>never</code>&quot;, revealing what <code>T</code>
+    is.
+</p></li></ul></section><section data-level="h3"><h3>Use of ES6 Classes</h3><p>At the time of assigning this project, JavaScript objects and ES6
+classes will not have been covered in detail in the course.  However,
+you should be able to use ES6 <code class="hljs language-javascript">class</code> syntax without needing to
+understand the finer points.
+</p><p>Note that the <code>class</code> syntax is a relatively recent addition to
+JavaScript and is syntactic sugar around JavaScript's more flexible
+object model.  Note that even though the use of this <code>class</code> syntax
+may make students with a background in class-based OOPL's feel more
+comfortable, there are some differences worth pointing out:
+</p><ul><li><p>All &quot;instance variables<code></code>&quot; must be referenced through the <code>this</code>
+    pseudo-variable in both <code>constructor</code> and methods.  For example,
+    if we want to initialize an instance property <code>students</code> in the
+    <code>constructor()</code> we may use a statement like:
+</p><pre class="hljs language-javascript">    this.students = {};
+</pre><p>    after providing a suitable declaration like <code>private readonly
+    students: Record&lt;T.StudentId, T.Student></code> in the <code>class</code>.
+</p></li><li><p>There is no implicit <code>this</code>.  If an instance method needs to call
+    another instance method of the same object, the method <strong>must</strong> be
+    called through <code>this</code>.
+</p></li></ul></section><section data-level="h3"><h3>Tests</h3><p>The provided code contains tests for the project.  Most of them will
+fail when you start your project. You will make them succeed, as you
+develop your code, thus practising
+ <a href="https://en.wikipedia.org/wiki/Test-driven_development">TDD.</a>
+</p><p>You are welcome to add more tests (note that tests different from
+those provided here may be used when grading your project).
+</p><p>If you set up your <code>package.json</code> as instructed, typing <code>npm test</code>
+should run all tests using the builtin <code>node:test</code> testing framework.
+</p><p>You can run only a single test by replacing the call to the <code>tst.test(...)</code>
+function defining the test with <code>tst.test.only(...)</code>.  You can run only a
+single test suite by replacing the call to the <code>tst.suite(...)</code>
+function defining the suite with <code>tst.suite.only(...)</code>.  To skip
+a test or suite, use <code>.skip()</code> instead of <code>.only()</code>.
+</p></section><section data-level="h3"><h3> <span id="result">Error</span> Reporting</h3><p>All methods which may produce errors must return a
+ <a href="../../lib/js-utils/src/lib/errors.ts?lang=ts">Result</a> which wraps
+either a success result or an error.  The details of
+using this wrapper were covered in class in the
+
+<a href="../../slides/practical-considerations/practical-considerations.html#:~:text=Result%20Type">Practical Considerations</a> slides.
+</p><ul><li><p>Usually, you can import
+    all the exported functionality under a namespace like <code>E</code>:
+</p><pre class="hljs language-ts">    import { Errors as E  } from 'cs444-js-utils';
+</pre></li><li><p>To unwrap a <code>result: E.Result&lt;OkType, ErrType></code> use code like the
+    following:
+</p><pre class="hljs language-ts">    if (result.isOk) {
+      value: OkType = result.val;
+      //process value
+    }
+    else {
+      error: ErrType = result.err;
+      //handle error
+    }
+</pre></li><li><p>Usually if the result is not okay, then it suffices to return that
+    error result to the caller:
+</p><pre class="hljs language-javascript">    if (!result.isOk) return result;
+</pre><p>    Directly returning an error result can sometimes cause problems
+    when the <code>result</code>'s success type is different from the function's
+    success type as in:
+</p><pre class="hljs language-javascript">    function someFn(...) : E.Result&lt;number, E.Errs> {
+
+      const result: E.Result&lt;string, E.Errs> = someOtherFn();
+      if (!result.isOk) return result;
+      ...
+    }
+</pre><p>    The compiler will get upset because of the type mismatch.  This
+    can be fixed simply by using the <code>.into&lt;T>()</code> method available on
+    a failed result:
+</p><pre class="hljs language-javascript">      if (!result.isOk) return result.into&lt;number>();
+</pre></li><li><p>A simple way to generate a successful result <code>value</code> is to use the
+   <code>okResult()</code> factory function:
+</p><pre class="hljs language-javascript">   return E.okResult(value);
+</pre><p>   A simple way to return an error result would be to use the
+   <code>errResult()</code> factory function:
+</p><pre class="hljs language-javascript">   if (some validation failure) {
+     const msg = `some error message ...`;
+     return E.errResult(E.errs(msg, SOME_ERROR_CODE));
+   }
+</pre></li></ul></section><section data-level="h3"><h3>IDs</h3><p> <span id="ids">IDs</span> identifying entities should have the following
+requirements:
+</p><ul><li><p>IDs need to be guaranteed to be unique.  This makes an ID based on
+    a random number unsuitable, but one based on an incrementing
+    counter would work.
+</p></li><li><p>In order to avoid security issues, ID's should be difficult to
+    guess.  This makes an ID based on a random number suitable, but
+    one based on an incrementing counter unsuitable.
+</p></li><li><p>They should not be based on an ID generated automatically by a
+    database as that exposes database internals to the outside world.
+    In particularly, the id's need to exist independently of a
+    database instance and should survive data migrations between
+    database instances or to different database systems.
+</p></li><li><p>IDs should be short to facilitate manual testing during
+    development, but it should be easy to make them longer once
+    development is complete.
+</p></li></ul><p>Based on these requirements, a good ID can be a string containing the
+following components:
+</p><ol><li><p>A component derived from an incrementing counter.
+</p></li><li><p>A delimiter character.  Due to mongo limitations, it cannot
+    be a period <code>.</code>, we use an underscore <code>_</code>.
+</p></li><li><p>A component derived from a random number.  Depending on the
+    security requirements of the application, the cryptographical
+    properties of the underlying random number generator may become
+    important.
+</p></li></ol><p>Note that the value generated by the counter in (1) must be guaranteed
+to be unique across multiple restarts of the application.  To
+guarantee that is the case, the counter must be stored in persistent
+storage like a database.
+</p><p>Alternately, you can use a random UUID generated using
+
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID">crypto.randomUUID()</a> with the downside being that it will be difficult to
+type during development and may not be efficient because of its
+non-sequential nature.  There are variations like
+ <a href="https://github.com/ulid/spec">ULID</a> which avoids the efficiency
+problem.
+</p></section><section data-level="h3"><h3> <span id="debug">Debugging</span></h3><p>Look into debugging methods for your project.  Possibilities
+include:
+</p><ul><li><p>Logging debugging information onto the terminal using
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Console/log">console.log(),</a>
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Console/error">console.error()</a> or
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Console/dir">console.dir().</a>
+</p><p>    Note that there is a default limit on the maximum depth printed
+    for deeply nested objects.  You can get around this by
+    stringifying your object <code>obj</code> using <code>JSON.stringify(obj, null,
+    2)</code> or by using <code>console.dir(obj, { depth: null })</code>.
+</p></li><li><p>Use the chrome debugger as outlined in this
+    
+    <a href="https://medium.com/@paul_irish/debugging-node-js-nightlies-with-chrome-devtools-7c4a1b95ae27">article.</a>  Specifically, use the <code>--inspect-brk</code> node option when
+    starting your program and then visit <code>chrome://inspect</code> in your
+    chrome browser.
+</p><p>	If you have trouble getting to the function you want to
+	test, add a line containing the word <code>debugger</code> at the point
+	at which you would like to get debug control.
+</p><p>    It is well worth spending a few minutes setting up the chrome
+    debugger as it could save you a lot of debugging time.
+</p></li></ul></section></section><section data-level="h2"><h2>MongoDB</h2><p> <a href="https://www.mongodb.com/developer">MongoDB</a> is a popular nosql
+database.  This sections gives an overview, not all of which may be
+relevant to this project.
+</p><p>With relational databases, the data stored in a row of a table has to
+have essentially the same structure as the data stored in another row
+of the same table.  That is not the case with a mongodb <strong>collection</strong>
+which can store documents which may have different structures (though
+it is probably not a great idea to store documents with totally
+different different structures within a single collection).
+</p><ul><li><p>In terms of JavaScript, mongodb <strong>documents</strong> correspond to
+    arbitrarily nested JavaScript <code>Object</code>s having a top-level <code>_id</code>
+    property which is used as a primary key. If an object does not
+    have an <code>_id</code> property, then one will be created with a unique
+    
+    <a href="https://mongodb.github.io/node-mongodb-native/6.19/classes/BSON.ObjectId.html">ObjectId</a> assigned by mongodb. If a document has a natural ID and
+    the timestamping and location independence of <code>ObjectId</code> are not
+    required, then the <code>_id</code> should be set to the natural ID to avoid
+    needing an additional index (it will be necessary to let
+    TypeScript know the type of <code>_id</code> within the <code>T</code> type parameter of
+    <code>collection&lt;T></code>).
+</p><p>   Note that the <code>_id</code> property is an implementation detail and should
+   not be exposed externally as it may change in case of database
+   migrations.
+</p></li><li><p>MongoDB provides a basic repertoire of
+     <a href="https://docs.mongodb.com/manual/crud/">CRUD Operations</a>.
+</p></li><li><p>All asynchronous mongo library functions can be called directly using
+    <code>await</code>.
+</p></li><li><p>It is important to ensure that all database connections are closed.
+    Otherwise your program will not exit gracefully.
+</p></li><li><p>You can play with mongo by starting up a
+     <a href="https://docs.mongodb.com/mongodb-shell/">mongo shell</a>:
+</p><pre class="hljs language-sh">    $ mongosh
+    Current Mongosh Log ID:	...
+    ...
+    For mongosh info see: https://docs.mongodb.com/mongodb-shell/
+    ...
+    > help
+
+    Shell Help:
+
+    use DB_NAME                    #Set current database
+    ...
+    ...
+    >
+</pre></li><li><p><strong>Important</strong>: Since mongodb is available for different languages
+    and versions, when looking at documentation make sure that you are
+    looking at the
+    
+    <a href="https://www.mongodb.com/docs/drivers/node/current/quick-start/">nodejs documentation</a> and
+     <a href="https://mongodb.github.io/node-mongodb-native">API</a> for
+    v6.x.  This is <strong>very important</strong> as the top results from web
+    searches will often point you to inapplicable documentation.
+</p></li><li><p>It is important to emphasize that mongo is promise-ready.  Hence
+    if a mongo function is documented as requiring a callback, then it
+    will return a <code>Promise</code> when called without a callback; this can
+    then be used with <code>await</code>.
+</p></li><li><p>Try to use mongo's facilities as much as possible; for example,
+    use mongo's <code>_id</code> field to hold ID's; instead of writing code for
+    filtering, design your database objects such that you can use the
+    filtering capabilities of mongo's
+    
+    <a href="https://mongodb.github.io/node-mongodb-native/6.19/classes/Collection.html#find">find()</a> method.  For example, you can use the cursor modification
+    methods like
+    
+    <a href="https://mongodb.github.io/node-mongodb-native/6.19/classes/FindCursor.html#sort">sort(),</a>
+    
+    <a href="https://mongodb.github.io/node-mongodb-native/6.19/classes/FindCursor.html#skip">skip()</a> and
+    
+    <a href="https://mongodb.github.io/node-mongodb-native/6.19/classes/FindCursor.html#limit">limit()</a> to sort your results and implement paging within results.
+</p></li><li><p>Usually, there is no need to explicitly create a database or collection in
+    mongo; both will be created transparently when data is first
+    inserted into a collection in the database.  The exception is when
+    the newly created database or collection requires non-default attributes.
+</p></li></ul><ul><li><p>Since opening a connection to a database is an expensive
+    operation, it is common to open up a connection at the start of a
+    program and hang on to it for the duration of the program.  It is
+    also important to remember to close the connection before
+    termination of the program (this is handled by the main program
+    calling your implementation of the <code>close()</code> method).  A common
+    cause for program non-termination is a leftover database
+    connection.    
+</p><p>    [Note that the provided command-line program for this project
+    performs only a single command for each program run.  This is not
+    typical and will not be the case in future projects.]
+</p></li><li><p> <span id="persistent-setup">It</span> is impossible to have an <code>async</code>
+    constructor.  Hence a dao wrapping a mongo connection must be
+    created using an <code>async make()</code> factory function.  This factory
+    function will need to perform the following:
+</p><ol><li><p>Get a connection to a mongodb server using the mongo client's
+        asynchronous
+        
+        <a href="https://www.mongodb.com/docs/drivers/node/current/connect/mongoclient/">connect()</a> method.
+</p></li><li><p>Given the connection to a server, you can get to a specific
+        database using the synchronous
+        
+        <a href="http://mongodb.github.io/node-mongodb-native/6.19/classes/MongoClient.html#db">db()</a> method.
+</p><p>	Note that this call to <code>db()</code> is not necessary if the <code>dbUrl</code>
+	used for (1) already specified the database name.
+</p></li><li><p>Given a database, you can get to a specific collection using
+        the synchronous
+        
+        <a href="http://mongodb.github.io/node-mongodb-native/6.19/classes/Db.html#collection">collection()</a> method; it will automatically create it if it
+        does not exist as long as mongo's
+        
+        <a href="http://mongodb.github.io/node-mongodb-native/api-articles/nodekoarticle1.html#:~:text=strict">strict mode</a> is off.
+</p><p>	Note that when using TypeScript, it is possible parameterize a
+	connection as <code>collection&lt;T></code> to let TypeScript know that the
+	type of documents stored in the collection will be <code>T</code>.
+</p></li><li><p>Mongo db  <a href="https://docs.mongodb.com/manual/indexes/">indexes</a>
+        can be used to facilitate search.  Given a collection, create
+        any necessary indexes using
+        
+        <a href="http://mongodb.github.io/node-mongodb-native/6.19/classes/Collection.html#createIndex">createIndex().</a>
+</p><p>        [While indexes do result in better query performance, indexes
+         need to be updated during data changes resulting in less
+         efficient updates.]
+</p><p>          <span id="text-index">Mongo</span> db supports a <strong>single</strong>
+         <a href="https://docs.mongodb.com/manual/text-search/">text index</a>
+        on each collection.  Note that the text index associated with
+        a collection can index multiple properties of each document.
+</p></li><li><p>Call the private constructor passing in all information which
+        will be needed by the DAO instance.  Typically, these will
+	include the connection and all the collections.
+</p></li></ol></li><li><p>Given a collection, a large number of
+    
+    <a href="http://mongodb.github.io/node-mongodb-native/6.19/classes/Collection.html">collection methods</a> are available:
+</p><ul><li><p> <span id="insertOne">You</span> can asynchronously insert a single document
+        into a collection using the
+        
+        <a href="http://mongodb.github.io/node-mongodb-native/6.19/classes/Collection.html#insertOne">insertOne()</a> method.  Note that mongo will fail to insert a
+        document having the same unique key as that of a document
+        already in the collection with an error having <code>code</code> set to
+        <code>11000</code>.
+</p></li><li><p> <span id="find">You</span> can synchronously
+        
+        <a href="http://mongodb.github.io/node-mongodb-native/6.19/classes/Collection.html#find">find()</a> a cursor to a collection which meets the criteria
+        specified by a filter to <code>find()</code>.  The query can be used to
+        filter the collection; specifically, if the filter specifies a
+        primary key like <code>_id</code>, then the cursor returned by the
+        <code>find()</code> should contain at most one result.
+</p><ul><li><p>Given a cursor, you can modify it using the synchronous
+            
+            <a href="http://mongodb.github.io/node-mongodb-native/6.19/classes/FindCursor.html#sort">sort(),</a>
+            
+            <a href="http://mongodb.github.io/node-mongodb-native/6.19/classes/FindCursor.html#skip">skip()</a> and
+            
+            <a href="http://mongodb.github.io/node-mongodb-native/6.19/classes/FindCursor.html#limit">limit()</a> methods.
+</p></li><li><p> <span id="toArray">Given</span> a cursor, you can get all its results as
+      	    an array using the asynchronous
+      	    
+      	    <a href="http://mongodb.github.io/node-mongodb-native/6.19/classes/FindCursor.html#toArray">toArray()</a> method.
+</p></li></ul></li><li><p> <span id="findOneAndUpdate">You</span> can asynchronously update a document
+        in a collection using the
+        
+        <a href="http://mongodb.github.io/node-mongodb-native/6.19/classes/Collection.html#updateOne">updateOne()</a> or
+        
+        <a href="http://mongodb.github.io/node-mongodb-native/6.19/classes/Collection.html#findOneAndUpdate">findOneAndUpdate()</a> method.  Note that the
+        
+        <a href="https://docs.mongodb.com/manual/reference/method/db.collection.update/#std-label-update-upsert">upsert</a> option is useful if you wish to create a new document
+        when there is no existing document to be updated.  Note also
+        that the latter can return the document after the update if
+        the
+        
+        <a href="http://mongodb.github.io/node-mongodb-native/6.19/interfaces/FindOneAndUpdateOptions.html#returnDocument">returnDocument</a> option is set to <code>mongo.ReturnDocument.AFTER</code>.
+</p></li><li><p> <span id="deleteOne">You</span> can asynchronously delete a single document
+        from a collection using
+        
+        <a href="http://mongodb.github.io/node-mongodb-native/6.19/classes/Collection.html#deleteOne">deleteOne()</a> or many documents from it using
+        
+        <a href="https://mongodb.github.io/node-mongodb-native/6.19/classes/Collection.html#deleteMany">deleteMany().</a>
+</p></li><li><p>Given a collection, you can asynchronously replace a document
+        using the
+        
+        <a href="http://mongodb.github.io/node-mongodb-native/6.19/classes/Collection.html#replaceOne">replaceOne()</a> or
+        
+        <a href="http://mongodb.github.io/node-mongodb-native/6.19/classes/Collection.html#findOneAndReplace">findOneAndReplace()</a> method.  Note that the
+        
+        <a href="https://docs.mongodb.com/manual/reference/method/db.collection.update/#std-label-update-upsert">upsert</a> option is useful if you wish to create a new document
+        when there is no existing document to be replaced.
+</p></li></ul></li></ul><ul><li><p> <span id="partial-updates">Mongo</span> db supports partial updates within a <strong>single
+   document</strong>.  Here are some examples in the mongo shell:
+</p><pre class="hljs language-js">   $ mongosh
+   Current Mongosh Log ID:	...
+   Connecting to:		mongodb://127.0.0.1:27017/?direct...
+
+   ...
+   // insert document with _id 99 into db in tests collection
+   // in default test db
+   test> db.tests.updateOne({_id: 99},  //query
+                            { $set: { life: { meaning: 42 } }}, //update op
+			    { upsert: true }) //insert if not present
+   ...
+
+   // list all documents in tests collection
+   test> db.tests.find()
+   [ { _id: 99, life: { meaning: 42 } } ]
+
+   // update portion of document
+   test> db.tests.updateOne( { id: 99 },
+                             //note use of . to access nested doc
+                             { $set: { 'life.meaning': null } },
+			     { upsert: true})
+
+   // show updated document			     
+   test> db.tests.find()
+   [ { _id: 99, life: { meaning: null } } ] //null is fine
+
+   test> db.tests.updateOne({ _id: 99 },
+                            { $set: { 'end.of.life': 99 } }, //auto-vivification
+			    { upsert: true})
+   ...			    
+   test> db.tests.find()
+   [
+    { _id: 99, life: { meaning: null }, end: { of: { life: 99 } } }
+   ]
+   test> //type ^D to exit
+   $
+</pre><ul><li><p>Unlike relational databases, Mongo does not provide foreign key
+    constraints, but it does support  <a href="https://www.mongodb.com/docs/manual/tutorial/unique-constraints-on-arbitrary-fields/">unique key constraints</a>.  It
+    also supports 
+    <a href="https://www.mongodb.com/docs/manual/core/transactions/">transactions.</a>
+</p></li></ul></li></ul></section><section data-level="h2"><h2> <span id="design">Design</span> Ideas</h2><p>At first glance, it appears that the <code>User</code>, <code>ChatRoom</code> and <code>ChatMsg</code>
+entities can be mapped directly into mongo collections.  However, the
+<code>updateUser()</code> method you are required to implement introduces
+complications (also, though you are not required to implement an
+update for <code>ChatRoom</code>s, the type implies that this is a distinct
+policy.)
+</p><p>Hence if the database entity for a <code>ChatMsg</code> directly stored the
+<code>chatName</code> and <code>roomName</code> fields, any update to these fields via
+the <code>User</code> or <code>ChatRoom</code> entities would be extrenly clumsy, requiring
+an update of an unlimited number of <code>ChatMsg</code>s.
+</p><p>A better solution would be to replace the <code>chatName</code> and <code>roomName</code>
+fields with <code>userId</code> and <code>roomId</code> fields.  Now any change to the
+values of <code>chatName</code> or <code>roomName</code> would not require any updates
+at all to chat-messages.  The cost is somewhat more complex code for
+chat-message operations:
+</p><ul><li><p>Creating a chat-message would require having <code>makeChatMsg()</code>
+    translating <code>chatName</code> and <code>roomName</code> values to <code>userId</code> and
+    <code>roomId</code> values.
+</p></li><li><p>Finding chat-messages would require having <code>findChatMsgs()</code>
+    translating <code>chatName</code> and <code>roomName</code> search fields (if any)
+    to the corresponding IDs.
+</p></li></ul><p>In terms of relational databases, chat-message operations require
+join operations.  Since mongo does not directly support joins,
+the joins will need to be done manually, possibly within a
+transaction.
+</p><p>Based on the above observations:
+</p><ol><li><p>Decide on the names of the collections for your mongo db.
+</p></li><li><p>For each collection decide on the type of the document
+    stored in that collection.  Those types will largely be the
+    same as those of the chat entities with the important
+    caveats mentioned above (another difference would be to
+    use mongo's <code>_id</code> field rather than the <code>id</code> fields in
+    the entity types).
+</p></li><li><p>Decide on indexes for your collections.  Use the indexes
+    to facilitate efficient search and ensure that uniqueness
+    constrains are satisfied.
+</p></li></ol></section><section data-level="h2"><h2>Hints</h2><p>The following points are worth noting:
+</p><ul><li><p>The methods you are required to implement must return a
+     <a href="../../lib/js-utils/src/lib/errors.ts?lang=ts">Result</a> which wraps
+    either the success result or any encountered errors.  The details
+    of using this wrapper were covered in class in the
+    
+    <a href="../../slides/practical-considerations/practical-considerations.html#:~:text=Result%20Type">Practical Considerations</a> slides.
+</p></li><li><p>Since you have already been provided with tests, you will be
+    practising 
+    <a href="https://en.wikipedia.org/wiki/Test-driven_development">Test-Driven Development</a> (TDD).
+</p><ul><li><p>If you would like to run only a particular test suite, change
+         the <code>tst.suite(...)</code> for that test suite to <code>tst.suite.only(...)</code>.
+</p></li><li><p>If you would like to run only a particular test, change
+         the <code>tst.test(...)</code> for that test to <code>tst.test.only(...)</code>.
+</p></li><li><p>If you would like to skip a test or suite, use <code>skip</code>
+         instead of <code>only</code>.
+</p></li></ul></li><li><p>You should feel free to use any of the functions from the standard
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">library;</a> in particular, functions provided by the
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array,</a>
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/">String,</a>
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set">Set</a> and
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math">Math</a> objects may prove useful.  Note also that the JavaScript's
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set">Set</a> API provides 
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/add">add()</a> and
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/has">has()</a> methods, including recently added 
+     <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/union">union</a> and
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/intersection">intersection</a> methods.
+</p></li><li><p>The two files you will be changing in this project are
+     <a href="./prj1-sol/src/lib/chat.ts?lang=ts">chat.ts</a> and
+     <a href="./prj1-sol/src/lib/chat-dao.ts?lang=ts">chat-dao.ts.</a>  The former
+    will be a rather thin wrapper over the latter.  The DAO should
+    contain all db-specific code whereas the wrapper provides a layer
+    over it which can be used to implement database-independent domain
+    logic.  For example, the next project will use the wrapper to add
+    additional validations (for <code>E_BAD_VAL</code> errors).
+</p><p>    The provided  <a href="prj1-sol/src/lib/chat-dao.ts?lang=ts">DAO
+    skeleton file</a> does not contain any methods for the DAO.  This
+    provides you more of a blank slate on which you can design your
+    own DAO API.
+</p></li></ul><p>The following steps are not prescriptive in that you may choose to
+ignore them as long as you meet all project requirements.
+</p><ol><li><p>Understand the  <a href="#require">project requirements</a>.  Make sure you
+    understand the types in
+     <a href="./prj1-sol/src/lib/chat-types.ts?lang=ts">chat-types.ts.</a>
+</p></li><li><p>Review the  <a href="#design">Design Ideas</a> to make sure you understand
+    how you will approach the project.
+</p></li><li><p>Follow the provided  <a href="../working/working.html#start">generic instructions</a>
+    to start work on your project.  You should have set up a project
+    directory with a <code>package.json</code>, <code>README</code> filled in, with everything commited to your <code>i?44</code> repository on github,
+</p></li><li><p>Capture an image to validate that you have set up your course VM
+    as instructed.  Within a terminal window in your <code>x2go</code> client
+    window, type in the following commands:
+</p><pre class="hljs language-sh">    $ hostname; hostname -I
+    $ ls ~/cs544
+    $ ls ~/i?44
+    $ crontab -l | tail -3
+</pre><p>    Use an image capture program on your <strong>workstation</strong> to capture an
+    image of your <code>x2go</code> client window into a file <code>vm.png</code>.  The
+    captured image should show the terminal window containing the
+    output of the above commands as part of the <code>x2go</code> client window.
+    Move the <code>vm.png</code> file from your workstation to your VM's
+    <code>~/i444/submit/prj1-sol</code> directory (you can use <code>scp</code>; if your
+    workstation cannot connect directly to your VM, then do a two step
+    copy using <code>remote.cs</code> as an intermediate).
+</p><p>    Add, commit and push the <code>vm.png</code> file.
+</p></li><li><p>Replace the <code>scripts</code> section of your generated <code>package.json</code>
+    with the following lines:
+</p><pre class="hljs language-javascript">    &quot;clean&quot;: &quot;shx rm -rf dist&quot;,
+    &quot;dist-clean&quot;: &quot;shx rm -rf dist node_modules package-lock.json&quot;,
+    &quot;build&quot;: &quot;npx tsc&quot;,
+    &quot;postbuild&quot;: &quot;shx test -e dist/index.js &amp;&amp; shx chmod a+x dist/index.js || true&quot;,
+    &quot;watch&quot;: &quot;tsc --watch&quot;,
+    &quot;pretest&quot;: &quot;npm run build&quot;,
+    &quot;test&quot;: &quot;node dist/test/tst-*.js&quot;,
+    &quot;predebug-test&quot;: &quot;npm run build&quot;,
+    &quot;debug-test&quot;: &quot;node --inspect-brk dist/test/tst-*.js&quot;
+</pre><p>    Since <code>package.json</code> uses strict JSON syntax, be careful to
+    avoid trailing commas.
+</p><dl><dt> <code>clean</code> </dt><dd><p>        Removes the <code>dist</code> directory which is specified as the <code>tsc</code>
+	output directory by the provided 
+	<a href="prj1-sol/tsconfig.json?lang=json">tsconfig.json.</a>
+</p></dd><dt> <code>dist-clean</code> </dt><dd><p>         Clean out everything, including all downloaded libraries.
+</p></dd><dt> <code>build</code> </dt><dd><p>        Run the <code>tsc</code> compiler using options specified by
+	 <a href="prj1-sol/tsconfig.json?lang=json">tsconfig.json.</a>
+	The distributed <code>tsconfig.json</code> is set up to compile
+	<code>*.ts</code> files from your <code>src</code> directory to the <code>dist</code>
+	directory.
+</p></dd><dt> <code>watch</code> </dt><dd><p>        Rerun the <code>tsc</code> compiler when any of the source files
+	change.  You can keep this command running in a terminal
+	and any file changes will automatically trigger a recompile.
+</p></dd><dt> <code>test</code> </dt><dd><p>        Run all generated tests in the <code>dist/test</code> directory.  The
+        <code>pretest</code> script will automatically be run before <code>test</code>,
+        ensuring that the build is always up-to-date before testing.
+</p></dd><dt> <code>debug-test</code> </dt><dd><p>        Like <code>test</code>, but pause until connected to by the
+	chrome debugger.
+</p></dd></dl><p>    You can run any of the above scripts using <code>npm run</code> <em>script</em>,
+    where <em>script</em> is name of the script.  You can run tests
+    directly as simply <code>npm test</code>.
+</p></li><li><p>Add the declaration <code>&quot;type&quot;: &quot;module&quot;,</code> after the <code>scripts</code>
+    section in <code>package.json</code>.  This will ensure that node
+    treats <code>*.mjs</code> files as ES6 JavaScript modules.
+</p></li><li><p>Use <code>npm install -D</code> to install the following packages as
+  <strong>development</strong> dependencies: <code>@types/node</code>, <code>@types/semver</code>, <code>chai</code>,
+  <code>shx</code>, <code>mockdate</code>, <code>mongodb-memory-server</code> and <code>typescript</code>.
+</p><ul><li><p>The <code>@types/*</code> packages provide the typescript compiler with
+        information about the types exported by the respective
+        JavaScript projects.
+</p></li><li><p>The <code>chai</code> package is an assertion library providing somewhat
+        more friendly assertion syntax than that available in node.
+</p></li><li><p><code>shx</code> allows portable execution of some selected user commands;
+      	note that this will allow the commands to also be used on Windows.
+</p></li><li><p><code>mockdate</code> and <code>mongodb-memory-server</code> are used during testing
+        to mock dates and mongodb respectively.
+</p></li><li><p>Installing <code>typescript</code> ensures your project uses a project-specific
+        typescript installation (rather than the one installed system wide
+	on your VM).
+</p></li></ul><p>    The <code>-D</code> option marks the dependencies as those needed only during
+    project development and not needed when running your project.
+</p></li><li><p>Install the following runtime dependencies using the <code>npm install</code>
+    command (without any <code>-D</code> option):
+</p><pre>    mongodb
+    https://sunybing:sunybing@zdu.binghamton.edu/cs444/lib/cs444-js-utils-0.0.1.tgz
+    https://sunybing:sunybing@zdu.binghamton.edu/cs444/lib/cs444-node-utils-0.0.1.tgz
+</pre><p>    The latter two dependencies are built from the source code contained
+    in the  <a href="../../lib">lib</a> course library directory.
+</p></li><li><p>Build your project using <code>npm run build</code>.  It should build without
+    errors if everything was set up correctly.
+</p><p>    Spend a few minutes poking around in the generated <code>prj1-sol/dist</code>
+    directory and notice that the generated JS files are very similar
+    to the source TS files.  Being familiar with this directory may
+    prove useful to track down runtime errors which are reported using
+    line numbers in the JS files.
+</p></li><li><p>Run the provided tests using <code>npm test</code>. Most of the tests will
+    fail.  Deactivate all the tests by changing the top level
+    <code>tst.suite(</code> in <code>src/test/tst-chat.ts</code> to <code>tst.test.skip(</code>.  Rerun
+    the tests and verify that no tests are being run.
+</p><p>    Also, run the provided command-line program.  It should run well
+    enough to provide a usage message:
+</p><pre class="hljs language-sh">    $ ./dist/index.js 
+    index.js DB_URL CMD ...
+    for CMD in
+     make-user chat-name=CHAT_NAME email=EMAIL first-name=FIRST_NAME 
+                last-name=LAST_NAME 
+                Make a new user and print its newly created ID. 
+      get-user user-key=USER_KEY 
+                Output all info for chat-user specified by USER_KEY, 
+    ...
+          help 
+                Print this message 
+</pre></li><li><p>Write types for your collection types in your <code>chat-dao.ts</code> file.
+    Try to derive them from the <code>T.*</code> types using typescript's
+    
+    <a href="https://www.typescriptlang.org/docs/handbook/utility-types.html">utility types</a>.  The skeleton file provides a couple of examples
+    to help you get started.  The db type for chat messages will need
+    to replace the <code>chatName</code> and <code>roomName</code> with the equivalent
+    ID fields.
+</p><p>    Since the brands on branded types are purely compile-time
+    artifacts, you can freely use branded types within your database
+    types.  This will make typescript automatically coerce raw types
+    stored in the database to branded types when retrieved.
+</p></li><li><p>Work on the <code>make()</code> factory method within the dao class.  Start
+    up by  <a href="#persistent-setup">opening a connection</a> to the specified
+    mongo URL.  Then create all the necessary collections and indexes.
+    When creating a collection <code>name</code> for documents having type <code>T</code>,
+    be sure to parameterize the creation call with the type as in
+    <code>db.collection&lt;T>(name)</code> where <code>T</code> is a type you constructed in
+    the previous step.
+</p><p>    Like all your top-level DAO methods, this method should be
+    structured as follows:
+</p><pre class="hljs language-ts">    try {
+      // ... stuff including early error returns
+      return E.okResult(some-success-result);
+    }
+    catch (error) {
+      //convert what should be a mongo exception to a Result
+      return E.errResult(E.errs((error as Error).message, 'E_DB'));
+    }
+</pre><p>    Using the command-line program to run the program at this stage
+    should hang.  This is because the program attempts to terminate
+    while leaving a db connection open.
+</p></li><li><p>Add code to <code>close()</code> the DAO and hook up the <code>close()</code> method in
+    <code>chat.ts</code> to call it.  Now when you run the command-line program,
+    it should terminate cleanly.
+</p></li><li><p>Implement a <code>clear()</code> method on your  DAO and hook it up to the
+    one in <code>chat.ts</code>.  You can simply using         
+        <a href="https://mongodb.github.io/node-mongodb-native/6.19/classes/Collection.html#deleteMany">deleteMany({})</a> on all the collections in your design.
+</p><p>    Do not forget to include the top-level <code>try-catch</code> to convert
+    any mongo exceptions into <code>Result</code>s.
+</p></li><li><p>Now implement a DAO method which can be called by <code>Chat::makeUser()</code>.
+    First, you will need to build a db type out of the incoming
+    <code>T.RawUser</code>.
+</p><ol><li><p>Use your chosen id-generation method to create a new
+        <code>T.UserIdX</code> ID.
+</p></li><li><p>Set up a timestamp to be stored for the creation and
+        last-update times:
+</p><pre class="hljs language-javascript">	const now = T.brand&lt;T.Iso8601X>(new Date().toISOString());
+</pre></li><li><p>Use the  <a href="#insertOne">insertOne()</a> method to insert the db
+        data.
+</p></li><li><p>If you have correctly set up unique indexes on your
+        collection, mongo should trigger an exception on any
+	attempt to insert user data having the same <code>email</code>
+	or <code>chatName</code> as that of a previously created
+	user.  Use a test within your <code>try { ... }</code> block
+	to distinguish this error from other errors:
+</p><pre class="hljs language-ts">    	catch (e) {
+      	  if ((e instanceof mongo.MongoError) &amp;&amp;
+	      (e.code ?? 0) === MONGO_UNIQUE_ERR) {
+	    return E.errResult(E.errs(`...`, 'E_EXISTS'));
+          }
+      	  else {
+	    return E.errResult(E.errs((e as Error).message,
+	                      'E_DB'));
+        }
+</pre></li></ol></li><li><p>Implement a DAO method to implement the <code>getUser()</code> functionality.
+    You may need some initial manipulation to move the <code>id</code> parameter
+    into the <code>_id</code> if you are storing <code>id</code> fields using mongo's <code>_id</code>.
+    Then simply call mongo's  <a href="#findOne">findOne().</a>  If the value
+    returned by <code>findOne()</code> is falsy, return a suitable <code>E_NOT_FOUND</code>
+    error.  Before returning the value read from the database, it may
+    need some cleanup to convert <code>_id</code> to <code>id</code>.
+</p></li><li><p>Enable the <code>users</code> test suite in <code>src/test/tst-chat.ts</code>.
+    Specifically, remove the <code>.skip</code> from the top-level <code>Chat</code>
+    suite and add it to all next-level suites except for the <code>users</code>
+    suite.
+</p><p>    Run tests using <code>npm test</code>, making any necessary code changes to
+    make all the tests pass.
+</p></li><li><p>Implement functionality within the DAO to support the
+    <code>makeChatRoom()</code> and <code>getChatRoom()</code> methods.  These will be
+    very similar to the <code>makeUser()</code> and <code>getUser()</code> methods.
+</p><p>    Enable the <code>chat rooms</code> suite and update your code until
+    all tests pass.  Three of the tests have been marked
+    as <code>.todo()</code>.  Implement those tests by understanding similar
+    tests and copy-and-pasting in code with suitable modifications.
+</p></li><li><p>Add functionality to the DAO to support the <code>updateUser()</code>
+    method.  You can base your code around the functionality
+    provided by mongo's  <a href="#findOneAndUpdate">findOneAndUpdate()</a>
+    which should be invoked on the corresponding collection as
+</p><pre class="hljs language-ts">    ... .findOneAndUpdate(query, {$set: updates}, options);
+</pre><p>    where:
+</p><ul><li><p><code>query</code> should select the document to be updated
+        based on the provided <code>id</code> (possibly reflected into
+	mongo's <code>_id</code>).
+</p></li><li><p><code>updates</code> are the requested updates enhanced with
+        a <code>lastUpdateTime</code> set to now.
+</p></li><li><p><code>options</code> should be set to <code>{ returnDocument:
+        mongo.ReturnDocument.AFTER }</code> to facilitate the required return
+        value.
+</p></li></ul><p>    As for <code>makeUser()</code> the database value may need some cleanup before
+    being returned.
+</p><p>    Validate your code by turning on the corresponding test suite.
+</p></li><li><p>Now implement the DAO functionality for the <code>makeChatMsg()</code>
+    method.
+</p><p>    As mentioned in the earlier  <a href="#design">discussion,</a> that while the
+    external <code>T.ChatMsg</code> has <code>chatName</code> and <code>roomName</code> fields, it is
+    undesirable that those fields be stored within the db chat-message
+    to facilitate changing those fields.  Hence the <code>makeChatMsg()</code>
+    functionality can be implemented in the DAO as follows:
+</p><ol><li><p>Use the previously functionality previously implemented in the
+        DAO to support the <code>getUser()</code> method to convert the
+        <code>chatName</code> into a <code>userId</code>.  
+</p></li><li><p>Similarly, use the <code>getChatRoom()</code> functionality to convert a
+        <code>roomName</code> to a <code>roomId</code>.
+</p></li><li><p>Add a private method to the DAO which takes a chat message
+        having the db chat-message type (the one where the <code>chatName</code>
+	and <code>roomName</code> fields have been replaced by the corresponding
+	<code>ID</code>s).  This should be a fairly simple wrapper around mongo's
+	<code>insertOne()</code> similar to the previously implemented <code>addUser()</code>
+	and <code>addChatRoom()</code> methods.
+</p></li><li><p>Add a method to the DAO which directly supports the external <code>
+        </code>makeChatMsg()<code> functionality.  This will merely call the
+	modified </code>getUser()<code> and </code>getChatRoom()<code> functionality to
+	convert the names to IDs and then call the above private
+	method.  You will need to ensure an early error return if
+	any of the calls fail.</code></p></li></ol></li><li><p>Implement the DAO functionality for the <code>findChatMsgs()</code> method.
+    The <code>roomName</code> and the optional <code>chatName</code> in findParams will need
+    to be converted to ID's.  This will be very similar to what you
+    did for <code>makeChatMsg()</code> except that it is complicated slightly by
+    the fact that the <code>chatName</code> parameter is optional.
+</p><p>    As for <code>makeChatMsg()</code>, the guts of the find can then be delegated
+    to a private method.
+</p><p>    The reverse conversion will need to be done on the db value
+    returned by the private method (containing IDs) to the external
+    <code>ChatMsg</code> type containing names.  This can again be implemented
+    doing a lookup by ID using <code>getUser()</code> and <code>getChatRoom()</code>.
+</p><p>    The private method should be set up to use the functionality of
+    mongo's  <a href="#find">find()</a> to implement the search.  The code is
+    complicated by the fact that the parameters to mongo's <code>find()</code>
+    need to be built up from optional parameters.
+</p><p>    To start with, use destructuring to take apart the the incoming
+    <code>search</code> field having a type similar to <code>T.FindParams</code> (the difference
+    is that the <code>chatName</code> and <code>roomName</code> fields will have been replaced
+    by the corresponding ID's):
+</p><pre class="hljs language-ts">    const { offset = 0, limit = T.PAGE_SIZE, id, words, earliest, latest,
+           ...query1 } = search;
+</pre><p>    The above destructures search into the fields which need special
+    handling with other fields grabbed in <code>query1</code>.
+</p><p>    Depending on the presence of the optional search fields, create
+    a new query from <code>query1</code> (a field is present if its value
+    is not <code>undefined</code>):
+</p><ul><li><p>If <code>words</code> is present, add in a <code>$text</code> property with
+         value <code>{ $search: words }</code>.  This assumes that you
+	 have created a  <a href="#text-index">text index</a> on the collection.
+</p></li><li><p>If <code>earliest</code>/<code>latest</code> are present add in a <code>creationTime</code>
+         property having properties <code>{ $gte: earliest, $lte: latest }</code>
+         (only one property should be present if only one of
+         <code>earliest</code>/<code>latest</code> is present.
+</p></li></ul><p>    The modified <code>query</code> can then be used to asynchronously invoke
+    <code>.find()</code> on the appropriate collection.  The returned cursor
+    should be processed to meet the project requirements:
+</p><pre class="hljs language-ts">    .sort({ creationTime: -1, msg: 1, _id: 1 })
+    .skip(offset)
+    .limit(limit);
+</pre><p>    The <code>sort()</code> sorts the cursor by non-ascending order of
+    <code>creationTime</code> then by non-descending order by <code>msg</code> and then by
+    ascending order of the internal <code>_id</code>.
+</p><p>    The processed cursor results can then be collected into an array
+    using the asynchronous  <a href="#toArray">toArray()</a> method.  The db
+    values in the array may require <code>_id</code> to <code>id</code> cleanup.
+</p></li><li><p>Turn on all test suites including the <code>Chat Messages</code> and
+    <code>user updates must be reflected ...</code> suites.
+</p></li><li><p>Iterate until all tests pass.
+</p></li><li><p>Clean up your code.  Activate all tests.  Remove any debugging
+    code like print statements.
+</p></li><li><p>Update your <code>README</code> with any information you need the grader to
+    read.  Do this only if you have not met or exceeded the project
+    requirements.  Do not include information already provided in the
+    assignment.
+</p></li><li><p>Complete and submit your project as per the
+     <a href="../working/working.html#complete">generic working directions</a>.
+</p></li></ol></section></section></div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/slide-controls.mjs"></script>
+    <script type="module" src="../../assets/scripts/nav.mjs"></script> 
+    <script type="module" src="../../assets/scripts/highlight.mjs"></script>
+</body>
+</html>
+
