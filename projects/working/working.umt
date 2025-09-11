@@ -74,7 +74,7 @@ repository and your personal github repository respectively.
     .code(lang=sh)
     ~~~
     $ git add .   #add contents of directory to git 
-    $ git commit -m 'started prj1' #commit locally
+    $ git commit -m 'started prjN' #commit locally
     $ git push    #push changes to github
     ~~~
 
@@ -156,7 +156,7 @@ repository and your personal github repository respectively.
 
 You will submit your project as a zip file on gradescope.
 
-  # Create a zip file for your lab submission:
+  # Create a zip file for your submission:
 
     .code(lang=sh)
     ~~~

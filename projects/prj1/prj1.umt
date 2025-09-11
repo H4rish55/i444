@@ -202,6 +202,10 @@ project.
         `dist` directory (containing compiled code) and emacs `*~`
         backup files into git.
 
+        [This link does not work on the course website, but the file
+        is present in the provided `prj1-sol` directory].
+
+
       : .<./prj1-sol/.zipignore> ".zipignore" :
         A `.zipignore` file for use by the
         .<../../bin/do-zip.sh?lang=sh> do-zip.sh shell script to avoid

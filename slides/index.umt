@@ -27,6 +27,11 @@ runnable version of code for that section.
 
   + .<destructuring/destructuring.html> "Destructuring".
 
+  + .<async/async.html> Async.
+
+  + .<users-auth/users-auth.html> "Users Authentication".
+
+
 
 %%%
 
@@ -35,13 +40,9 @@ runnable version of code for that section.
   + .<iterators-generators/iterators-generators.html>
     "Iterators and Generators".
 
-  + .<async/async.html> Async.
-
   + .<functions/functions.html> Functions.
 
   + .<modules/modules.html> Modules.
-
-  + .<users-auth/users-auth.html> "Users Authentication".
 
   + .<http/http.html> HTTP.
 

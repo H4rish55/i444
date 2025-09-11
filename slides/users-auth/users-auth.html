@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Users  Authentication</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link href="../../assets/styles/article.css" rel="stylesheet" type="text/css" /> 
+</head>
+
+<body class=umt-slides>
+
+    <nav id="course-nav">
+      <ul>
+      </ul>
+    </nav>
+    
+    <div class="umt-content">
+      <div><section data-level="h1"><h1>Users  Authentication</h1><section data-level="h2"><h2>Overview</h2><ul><li><p>Authentication vs authorization.
+</p></li><li><p>Password storage.
+</p></li><li><p>Demo following technologies:
+</p><ul><li><p>JSON
+</p></li><li><p>Asynchronous programming using <code>async</code> and <code>await</code>.
+</p></li><li><p>Mongo db
+</p></li><li><p>Zod validation.
+</p></li></ul></li><li><p>Testing.
+</p></li></ul></section><section data-level="h2"><h2>Authentication vs Authorization</h2><ul><li><p><strong>Authentication</strong>: Who we are.  Example: user-id and password.
+</p></li><li><p><strong>Authorization</strong>: What we can do.  Example: Unix file system
+    permissions.
+</p></li><li><p><strong>2-Factor Authentication</strong>: Authentication based on 2 independent
+    factors: for example, <em>what we know</em> and <em>what we have</em>.
+    Examples: user-id password and fingerprint; user-id password and
+    cellphone; user-id password and iris scan.
+</p></li><li><p>Authentication and authorization are orthogonal concepts, but
+    authorization usually requires some kind of earlier
+    authentication.
+</p></li><li><p><strong>Access control</strong>: control access to resources based on authentication
+    and authorization.
+</p></li></ul></section><section data-level="h2"><h2>Password Storage</h2><ul><li><p>A responsible programmer should <strong>never</strong> store a plaintext
+    password.
+</p></li><li><p>Typically, passwords are hashed (not encrypted) using a one-way
+    hashing algorithm like SHA256 or bcrypt.  Only hash is stored.
+    When user logs in, entered password is hashed and compared with
+    stored hash; if they match, then login is allowed, else denied.
+</p></li></ul><ul><li><p>Simple hash is amenable to a <em>dictionary attack</em> where hashes are
+    precomputed for many common passwords; if precomputed hash matches
+    stored hash (got by accessing the password file), then password is
+    dictionary word.
+</p></li></ul></section><section data-level="h2"><h2>More on Hashing</h2><ul><li><p>Map variable length content to fixed-length hash string.
+</p></li><li><p>Good hashing algorithms ensure that changing the content slightly
+    (even by a single bit) will result in a different hash.
+</p></li><li><p>The uses of hashing include hash tables, summarizing content,
+    cryptographic signatures.
+</p></li><li><p>Cryptographically secure hashing algorithms SHA-256, and bcrypt.
+    The latter is purposely slow.  Note that MD5 is no longer regarded
+    as cryptographically secure.
+</p></li></ul><pre>$ echo hello | sha256sum 
+5891b5b522d5df086d0ff... (64 hexets)
+$ echo hellp | sha256sum 
+bf8c83416f31143ee2fa5... (64 hexets)
+$
+</pre></section><section data-level="h2"><h2>Password Storage Continued</h2><ul><li><p>One way of cracking passwords is to have pre-built maps mapping 
+    common &quot;dictionary words<code></code>&quot; to their hash values and simply find a
+    match in the stored hashes for the hash of the password being
+    cracked.
+</p></li><li><p>Dictionary attacks can be made harder by adding a random salt to
+    each password before hashing.  The salt is stored along with the
+    hash to allow matching an entered password.  So a 2 character salt
+    with 64 possibilities for each salt character would increase the
+    number of combinations for a dictionary attack by 4096.
+</p></li><li><p>In 2000's, brute-forcing passwords becoming possible because
+    of extremely fast hardware (sometimes using GPUs).
+</p></li><li><p>Normal hashing algorithms like SHA-256 were designed to be fast.
+</p></li><li><p>Current best practice for password hashing is to use purposely
+    slowed up hash algorithms like <code>bcrypt</code> to make it harder for
+    crackers.
+</p></li></ul></section><section data-level="h2"><h2>Using bcrypt</h2><p>In  <a href="./code/users-auth/bin/bcrypt-hash.mjs?lang=js">bcrypt-hash.mjs:</a>
+</p><pre class="hljs language-mjs">import bcrypt from 'bcrypt';
+
+async function go() {
+  const PW = 'asdf';
+  const h1 = await bcrypt.hash(PW, 10);
+  const h2 = await bcrypt.hash(PW, 10);
+  console.log(`hash1: ${h1}`);
+  console.log(`hash2: ${h2}`);
+  console.log('cmp1', await bcrypt.compare(PW, h1));
+  console.log('cmp2', await bcrypt.compare(PW + 'a', h1));
+}
+
+go().catch(err => console.error(err));
+
+</pre></section><section data-level="h2"><h2>Using bcrypt: Log</h2><pre>$ node code/users-auth/bin/bcrypt-hash.mjs
+hash1: $2b$10$wXRP2XE8q3czM8mHe9Fi2.h... (truncated)
+hash2: $2b$10$0zqbCRkJomsoXaL3oSo4De2... (truncated)
+cmp1 true
+cmp2 false
+</pre></section><section data-level="h2"><h2>MongoDb</h2><ul><li><p>One of many nosql databases.  No rigid relations need to be predefined.
+</p></li><li><p>Allows storing and JS data serialized in &quot;documents<code></code>&quot; having <code>_id</code>
+    as primary key (when storing a document without an <code>_id</code> property, it is created
+    automatically with a suitable ID value).
+</p></li><li><p>Allows indexing.
+</p></li><li><p>Provides basic <strong>Create-Read-Update-Delete</strong> (CRUD) repertoire.
+</p></li></ul></section><section data-level="h2"><h2>Mongo CRUD</h2><p>All operations asynchronous.  Set up to return a <code>Promise</code> when
+called without a handler.
+</p><dl><dt>Create</dt><dd><p>    <code>insertOne()</code> and <code>insertMany()</code>.
+</p></dd><dt>Read</dt><dd><p>    <code>find()</code> returns a <code>Cursor</code>.  Can grab all using <code>toArray()</code>.
+</p></dd><dt>Update</dt><dd><p>    <code>updateOne()</code> and <code>updateMany()</code>.  Also, <code>findOneAndUpdate()</code>
+    and <code>findOneAndReplace()</code>.  Can combine insert and update
+    functionality using <code>upsert</code> option.
+</p></dd><dt>Delete</dt><dd><p>    <code>deleteOne()</code> and <code>deleteMany()</code>.
+</p></dd></dl></section><section data-level="h2"><h2>Asynchronous DB Operations</h2><ul><li><p>As mentioned, most DB operations are asynchronous.
+</p></li><li><p>Usually a good idea to cache DB connection as opening
+    a DB connection is an expensive operation.
+</p></li><li><p>Create a 
+    <a href="https://en.wikipedia.org/wiki/Data_access_object">Data Access Object</a> (DAO) which wraps a database.  Cache database
+    connection within object when object is first created.
+</p></li><li><p>DAO should provide dumb persistence operations and not contain
+    domain logic.
+</p></li><li><p>Getting a connection to a DB is an asynchronous operation.
+</p></li><li><p>Can we build object using an <code>async</code> <code>constructor</code>??
+</p></li><li><p>Use a static factory method instead.
+</p></li></ul></section><section data-level="h2"><h2>Setting up a Mongo Project</h2><pre class="hljs language-sh">$ npm init -y #creates package.json
+...
+$ npm install mongodb    #old versions required --save
+npm notice created a lockfile as package-lock.json...
+...
+$ ls -a
+.gitignore node_modules package.json package-lock.json ...
+$
+</pre></section><section data-level="h2"><h2>Mongo Shell Log</h2><p>Allows interacting with mongo db.  Following log assumes that
+collection <code>userInfos</code> in db <code>users</code> is loaded with simpsons data.
+</p><pre>$ mongosh
+Current Mongosh Log ID: ...
+...
+...
+test> help
+...
+> use users   //assume populated with Simpsons
+switched to db users
+users> db.userInfos.find({})
+{ &quot;_id&quot; : &quot;bart&quot;, &quot;id&quot; : &quot;bart&quot;, ... }
+{ &quot;_id&quot; : &quot;marge&quot;, &quot;id&quot; : &quot;marge&quot;, ... }
+{ &quot;_id&quot; : &quot;lisa&quot;, &quot;id&quot; : &quot;lisa&quot;, ... }
+{ &quot;_id&quot; : &quot;homer&quot;, &quot;id&quot; : &quot;homer&quot;, ... }
+users> db.userInfos.find({&quot;firstName&quot;: &quot;Bart&quot;})
+{ &quot;_id&quot; : &quot;bart&quot;, &quot;id&quot; : &quot;bart&quot;, ... }
+users> db.userInfos.find({}).length()
+4
+</pre></section><section data-level="h2"><h2>Mongo Shell Log Continued</h2><pre>users> db.userInfos.deleteOne({&quot;firstName&quot;: &quot;Bart&quot;})
+{ &quot;acknowledged&quot; : true, &quot;deletedCount&quot; : 1 }
+> db.userInfos.find({}).length()
+3
+users> db.userInfos.deleteMany({})
+{ &quot;acknowledged&quot; : true, &quot;deletedCount&quot; : 3 }
+users> db.userInfos.find({}).length()
+0
+</pre></section><section data-level="h2"><h2>Zod Validation Framework</h2><p> <a href="https://zod.dev/?id=table-of-contents">Zod</a> is a TS centered validation
+framework.
+</p><ul><li><p>Schemas describing validation constraints.
+</p></li><li><p>TypeScript type extracted automatically from zod schemas.
+</p></li><li><p>Schemas for basic JS types like primitives, objects and arrays.
+</p></li><li><p>Possible to add additional constraints like a minimal length.
+</p></li><li><p>Add additional constrains using refinements.
+</p></li><li><p>Transform to different types using transforms.
+</p></li></ul><pre class="hljs language-javascript">const UserInfo =  z.object({
+  email: z.string().email(),
+  firstName: z.string().min(1).regex(/^[\w\s]+$/),
+  lastName: z.string().min(1).regex(/^[\w\s]+$/),
+});
+
+type UserInfo = z.infer&lt;typeof UserInfo>;
+</pre></section><section data-level="h2"><h2>User Auth Features</h2><ul><li><p>Store user-info objects.
+</p></li><li><p>Demonstrate use of <code>insert*()</code>, <code>find*()</code>, <code>delete*()</code>.
+</p></li><li><p> <a href="code/users-auth/LOG?lang=sh">Sample log</a>.
+</p></li></ul></section><section data-level="h2"><h2> <span id="auth">TS</span> Implementation</h2><dl><dt>  <a href="code/users-auth/src/lib/auth-services.ts?lang=ts">auth-services.ts</a> </dt><dd><p>    Top-level authentication services.
+</p></dd><dt>  <a href="code/users-auth/src/lib/user.ts?lang=ts">user.ts</a> </dt><dd><p>    User interface and zod validation.
+</p></dd><dt>  <a href="code/users-auth/src/lib/auth-dao.ts?lang=ts">auth-dao.ts</a> </dt><dd><p>    Data Access Object which implements db operations.
+</p></dd><dt>  <a href="code/users-auth/src/lib/main.ts?lang=ts">main.ts</a> </dt><dd><p>    Command-line interface, trivially invoked from
+     <a href="code/users-auth/src/index.ts?lang=ts">index.ts.</a>
+</p></dd><dt>  <a href="code/users-auth/src/test/mem-db-server.ts?lang=ts">test/mem-db-server.ts</a> </dt><dd><p>    Memory based mongo sever as a <strong>test double</strong>.  Advantages include
+    speed and that clearing of in-memory db before each test.
+</p></dd><dt>  <a href="code/users-auth/src/test/auth-dao.ts?lang=ts">test/auth-dao.ts</a> </dt><dd><p>    Auth dao tests.
+</p></dd><dt>  <a href="code/users-auth/src/test/auth-services.ts?lang=ts">test/auth-services.ts</a> </dt><dd><p>    Auth service tests.
+</p></dd><dt>  <a href="code/users-auth/src/test/user.ts?lang=ts">test/user.ts</a> </dt><dd><p>    User tests.
+</p></dd></dl></section></section></div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/slide-controls.mjs"></script>
+    <script type="module" src="../../assets/scripts/nav.mjs"></script> 
+    <script type="module" src="../../assets/scripts/highlight.mjs"></script>
+</body>
+</html>
+

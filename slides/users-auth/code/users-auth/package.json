@@ -1,0 +1,41 @@
+{
+  "name": "users-auth",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/main.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "clean": "shx rm -rf dist",
+    "build": "tsc",
+    "postbuild": "shx chmod a+x dist/index.js",
+    "watch": "tsc --watch",
+    "prepack": "npm run clean && npm run build",
+    "pretest": "npm run build",
+    "test": "mocha --reporter-options maxDiffSize=128000 dist/test",
+    "predebug-test": "npm run build",
+    "debug-test": "mocha --inspect-brk dist/test"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chai": "^5.0.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.13.9",
+    "@types/semver": "^7.5.8",
+    "chai": "^5.2.0",
+    "mongodb-memory-server": "^10.1.4",
+    "shx": "^0.3.4",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "bcrypt": "^5.1.1",
+    "mocha": "^11.1.0",
+    "mongodb": "^6.14.1",
+    "zod": "^3.24.2"
+  }
+}

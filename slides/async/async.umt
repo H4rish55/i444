@@ -1,0 +1,1108 @@
+           A s y n c h r o n o u s    J a v a S c r i p t
+
+                        Overview
+			========
+
+  + Cookbook approach to asynchronous code in modern JavaScript.
+
+  + The JavaScript *event loop* and *run-to-completion* semantics.
+
+  + Callbacks for event handlers.
+
+  + Pyramid of doom.
+
+  + Taming asynchronous code: promises.
+
+  + Taming asynchronous code: `async`, `await`.
+
+
+    	   	  Cookbook Approach
+		  =================
+
+Can use asynchronous code without understanding underlying concepts
+by using ."keywords``." `async` and `await`:
+
+  + If a function is documented as .~async~ or as returning a
+    promise, then it is possible to call it using the .~await~
+    keyword.
+
+  + The .~await~ returns with the success value only when the
+    underlying asynchronous operation completes.
+
+  + If an error occurs in the asynchronous function, then
+    the resulting exception can be handled using the
+    usual .~try~-``.~catch~.
+
+  + The .~await~ keyword can *only* be used within functions
+    declared using the .~async~ keyword.  Consequently, any
+    use of asynchronous code within a program will necessitate
+    declaring the top-level function in the program .~async~.
+
+  + Enables writing asynchronous code in a synchronous style.
+
+
+    	    	    Cookbook Approach to using fetch()
+		    ==================================
+
+The browser provides .<https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch> fetch() to allow accessing resources asynchronously.
+
+~~~
+async function getUrl(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`HTTP error '${response.status}'`);
+  }
+  else {
+    return await response.json();
+  }
+}
+~~~
+
+This was used in the .<../regex/code/crawler/index.html> crawler
+discussed earlier.
+
+    	    	    Cookbook Approach to using MongoDB
+		    ==================================
+
+Docs for .<http://mongodb.github.io/node-mongodb-native/3.1/api/MongoClient.html#.connect> connect(), .<http://mongodb.github.io/node-mongodb-native/3.1/api/MongoClient.html#db> db, .<http://mongodb.github.io/node-mongodb-native/3.1/api/Db.html#collection> collection, .<http://mongodb.github.io/node-mongodb-native/3.1/api/Collection.html#findOne> findOne() and .<http://mongodb.github.io/node-mongodb-native/3.1/api/MongoClient.html#close> close().
+
+~~~
+const mongo = require('mongodb').MongoClient;
+async function(mongoUrl, dbName, collectionName, id) {
+  //bad code: reuse db conn; close() should be in finally.
+  try { 
+    const client = await mongo.connect(mongoUrl);
+    const db = client.db(dbName);
+    const collection = db.collection(collectionName);
+    const value = await collection.findOne({_id: id});
+    await client.close();
+    return value;
+  }
+  catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+~~~
+
+
+
+                  The Need for  Concurrency
+		  =========================
+
+  + Modern CPUs have clocks in the low GHz.  That means individual
+    CPU operations occupy under 1 nanosecond.
+
+  + Typically, I/O may take in the order of milliseconds which is
+    around a million times slower than CPU operations.
+
+  + Highly inefficient to have CPU wait for an I/O operation to
+    complete.
+
+  + Need to concurrently do other stuff while waiting for I/O to
+    complete.
+
+  + Note that browser responsiveness is usually controlled by
+    I/O responsiveness.
+
+
+
+		Approaches to Concurrency
+		=========================
+
+Two commonly used approaches to concurrency:
+
+  : Synchronous Blocking Model:
+    When a program attempts to do I/O, the program blocks until the
+    I/O is completed.  To allow concurrency, the operating system
+    will schedule some other activity while waiting for the I/O.  The
+    unit of scheduling is usually a *process* or *thread*; leads to
+    the process/thread model used by many current OS's.
+
+
+  : Asynchronous Event Model:
+    When a program attempts to do I/O, it merely starts the I/O after
+    registering a callback handler to handle the I/O completion event.  The
+    program continues running while the I/O is happening concurrently.
+    The completion of the I/O results in a event which results in
+    the registered handler being called.
+
+
+    		   Asynchronicity in JavaScript
+		   ============================
+
+
+  + JavaScript uses the asynchronous event model.
+
+  + JavaScript started out simply using callbacks for asynchronous
+    programming.
+
+  + Promises introduced into JavaScript in ES6 around 2012.
+
+  + Allow using asynchronous functions in a synchronous style
+    using .~async~/``.~await~ in ES2017.
+
+  + Asynchronicity is required for *message passing* which is an
+    essential ingredient of .<https://www.reactivemanifesto.org/>
+    "Reactive Programming".
+
+
+	   	    JavaScript Event Loop
+		    =====================
+
+
+The top-level JavaScript runtime consists of an event loop which pulls
+tasks corresponding to completed events off a task queue and calls their
+handler function.
+
+~~~
+  while (taskQueue.notEmpty()) {
+    const task = taskQueue.remove();
+    const handler = task.handler();
+    handler.call(); //pass suitable arguments
+  }
+  //terminate program
+~~~
+
+  + The `hander.call()` *runs to completion*.
+
+  + Code does not need to deal with an event handler being
+    interrupted.
+
+  + Code still needs to deal with the fact that the order of
+    running of event handlers is not defined.
+
+
+    	       Run to Completion Consequences
+	       ==============================
+
+In .<code/run-to-completion.js?colorize=true> run-to-completion.js:
+
+.include("code/run-to-completion.js")
+
+		Run to Completion Log
+		=====================
+
+```
+$ ./run-to-completion.js 
+sleep done
+timeout
+$
+```
+
+Because of run-to-completion semantics, it will *always* be
+the case that the "sleep done" message will be output before
+the "timeout" message.
+
+
+    	      Why This Concurrency Model
+	      ==========================
+
+  + JavaScript was designed as a language which should be easy for
+    inexperienced programmers to use for scripting dynamic behavior in
+    browsers.
+
+  + Browser reacts to user actions by generating events like
+    key-press, mouse-click, etc.
+
+  + Browser programmer needs to provide optional event handlers for
+    these events in order to implement browser dynamic behavior.
+
+  + Since every event handler runs to completion, programmer can simply
+    concentrate on code for that event, ignoring other events (at least
+    for independent events).
+
+  + No need for the programmer to understand complex process / threading
+    models.
+
+  + Lower overhead for I/O bound tasks; well suited for browser
+    environment.
+
+		Playing with Asynchronous Functions
+		===================================
+
+
+Simulate asynchronous success and failure using .<code/async-sim.mjs>
+async-sim.mjs which uses
+.<https://developer.mozilla.org/en-US/docs/Web/API/setTimeout>
+setTimeout() to run function asynchronously or fail after a 2-second
+delay:
+
+.include("code/async-sim.mjs")
+
+		Playing with Asynchronous Functions: Usage
+		==========================================
+
+~~~
+> const { asyncSucc, asyncErr, p, t } =
+     await import('./async-sim.mjs')
+undefined
+> p(1, 2, 3)
+1 2 3
+undefined
+> t()
+'08:56:59 GMT-0400 (Eastern Daylight Time)'
+> asyncSucc(() => p('done'))
+undefined
+> done
+
+> asyncErr('some error message')
+undefined
+> Uncaught Error: some error message
+> 
+~~~
+
+		  Accessing Return Value of an Asynchronous Operation
+		  ===================================================
+
+~~~
+> function f() {
+    asyncSucc(() => { p('f run'); return 42; });
+  }
+undefined
+> let ret = f();
+undefined
+> f run
+
+> ret
+undefined
+> 
+~~~
+
+How do I get hold of the 42 return value.
+
+	  Return Value of an Asynchronous Operation: Another Attempt
+	  ==========================================================
+
+Try using a global var to get hold of return value.
+
+~~~
+> function f() {
+    asyncSucc(() => { p('f run'); ret = 42; });
+  }
+undefined
+> ret = -1; f(); p(`ret after f() is ${ret}`);
+ret after f() is -1
+undefined
+> f run
+
+> ret
+42
+> 
+~~~
+
+The only way to access the return value of an asynchronous operation
+is via a parameter to the callback function.
+
+~~~
+> asyncSucc(callback => callback(42), v => console.log(v))
+undefined
+> 42
+>
+~~~
+
+		Placing Order Simulation
+		========================
+
+We use a simple .<code/async-order-sim/> "async simulation" of placing
+an order.  Have an `orderer` object which simulates consecutive
+asynchronous steps:
+
+  : *validate* : Validate parameters.
+
+  : *order* :  Place order.
+
+  : *email* :  Send confirmation email.
+
+The command-line program .<code/async-order-sim/main.mjs?lang=js>
+main.mjs allows up to two arguments:
+
+  # The module to be used for placing an order.
+
+  # An optional argument which specifies the step at which
+    an error occurs.
+
+  
+          Placing an Order using Callbacks: Happy Path
+	  ============================================
+
+In .<code/async-order-sim/happy-cb-order.mjs?lang=js> happy-cb-order.mjs
+
+.include("code/async-order-sim/happy-cb-order.mjs", begin=".1")
+
+.code(lang=sh)
+```
+$ ./main.mjs happy-cb-order.mjs 
+happy-cb-order validated; order placed; email sent
+
+# same result, even tho placing order fails!!
+# (extra "order" argument forces error when placing order)
+$ ./main.mjs happy-cb-order.mjs order
+happy-cb-order validated; order placed; email sent
+$
+```
+
+
+			Errors
+			======
+
+~~~
+//Normal exception catching
+> try {
+    throw 'throwing';
+  } catch (ex) {
+    p(`caught ${ex}`);
+  }
+caught throwing
+undefined
+~~~
+
+		        Errors Continued
+			================
+
+~~~
+//Exception in Async not caught
+try {
+  asyncErr('some error');
+}
+catch (ex) {
+  p(`caught ${ex}`);
+}
+undefined
+> Uncaught Error: some error
+> 
+~~~
+
+
+		Using Node fs.readFile() with Callback
+		======================================
+
+.include("code/readfile.js", begin=".1.", end=".2.")
+
+*Log*:
+
+```
+> cannot read ./xxx.js: Error: ENOENT: ...
+read ./readfile.js:
+#!/usr/bin/env ...
+
+```
+
+          Placing an Order using Callbacks with Error Checking
+	  ====================================================
+
+In .<code/async-order-sim/err-cb-order.mjs?lang=mjs> err-cb-order.mjs:
+
+.include("code/async-order-sim/err-cb-order.mjs", begin=".1", lang=js)
+
+          Placing an Order using Callbacks with Error Checking: Log
+	  =========================================================
+
+.code(lang=sh)
+```
+# happy path
+$ ./main.mjs err-cb-order.mjs 
+err-cb-order validated; order placed; email sent
+
+# catches errors properly
+$ ./main.mjs err-cb-order.mjs validate
+validate error
+$ ./main.mjs err-cb-order.mjs order
+order error
+$ ./main.mjs err-cb-order.mjs email
+email error
+$
+```
+
+
+%%%
+		Aside: Callbacks and Continuations
+		==================================
+
+
+  + Pass every function a continuation which is a
+    function `cc(v)` of one argument.
+
+  + When the function would normally return a value `v`,
+    it should simply call `cc(v)`.
+
+  + In "continuation-passing style" a function never
+    returns.
+
+  + Programming a chain of event handlers is
+    similar to programming with continuations.
+
+    	    Continuation-Passing Factorial
+	    ==============================
+	    
+.include("code/continuation-fact.js", begin_label=".1.")
+
+%%%
+
+			Problems with Callbacks
+			=======================
+
+  + A top-level exception handler does not work for asynchronous
+    callbacks since the handler runs before the callback.  Hence
+    exceptions occurring within the callback are not caught
+    by the top-level exception handler.
+
+  + If an asynchronous function result needs to be further processed
+    by another asynchronous function, then we need to have nested
+    callbacks.
+
+  + A chain of callbacks leads to the *pyramid of doom* because
+    of nesting of callbacks.
+
+    	 	   Promises
+		   ========
+
+  
+  + A .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises>
+    Promise is an object representing the eventual completion or
+    failure of an asynchronous operation.
+
+  + When a function which requires an asynchronous callback as an
+    argument is called, it returns immediately with an object called a
+    "pending" *Promise*.  Subsequently, the callbacks can be added to
+    the promise.  The callbacks will be called after the promise has
+    been "settled".
+
+~~~
+let promise = some_call_which_returns_promise(...);
+promise.
+  then(callback1).
+  then(callback2).
+  ...
+  catch(errorCallback);
+~~~
+    
+		 Promise Advantages
+		 ==================
+
+  + Promises can be chained; this avoids the "pyramid of doom".
+
+  + Callbacks are never called before completion of current run of
+    js *event loop*.
+
+  + Callbacks added using .~then~ even after completion of the
+    asynchronous operation will still be called.
+
+  + .~then()~ can be called multiple times on the *same* promise to
+    add multiple callbacks (called in order of insertion).
+
+  + Allows catching errors much more easily using .~catch()~;
+    similar to exception handling.
+
+  + .~then()~ can even be chained after a catch.
+
+
+    	     Promise API
+	     ===========
+
+
+~~~
+new Promise(
+  /* executor */
+  function(resolve, reject) { ... }
+);
+~~~
+
+  + Creates a promise.
+
+  + `resolve` and `reject` are single argument functions.
+
+  + Executor function executed immediately.  Usually will start some
+    kind of asynchronous operation which may return some result.
+
+      # If the async operation succeeds with some result `succ`, then
+        the executor function should call `resolve(succ)`.
+
+      # If the async operation fails with some error `err`, then the
+        executor function should call `reject(err)`.
+
+
+       	      Outline of Using Promises for Asynch Operations
+	      ===============================================
+
+~~~
+function doOperation(...params) {
+  return new Promise((resolve, reject) => {
+    asyncOperation(...params, (result) => { //callback
+      if (isOk(result)) {
+        resolve(result);
+      }
+      else {
+        reject(result);
+      }
+    });
+  });
+}
+
+doOperation(...).
+  then(result => { ... }).
+  catch( err => ...);
+~~~
+
+			Example: Timeout Promise
+			========================
+
+.code(lang=js)
+```
+> function timeoutPromise(t = 2*1000) {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(42), t);
+  });
+}
+
+... ... ... ... undefined
+> timeoutPromise().then(v => console.log(v));
+
+Promise {
+  <pending>,
+  ...
+}
+> 42
+>
+```
+
+		  Promise States
+		  ==============
+
+
+  :Pending:
+    The underlying operation is not yet complete.
+
+  :Settled:
+    The underlying operation completed; it is known whether or not it succeeded
+    resulting in two settled sub-states:
+
+      :Fulfilled:
+        The underlying operation completed successfully.
+
+      :Rejected:
+        The underlying operation failed.
+
+A promise is settled only once.  The state of the promise will not change
+once it is settled.
+
+	 Getting Promise Settlement: `then()`
+	 ====================================
+
+~~~
+somePromise.then(value, err)
+~~~
+
+  + Arguments are one argument functions called when `somePromise` is
+     settled; specifically `value` / `err` are called with fulfillment
+     / rejection value depending on settlement.
+
+  + Usually .~then()~ is called with only the `value` argument,
+    with rejection of `somePromise` handled using a .~catch()~.
+
+  + .~then()~ itself returns a promise; this allows chaining .~then~'s.
+
+     + If the function passed to .~then()~ returns a value,
+       then the return'd promise fulfills with that value.
+
+     + If the function passed to .~then()~ throws an error,
+       then the return'd promise rejects with that error.
+
+     + If the function passed to .~then()~ returns a promise,
+       then the return'd promise has the same settlement
+       as it.
+
+
+	 Getting Promise Rejection: `catch()`
+	 ====================================
+
+~~~
+somePromise.catch(err)
+~~~
+
+  + `err` is a one argument functions called with the rejection value
+     of promise `somePromise`.
+
+  + .~catch()~ itself returns a promise; this allows continued promise
+    chaining.  Return value is similar to that of .~then()~.
+
+
+		nodejs util.promisify()
+		=======================
+
+  + API for nodejs evolved before promises were added to language.
+
+  + `util.promisify(fn)` can be used with existing callback-based
+    nodejs library function `fn` to make it return a .~Promise~.
+
+  + For example `util.promisify(fs.readFile)` returns a wrapped
+    version of `fs.readFile` which will return a .~Promise~.
+
+  + Newer versions of node have API already wrapped to return
+    promises.  For example, use `fsPromises.readFile()` instead
+    of `util.promisify(fs.readFile)`.
+    
+		Using Node fs.readFile() with Promise
+		=====================================
+
+.include("code/readfile.js", begin=".2.")
+
+    	       	      Playing with Promises
+		      =====================
+
+
+~~~
+> pr = new Promise((resolve, reject) => resolve(22))
+Promise {  22, ... }
+> pr.then((v) => p(v))
+Promise { <pending>, ... }
+> 22
+//Promise is settled only once
+> pr = new Promise((succ) => { succ(42); succ(22); })
+Promise { 42, ... }
+> pr.then((v) => p(v))
+Promise { <pending>, ... }
+> 42
+~~~
+
+       	      Playing with Promises: Chaining `then()`'s
+	      ==========================================
+
+
+~~~
+> function f(a, b) { p(a); return a * b; }
+undefined
+> pr = new Promise((resolve) => resolve(22))
+Promise { 22, ... }
+> pr.then((val) => f(val, 2)).
+    then((val) => f(val, 3)).
+    then((val) => p(val))
+> Promise { <pending>, ... }
+> 22
+44
+132
+
+>
+~~~
+
+
+		    Creating Settled Promises
+		    =========================
+
+
+  : `Promise.resolve(value)`:
+    Returns a promise which is already fulfilled with `value`.
+
+  : `Promise.reject(err)`:
+    Returns a promise which is already rejected with `err`.
+
+
+		Playing with Promises: Asynchronous Functions
+		=============================================
+
+~~~
+> function f(a, b, ret) {
+    p(`${t()}: ${a}`);
+    setTimeout(() => ret(a*b), 2000);
+  }
+undefined
+> pr = Promise.resolve(22)
+> pr.
+    then((v) => new Promise((succ) => f(v, 2, succ))).
+    then((v) => new Promise((succ) => f(v, 3, succ))).
+    then((v) => p(`${t()}: ${v}`))
+> 08:21:42 GMT-0400 (Eastern Daylight Time): 22
+08:21:44 GMT-0400 (Eastern Daylight Time): 44
+08:21:46 GMT-0400 (Eastern Daylight Time): 132
+
+> 
+~~~
+
+		Playing with Promises: Errors
+		=============================
+
+
+~~~
+> p(t()); pr1 = 
+    Promise.reject(new Error(t())); pr1.catch(()=>{})
+08:27:07 GMT-0400 (Eastern Daylight Time)
+...
+> p(t()); pr1.
+    then((v) => p(v)).
+    then((v) => p(v)).catch((err)=>p(err))
+08:27:51 GMT-0400 (Eastern Daylight Time)
+...
+> Error: 08:27:07 GMT-0400 (Eastern Daylight Time)
+...
+~~~
+
+
+		Playing with Promises: Errors Continued
+		=======================================
+
+~~~
+> pr1.
+    then((v) => p(`got value ${v}`)).
+    then((v) => p(`got value ${v}`)).
+    catch((e) => { p(`caught ${e}`); return 42; }).
+    then((v) => p(`got value ${v}`))
+Promise { <pending>, ... }
+> caught Error: 08:27:07 GMT-0400 (Eastern Daylight Time)
+got value 42
+
+> 
+~~~
+
+		Playing with Promises: Errors Continued
+		=======================================
+
+`then()`-chain continues past `catch()`:
+
+~~~
+> Promise.resolve(1).
+    then((v) => { p(`then1: ${v}`); return v*2; }).
+    then((v) => { p(`then2: ${v}`); return v*2; }).
+    catch((e) => p(`caught ${e}`)).
+    then((v) => { p(`then3: ${v}`); return v*2; })
+Promise { <pending>, ... }
+> then1: 1
+then2: 2
+then3: 4
+
+> 
+~~~
+
+
+
+%%%
+		A Curried Promise Creator
+		=========================
+
+In .<code/curried-promise.js> curried-promise.js:
+
+.include("code/curried-promise.js", begin_label=".1.")
+
+
+		Using Curried Promise
+		=====================
+
+~~~
+> .load curried-promise.js 
+> mul = curriedPromise((a, b) => a*b)
+> [mul2, mul3, mul4] = [mul(2), mul(3), mul(4)]
+[ [Function], [Function], [Function] ]
+> mul2(3).then((v)=>p(v))
+> 6
+> p(t()); mul2(3).then((v)=>mul4(v)).
+    then((v)=>p(`${t()}: ${v}`))
+13:58:11 GMT-0500 (EST)
+> 13:58:15 GMT-0500 (EST): 24
+> err = 
+    curriedPromise((a, b) => { throw new Error('err'); })
+> err(1)(2).catch((e) => p(`caught ${e}`))
+> caught Error: err
+~~~
+
+%%%
+
+          Placing an Order using Promises
+	  ===============================
+
+In .<code/async-order-sim/promise-order.mjs?lang=mjs> promise-order.mjs:
+
+.include("code/async-order-sim/promise-order.mjs", begin=".1")
+
+.code(lang=sh)
+```
+# happy path
+$ ./main.mjs promise-order.mjs
+promise-order validated; order placed; email sent
+
+# catches errors properly
+$ ./main.mjs promise-order.mjs validate
+validate error
+$ ./main.mjs promise-order.mjs order
+order error
+$ ./main.mjs promise-order.mjs email
+email error./main.mjs happy-cb-order.mjs 
+$
+```
+
+Revisit implementation of .<code/async-order-sim/main.mjs?lang=js>
+main program for asynchronous order simulator.
+
+		`Promise.all()`
+		===============
+
+Given an *iterable* of promises, returns a promise containing array
+of fulfilled values, or rejection if any promise rejected.
+(note that `mulN(i)` returns promise for `N*i` after 2 second delay):
+
+~~~
+> Promise.all([mul2(3), mul3(4), mul4(5)]).
+    then((v) => p(v))
+Promise { <pending>, ... }
+> [ 6, 12, 20 ]
+
+// err() returns a rejected promise
+> Promise.all([mul2(3), err(3)(2), mul3(4), mul4(5)]).
+    then((v) => p(v)).
+    catch((e) => p(`caught ${e}`))
+Promise {  <pending>, ... }
+> caught Error: err
+~~~
+
+		`Promise.all()` Continued
+		=========================
+
+`Promise.all()` runs all promises in parallel:
+
+~~~
+> p(t()); Promise.all([mul2(3), mul3(4), mul4(5)]).
+    then((v) => p(`${t()}: ${v}`))
+15:49:41 GMT-0500 (EST)
+Promise { <pending>, ... }
+> 15:49:43 GMT-0500 (EST): 6,12,20
+~~~
+
+Took 2 seconds to run all 3 functions even though each function
+takes 2 seconds apiece.
+
+
+		`Promise.race()`
+		================
+
+Given an *iterable* of promises, returns a promise containing
+settlement of which ever incoming promise completes first.
+
+~~~
+> Promise.race([mul2(3), mul3(4), mul4(5)]).
+    then((v) => p(v))
+Promise { <pending>, ... }
+> 6
+
+>
+~~~
+
+`Promise.any()` is similar except that it rejects only if
+all promises reject (`Promise.race()` will reject if the
+first settled promise rejects).
+
+%%%
+		Static Promise Sequencing
+		=========================
+
+Can sequence promises statically by chaining `then()`'s.  Repeating
+earlier example where output of one async function is input to the
+next, but using above `mul`"I" functions:
+
+~~~
+> p(t()); Promise.resolve(1).
+    then((v) => mul2(v)).
+    then((v) => mul3(v)).
+    then((v) => mul4(v)).
+    then((v) => { p(t()); p(v); })
+16:32:12 GMT-0500 (EST)
+Promise { <pending>, ... }
+> 16:32:18 GMT-0500 (EST)
+24
+
+>
+~~~
+
+		Dynamic Promise Sequencing 
+		==========================
+
+When number of promises to be sequenced is not known statically, we
+cannot use a static `then()`-chain.
+
+In .<code/promise-seq.js> promise-seq.js
+
+.include("code/promise-seq.js", end_label=".1.")
+
+	Dynamic Promise Sequencing Log
+	==============================
+
+~~~
+> .load promise-seq.js
+> fns = [mul2, mul3, mul4]
+> init = Promise.resolve(1)            //1
+> p(t()); sequencePromises(init, fns). //1*2*3*4
+    then((v) => p(`${t()}: ${v}`))
+17:15:41 GMT-0500 (EST)
+> 17:15:47 GMT-0500 (EST): 24
+> fns.push(mul4) //fns = [mul2, mul3, mul4, mul4]
+4
+> p(t()); sequencePromises(init, fns). //1*2*3*4*4
+    then((v) => p(`${t()}: ${v}`))
+17:16:14 GMT-0500 (EST)
+> 17:16:22 GMT-0500 (EST): 96
+~~~
+
+	   Alternative Dynamic Promise Sequencing
+	   ======================================
+
+.include("code/promise-seq.js", begin_label=".1.")
+
+%%%
+
+
+		Placing an Order using Generators
+		=================================
+
+Combine promises and generators to linearize control flow:
+
+In .<code/async-order-sim/generator-order.mjs?lang=mjs> generator-order.mjs:
+
+
+.include("code/async-order-sim/generator-order.mjs", begin=".1")
+
+
+		Placing an Order using Generators: Log
+		======================================
+
+
+.code(lang=sh)
+```
+# happy path
+./main.mjs generator-order.mjs 
+generator-order validated; order placed; email sent
+
+# catches errors properly
+$ ./main.mjs generator-order.mjs validate
+validate error
+$ ./main.mjs generator-order.mjs order
+order error
+$ ./main.mjs generator-order.mjs email
+email error
+$
+```
+
+		`async` / `await`
+		=================
+
+  + Extra syntax around promises and generators to allow writing
+    asynchronous code in a synchronous style.
+
+  + If a function or function expression has the .~async~ (contextual)
+    keyword in front of it, then that function always returns a
+    promise.
+
+  + When the .~await~ (contextual) keyword is used in front of
+    an expression which is a promise, it blocks the program
+    until the promise is settled.  The value of an .~await~
+    expression is the fulfillment value of the promise.
+
+  + The .~await~ keyword can only be used within a .~async~ function.
+
+  + Errors can be handled using .~try~-``.~catch~.
+
+  + Seems a big win.
+
+  + Note that we may need to fall back on promises using `Promise.all()`
+    when we want to run code in parallel rather than sequentially.
+
+    	    `async` / `await` Example
+	    =========================
+
+~~~
+> function msgPromise() {
+    return new Promise(function (resolve) {
+      setTimeout(() =>
+                 resolve(`hello@${t()}`), 2000)});
+   }
+undefined
+> async function msg(n) {
+    const m = await msgPromise();
+    return `${n}: ${m}`
+  }
+undefined
+~~~
+
+    	    Top-Level `async` / `await` Example: Invoking using IIFE
+	    ========================================================
+
+Until ES-2022, top-level .~await~ not allowed.  Used IIFE as workaround.
+
+~~~
+> ( async () => {     //must use async to use await
+    p(await msg(22));
+    p(await msg(42));
+  })()              //async IIFE
+Promise { <pending>, ... }
+> 22: hello@21:06:53 GMT-0500 (EST)
+42: hello@21:06:55 GMT-0500 (EST)
+
+>
+~~~
+
+		Async `sleep()`
+		===============
+
+~~~
+> async function sleep(millis) {
+    return new Promise((resolve) =>
+      setTimeout(() => resolve(), millis));
+}
+
+//using es-2022 top-level await
+> p(t()); await sleep(2000); p(t()); 
+18:49:06 GMT-0400 (Eastern Daylight Time)
+18:49:08 GMT-0400 (Eastern Daylight Time)
+undefined
+>
+~~~
+
+		Placing an Order using .~async~ and .~await~
+		============================================
+
+In .<code/async-order-sim/async-await-order.mjs?lang=mjs> async-await-order.mjs:
+
+
+.include("code/async-order-sim/async-await-order.mjs", begin=".1")
+
+.code(lang=sh)
+```
+# happy path
+./main.mjs async-await-order.mjs 
+async-await-order validated; order placed; email sent
+
+# catches errors properly
+$ ./main.mjs async-await-order.mjs validate
+validate error
+$ ./main.mjs async-await-order.mjs order
+order error
+$ ./main.mjs async-await-order.mjs email
+email error
+$
+```
+
+%%%
+
+	Revisit Dynamic Sequencing using `async`
+	========================================
+
+In .<code/async-seq.js> async-seq.js:
+
+.include("code/async-seq.js", end_label=".1.")
+
+        `async` Dynamic Sequencing Log
+	==============================
+
+~~~
+[amul2, amul3, amul4] =  //destructuring
+   [mul2, mul3, mul4].map((m) => async (a) => m(a))
+> (async () => p(await amul2(3)))() //IIFE to test amul2
+Promise {  <pending>, ... }
+> 6
+> afns = [amul2, amul3, amul4]
+[ [AsyncFunction], [AsyncFunction], [AsyncFunction] ]
+> afns.push(async function(a) { return  p(a); })
+4
+> asyncSequencePromises(init, afns);
+Promise { <pending>, ... }
+> 24
+~~~
+
+%%%
+

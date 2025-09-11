@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Asynchronous   JavaScript</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link href="../../assets/styles/article.css" rel="stylesheet" type="text/css" /> 
+</head>
+
+<body class=umt-slides>
+
+    <nav id="course-nav">
+      <ul>
+      </ul>
+    </nav>
+    
+    <div class="umt-content">
+      <div><section data-level="h1"><h1>Asynchronous   JavaScript</h1><section data-level="h2"><h2>Overview</h2><ul><li><p>Cookbook approach to asynchronous code in modern JavaScript.
+</p></li><li><p>The JavaScript <strong>event loop</strong> and <strong>run-to-completion</strong> semantics.
+</p></li><li><p>Callbacks for event handlers.
+</p></li><li><p>Pyramid of doom.
+</p></li><li><p>Taming asynchronous code: promises.
+</p></li><li><p>Taming asynchronous code: <code>async</code>, <code>await</code>.
+</p></li></ul></section><section data-level="h2"><h2>Cookbook Approach</h2><p>Can use asynchronous code without understanding underlying concepts
+by using &quot;keywords<code></code>&quot; <code>async</code> and <code>await</code>:
+</p><ul><li><p>If a function is documented as <code class="hljs language-javascript">async</code> or as returning a
+    promise, then it is possible to call it using the <code class="hljs language-javascript">await</code>
+    keyword.
+</p></li><li><p>The <code class="hljs language-javascript">await</code> returns with the success value only when the
+    underlying asynchronous operation completes.
+</p></li><li><p>If an error occurs in the asynchronous function, then
+    the resulting exception can be handled using the
+    usual <code class="hljs language-javascript">try</code>-<code></code><code class="hljs language-javascript">catch</code>.
+</p></li><li><p>The <code class="hljs language-javascript">await</code> keyword can <strong>only</strong> be used within functions
+    declared using the <code class="hljs language-javascript">async</code> keyword.  Consequently, any
+    use of asynchronous code within a program will necessitate
+    declaring the top-level function in the program <code class="hljs language-javascript">async</code>.
+</p></li><li><p>Enables writing asynchronous code in a synchronous style.
+</p></li></ul></section><section data-level="h2"><h2>Cookbook Approach to using fetch()</h2><p>The browser provides  <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch">fetch()</a> to allow accessing resources asynchronously.
+</p><pre class="hljs language-javascript">async function getUrl(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`HTTP error '${response.status}'`);
+  }
+  else {
+    return await response.json();
+  }
+}
+</pre><p>This was used in the  <a href="../regex/code/crawler/index.html">crawler</a>
+discussed earlier.
+</p></section><section data-level="h2"><h2>Cookbook Approach to using MongoDB</h2><p>Docs for  <a href="http://mongodb.github.io/node-mongodb-native/3.1/api/MongoClient.html#.connect">connect(),</a>  <a href="http://mongodb.github.io/node-mongodb-native/3.1/api/MongoClient.html#db">db,</a>  <a href="http://mongodb.github.io/node-mongodb-native/3.1/api/Db.html#collection">collection,</a>  <a href="http://mongodb.github.io/node-mongodb-native/3.1/api/Collection.html#findOne">findOne()</a> and  <a href="http://mongodb.github.io/node-mongodb-native/3.1/api/MongoClient.html#close">close().</a>
+</p><pre class="hljs language-javascript">const mongo = require('mongodb').MongoClient;
+async function(mongoUrl, dbName, collectionName, id) {
+  //bad code: reuse db conn; close() should be in finally.
+  try { 
+    const client = await mongo.connect(mongoUrl);
+    const db = client.db(dbName);
+    const collection = db.collection(collectionName);
+    const value = await collection.findOne({_id: id});
+    await client.close();
+    return value;
+  }
+  catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+</pre></section><section data-level="h2"><h2>The Need for  Concurrency</h2><ul><li><p>Modern CPUs have clocks in the low GHz.  That means individual
+    CPU operations occupy under 1 nanosecond.
+</p></li><li><p>Typically, I/O may take in the order of milliseconds which is
+    around a million times slower than CPU operations.
+</p></li><li><p>Highly inefficient to have CPU wait for an I/O operation to
+    complete.
+</p></li><li><p>Need to concurrently do other stuff while waiting for I/O to
+    complete.
+</p></li><li><p>Note that browser responsiveness is usually controlled by
+    I/O responsiveness.
+</p></li></ul></section><section data-level="h2"><h2>Approaches to Concurrency</h2><p>Two commonly used approaches to concurrency:
+</p><dl><dt> Synchronous Blocking Model</dt><dd><p>    When a program attempts to do I/O, the program blocks until the
+    I/O is completed.  To allow concurrency, the operating system
+    will schedule some other activity while waiting for the I/O.  The
+    unit of scheduling is usually a <strong>process</strong> or <strong>thread</strong>; leads to
+    the process/thread model used by many current OS's.
+</p></dd><dt> Asynchronous Event Model</dt><dd><p>    When a program attempts to do I/O, it merely starts the I/O after
+    registering a callback handler to handle the I/O completion event.  The
+    program continues running while the I/O is happening concurrently.
+    The completion of the I/O results in a event which results in
+    the registered handler being called.
+</p></dd></dl></section><section data-level="h2"><h2>Asynchronicity in JavaScript</h2><ul><li><p>JavaScript uses the asynchronous event model.
+</p></li><li><p>JavaScript started out simply using callbacks for asynchronous
+    programming.
+</p></li><li><p>Promises introduced into JavaScript in ES6 around 2012.
+</p></li><li><p>Allow using asynchronous functions in a synchronous style
+    using <code class="hljs language-javascript">async</code>/<code></code><code class="hljs language-javascript">await</code> in ES2017.
+</p></li><li><p>Asynchronicity is required for <strong>message passing</strong> which is an
+    essential ingredient of 
+    <a href="https://www.reactivemanifesto.org/">Reactive Programming</a>.
+</p></li></ul></section><section data-level="h2"><h2>JavaScript Event Loop</h2><p>The top-level JavaScript runtime consists of an event loop which pulls
+tasks corresponding to completed events off a task queue and calls their
+handler function.
+</p><pre class="hljs language-javascript">  while (taskQueue.notEmpty()) {
+    const task = taskQueue.remove();
+    const handler = task.handler();
+    handler.call(); //pass suitable arguments
+  }
+  //terminate program
+</pre><ul><li><p>The <code>hander.call()</code> <strong>runs to completion</strong>.
+</p></li><li><p>Code does not need to deal with an event handler being
+    interrupted.
+</p></li><li><p>Code still needs to deal with the fact that the order of
+    running of event handlers is not defined.
+</p></li></ul></section><section data-level="h2"><h2>Run to Completion Consequences</h2><p>In  <a href="code/run-to-completion.js?colorize=true">run-to-completion.js:</a>
+</p><pre class="hljs language-js">#!/usr/bin/env nodejs
+
+//BAD CODE!!
+function sleep(seconds) {
+  const stop = Date.now() + seconds*1000;
+  while (Date.now() &lt; stop) {
+    //busy waiting: yuck!
+  }
+}
+
+setTimeout(() => console.log('timeout'),
+	   1000 /*delay in milliseconds*/);
+
+sleep(5);
+console.log('sleep done');
+</pre></section><section data-level="h2"><h2>Run to Completion Log</h2><pre>$ ./run-to-completion.js 
+sleep done
+timeout
+$
+</pre><p>Because of run-to-completion semantics, it will <strong>always</strong> be
+the case that the <em>sleep done</em> message will be output before
+the <em>timeout</em> message.
+</p></section><section data-level="h2"><h2>Why This Concurrency Model</h2><ul><li><p>JavaScript was designed as a language which should be easy for
+    inexperienced programmers to use for scripting dynamic behavior in
+    browsers.
+</p></li><li><p>Browser reacts to user actions by generating events like
+    key-press, mouse-click, etc.
+</p></li><li><p>Browser programmer needs to provide optional event handlers for
+    these events in order to implement browser dynamic behavior.
+</p></li><li><p>Since every event handler runs to completion, programmer can simply
+    concentrate on code for that event, ignoring other events (at least
+    for independent events).
+</p></li><li><p>No need for the programmer to understand complex process / threading
+    models.
+</p></li><li><p>Lower overhead for I/O bound tasks; well suited for browser
+    environment.
+</p></li></ul></section><section data-level="h2"><h2>Playing with Asynchronous Functions</h2><p>Simulate asynchronous success and failure using 
+<a href="code/async-sim.mjs">async-sim.mjs</a> which uses
+
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/setTimeout">setTimeout()</a> to run function asynchronously or fail after a 2-second
+delay:
+</p><pre class="hljs language-mjs">const TIMEOUT_MILLIS = 2*1000;
+
+export function asyncSucc(fn, ...args) {
+  setTimeout(fn, TIMEOUT_MILLIS, ...args);
+}
+
+export function asyncErr(msg) {
+  setTimeout(() => { throw new Error(msg) }, TIMEOUT_MILLIS);
+}
+
+// Utilities
+
+export const p = console.log;
+
+export function t() { return new Date().toTimeString(); }
+
+
+</pre></section><section data-level="h2"><h2>Playing with Asynchronous Functions: Usage</h2><pre class="hljs language-javascript">> const { asyncSucc, asyncErr, p, t } =
+     await import('./async-sim.mjs')
+undefined
+> p(1, 2, 3)
+1 2 3
+undefined
+> t()
+'08:56:59 GMT-0400 (Eastern Daylight Time)'
+> asyncSucc(() => p('done'))
+undefined
+> done
+
+> asyncErr('some error message')
+undefined
+> Uncaught Error: some error message
+> 
+</pre></section><section data-level="h2"><h2>Accessing Return Value of an Asynchronous Operation</h2><pre class="hljs language-javascript">> function f() {
+    asyncSucc(() => { p('f run'); return 42; });
+  }
+undefined
+> let ret = f();
+undefined
+> f run
+
+> ret
+undefined
+> 
+</pre><p>How do I get hold of the 42 return value.
+</p></section><section data-level="h2"><h2>Return Value of an Asynchronous Operation: Another Attempt</h2><p>Try using a global var to get hold of return value.
+</p><pre class="hljs language-javascript">> function f() {
+    asyncSucc(() => { p('f run'); ret = 42; });
+  }
+undefined
+> ret = -1; f(); p(`ret after f() is ${ret}`);
+ret after f() is -1
+undefined
+> f run
+
+> ret
+42
+> 
+</pre><p>The only way to access the return value of an asynchronous operation
+is via a parameter to the callback function.
+</p><pre class="hljs language-javascript">> asyncSucc(callback => callback(42), v => console.log(v))
+undefined
+> 42
+>
+</pre></section><section data-level="h2"><h2>Placing Order Simulation</h2><p>We use a simple  <a href="code/async-order-sim/">async simulation</a> of placing
+an order.  Have an <code>orderer</code> object which simulates consecutive
+asynchronous steps:
+</p><dl><dt> <strong>validate</strong> </dt><dd><p>Validate parameters.
+</p></dd><dt> <strong>order</strong> </dt><dd><p> Place order.
+</p></dd><dt> <strong>email</strong> </dt><dd><p> Send confirmation email.
+</p></dd></dl><p>The command-line program 
+<a href="code/async-order-sim/main.mjs?lang=js">main.mjs</a> allows up to two arguments:
+</p><ol><li><p>The module to be used for placing an order.
+</p></li><li><p>An optional argument which specifies the step at which
+    an error occurs.
+</p></li></ol></section><section data-level="h2"><h2>Placing an Order using Callbacks: Happy Path</h2><p>In  <a href="code/async-order-sim/happy-cb-order.mjs?lang=js">happy-cb-order.mjs</a>
+</p><pre class="hljs language-mjs">function doOrder(orderer, params) {
+  orderer.validate(params, succ1 => {
+    orderer.placeOrder(succ1, succ2 => {
+      orderer.sendEmail(succ2, succ3 => {
+	console.log(succ3);
+      });
+    });
+  });
+}
+
+			
+  
+</pre><pre class="hljs language-sh">$ ./main.mjs happy-cb-order.mjs 
+happy-cb-order validated; order placed; email sent
+
+# same result, even tho placing order fails!!
+# (extra &quot;order&quot; argument forces error when placing order)
+$ ./main.mjs happy-cb-order.mjs order
+happy-cb-order validated; order placed; email sent
+$
+</pre></section><section data-level="h2"><h2>Errors</h2><pre class="hljs language-javascript">//Normal exception catching
+> try {
+    throw 'throwing';
+  } catch (ex) {
+    p(`caught ${ex}`);
+  }
+caught throwing
+undefined
+</pre></section><section data-level="h2"><h2>Errors Continued</h2><pre class="hljs language-javascript">//Exception in Async not caught
+try {
+  asyncErr('some error');
+}
+catch (ex) {
+  p(`caught ${ex}`);
+}
+undefined
+> Uncaught Error: some error
+> 
+</pre></section><section data-level="h2"><h2>Using Node fs.readFile() with Callback</h2><pre class="hljs language-js">for (const path of [ './readfile.js',
+		     './xxx.js',  ]) {
+  fs.readFile(path, (err, data) => {
+    if (err) {
+      console.error(`cannot read ${path}: ${err}`);
+    }
+    else {
+      console.log(`read ${path}:\n${data.slice(0, 15)}...`);
+    }
+  });
+}
+
+</pre><p><strong>Log</strong>:
+</p><pre>> cannot read ./xxx.js: Error: ENOENT: ...
+read ./readfile.js:
+#!/usr/bin/env ...
+
+</pre></section><section data-level="h2"><h2>Placing an Order using Callbacks with Error Checking</h2><p>In  <a href="code/async-order-sim/err-cb-order.mjs?lang=mjs">err-cb-order.mjs:</a>
+</p><pre class="hljs language-js">function doOrder(orderer, params) {
+  orderer.validate(params, (succ, err) => {
+    if (err) {
+      console.error(err);
+    }
+    else { //validate ok
+      orderer.placeOrder(succ, (succ, err) => {
+	if (err) {
+	  console.error(err);
+	}
+	else { //placeOrder ok
+	  orderer.sendEmail(succ, (succ, err)  => {
+	    if (err) {
+	      console.error(err);
+	    }
+	    else { //email ok
+	      console.log(succ);
+	    }
+	  }); //email
+	} //placeOrder ok			    
+      }); //placeOrder
+    } //validate ok
+  }); //validate
+}
+
+
+			
+  
+</pre></section><section data-level="h2"><h2>Placing an Order using Callbacks with Error Checking: Log</h2><pre class="hljs language-sh"># happy path
+$ ./main.mjs err-cb-order.mjs 
+err-cb-order validated; order placed; email sent
+
+# catches errors properly
+$ ./main.mjs err-cb-order.mjs validate
+validate error
+$ ./main.mjs err-cb-order.mjs order
+order error
+$ ./main.mjs err-cb-order.mjs email
+email error
+$
+</pre></section><section data-level="h2"><h2>Problems with Callbacks</h2><ul><li><p>A top-level exception handler does not work for asynchronous
+    callbacks since the handler runs before the callback.  Hence
+    exceptions occurring within the callback are not caught
+    by the top-level exception handler.
+</p></li><li><p>If an asynchronous function result needs to be further processed
+    by another asynchronous function, then we need to have nested
+    callbacks.
+</p></li><li><p>A chain of callbacks leads to the <strong>pyramid of doom</strong> because
+    of nesting of callbacks.
+</p></li></ul></section><section data-level="h2"><h2>Promises</h2><ul><li><p>A 
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises">Promise</a> is an object representing the eventual completion or
+    failure of an asynchronous operation.
+</p></li><li><p>When a function which requires an asynchronous callback as an
+    argument is called, it returns immediately with an object called a
+    <em>pending</em> <strong>Promise</strong>.  Subsequently, the callbacks can be added to
+    the promise.  The callbacks will be called after the promise has
+    been <em>settled</em>.
+</p></li></ul><pre class="hljs language-javascript">let promise = some_call_which_returns_promise(...);
+promise.
+  then(callback1).
+  then(callback2).
+  ...
+  catch(errorCallback);
+</pre></section><section data-level="h2"><h2>Promise Advantages</h2><ul><li><p>Promises can be chained; this avoids the <em>pyramid of doom</em>.
+</p></li><li><p>Callbacks are never called before completion of current run of
+    js <strong>event loop</strong>.
+</p></li><li><p>Callbacks added using <code class="hljs language-javascript">then</code> even after completion of the
+    asynchronous operation will still be called.
+</p></li><li><p><code class="hljs language-javascript">then()</code> can be called multiple times on the <strong>same</strong> promise to
+    add multiple callbacks (called in order of insertion).
+</p></li><li><p>Allows catching errors much more easily using <code class="hljs language-javascript">catch()</code>;
+    similar to exception handling.
+</p></li><li><p><code class="hljs language-javascript">then()</code> can even be chained after a catch.
+</p></li></ul></section><section data-level="h2"><h2>Promise API</h2><pre class="hljs language-javascript">new Promise(
+  /* executor */
+  function(resolve, reject) { ... }
+);
+</pre><ul><li><p>Creates a promise.
+</p></li><li><p><code>resolve</code> and <code>reject</code> are single argument functions.
+</p></li><li><p>Executor function executed immediately.  Usually will start some
+    kind of asynchronous operation which may return some result.
+</p><ol><li><p>If the async operation succeeds with some result <code>succ</code>, then
+        the executor function should call <code>resolve(succ)</code>.
+</p></li><li><p>If the async operation fails with some error <code>err</code>, then the
+        executor function should call <code>reject(err)</code>.
+</p></li></ol></li></ul></section><section data-level="h2"><h2>Outline of Using Promises for Asynch Operations</h2><pre class="hljs language-javascript">function doOperation(...params) {
+  return new Promise((resolve, reject) => {
+    asyncOperation(...params, (result) => { //callback
+      if (isOk(result)) {
+        resolve(result);
+      }
+      else {
+        reject(result);
+      }
+    });
+  });
+}
+
+doOperation(...).
+  then(result => { ... }).
+  catch( err => ...);
+</pre></section><section data-level="h2"><h2>Example: Timeout Promise</h2><pre class="hljs language-js">> function timeoutPromise(t = 2*1000) {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(42), t);
+  });
+}
+
+... ... ... ... undefined
+> timeoutPromise().then(v => console.log(v));
+
+Promise {
+  &lt;pending>,
+  ...
+}
+> 42
+>
+</pre></section><section data-level="h2"><h2>Promise States</h2><dl><dt>Pending</dt><dd><p>    The underlying operation is not yet complete.
+</p></dd><dt>Settled</dt><dd><p>    The underlying operation completed; it is known whether or not it succeeded
+    resulting in two settled sub-states:
+</p><dl><dt>Fulfilled</dt><dd><p>        The underlying operation completed successfully.
+</p></dd><dt>Rejected</dt><dd><p>        The underlying operation failed.
+</p></dd></dl></dd></dl><p>A promise is settled only once.  The state of the promise will not change
+once it is settled.
+</p></section><section data-level="h2"><h2>Getting Promise Settlement: <code>then()</code></h2><pre class="hljs language-javascript">somePromise.then(value, err)
+</pre><ul><li><p>Arguments are one argument functions called when <code>somePromise</code> is
+     settled; specifically <code>value</code> / <code>err</code> are called with fulfillment
+     / rejection value depending on settlement.
+</p></li><li><p>Usually <code class="hljs language-javascript">then()</code> is called with only the <code>value</code> argument,
+    with rejection of <code>somePromise</code> handled using a <code class="hljs language-javascript">catch()</code>.
+</p></li><li><p><code class="hljs language-javascript">then()</code> itself returns a promise; this allows chaining <code class="hljs language-javascript">then</code>'s.
+</p><ul><li><p>If the function passed to <code class="hljs language-javascript">then()</code> returns a value,
+       then the return'd promise fulfills with that value.
+</p></li><li><p>If the function passed to <code class="hljs language-javascript">then()</code> throws an error,
+       then the return'd promise rejects with that error.
+</p></li><li><p>If the function passed to <code class="hljs language-javascript">then()</code> returns a promise,
+       then the return'd promise has the same settlement
+       as it.
+</p></li></ul></li></ul></section><section data-level="h2"><h2>Getting Promise Rejection: <code>catch()</code></h2><pre class="hljs language-javascript">somePromise.catch(err)
+</pre><ul><li><p><code>err</code> is a one argument functions called with the rejection value
+     of promise <code>somePromise</code>.
+</p></li><li><p><code class="hljs language-javascript">catch()</code> itself returns a promise; this allows continued promise
+    chaining.  Return value is similar to that of <code class="hljs language-javascript">then()</code>.
+</p></li></ul></section><section data-level="h2"><h2>nodejs util.promisify()</h2><ul><li><p>API for nodejs evolved before promises were added to language.
+</p></li><li><p><code>util.promisify(fn)</code> can be used with existing callback-based
+    nodejs library function <code>fn</code> to make it return a <code class="hljs language-javascript">Promise</code>.
+</p></li><li><p>For example <code>util.promisify(fs.readFile)</code> returns a wrapped
+    version of <code>fs.readFile</code> which will return a <code class="hljs language-javascript">Promise</code>.
+</p></li><li><p>Newer versions of node have API already wrapped to return
+    promises.  For example, use <code>fsPromises.readFile()</code> instead
+    of <code>util.promisify(fs.readFile)</code>.
+</p></li></ul></section><section data-level="h2"><h2>Using Node fs.readFile() with Promise</h2><pre class="hljs language-js">function readFilePromise(path) {
+  return util.promisify(fs.readFile)(path, 'utf8');
+}
+
+for (const path of [ './readfile.js',
+		     './xxx.js', ]) {
+  readFilePromise(path)
+    .then(data => {
+      console.log(`read ${path}:\n${data.slice(0, 15)}...`);
+    })
+    .catch(err => {
+      console.error(`cannot read ${path}: ${err}`);
+    });
+}
+</pre></section><section data-level="h2"><h2>Playing with Promises</h2><pre class="hljs language-javascript">> pr = new Promise((resolve, reject) => resolve(22))
+Promise {  22, ... }
+> pr.then((v) => p(v))
+Promise { &lt;pending>, ... }
+> 22
+//Promise is settled only once
+> pr = new Promise((succ) => { succ(42); succ(22); })
+Promise { 42, ... }
+> pr.then((v) => p(v))
+Promise { &lt;pending>, ... }
+> 42
+</pre></section><section data-level="h2"><h2>Playing with Promises: Chaining <code>then()</code>'s</h2><pre class="hljs language-javascript">> function f(a, b) { p(a); return a * b; }
+undefined
+> pr = new Promise((resolve) => resolve(22))
+Promise { 22, ... }
+> pr.then((val) => f(val, 2)).
+    then((val) => f(val, 3)).
+    then((val) => p(val))
+> Promise { &lt;pending>, ... }
+> 22
+44
+132
+
+>
+</pre></section><section data-level="h2"><h2>Creating Settled Promises</h2><dl><dt> <code>Promise.resolve(value)</code></dt><dd><p>    Returns a promise which is already fulfilled with <code>value</code>.
+</p></dd><dt> <code>Promise.reject(err)</code></dt><dd><p>    Returns a promise which is already rejected with <code>err</code>.
+</p></dd></dl></section><section data-level="h2"><h2>Playing with Promises: Asynchronous Functions</h2><pre class="hljs language-javascript">> function f(a, b, ret) {
+    p(`${t()}: ${a}`);
+    setTimeout(() => ret(a*b), 2000);
+  }
+undefined
+> pr = Promise.resolve(22)
+> pr.
+    then((v) => new Promise((succ) => f(v, 2, succ))).
+    then((v) => new Promise((succ) => f(v, 3, succ))).
+    then((v) => p(`${t()}: ${v}`))
+> 08:21:42 GMT-0400 (Eastern Daylight Time): 22
+08:21:44 GMT-0400 (Eastern Daylight Time): 44
+08:21:46 GMT-0400 (Eastern Daylight Time): 132
+
+> 
+</pre></section><section data-level="h2"><h2>Playing with Promises: Errors</h2><pre class="hljs language-javascript">> p(t()); pr1 = 
+    Promise.reject(new Error(t())); pr1.catch(()=>{})
+08:27:07 GMT-0400 (Eastern Daylight Time)
+...
+> p(t()); pr1.
+    then((v) => p(v)).
+    then((v) => p(v)).catch((err)=>p(err))
+08:27:51 GMT-0400 (Eastern Daylight Time)
+...
+> Error: 08:27:07 GMT-0400 (Eastern Daylight Time)
+...
+</pre></section><section data-level="h2"><h2>Playing with Promises: Errors Continued</h2><pre class="hljs language-javascript">> pr1.
+    then((v) => p(`got value ${v}`)).
+    then((v) => p(`got value ${v}`)).
+    catch((e) => { p(`caught ${e}`); return 42; }).
+    then((v) => p(`got value ${v}`))
+Promise { &lt;pending>, ... }
+> caught Error: 08:27:07 GMT-0400 (Eastern Daylight Time)
+got value 42
+
+> 
+</pre></section><section data-level="h2"><h2>Playing with Promises: Errors Continued</h2><p><code>then()</code>-chain continues past <code>catch()</code>:
+</p><pre class="hljs language-javascript">> Promise.resolve(1).
+    then((v) => { p(`then1: ${v}`); return v*2; }).
+    then((v) => { p(`then2: ${v}`); return v*2; }).
+    catch((e) => p(`caught ${e}`)).
+    then((v) => { p(`then3: ${v}`); return v*2; })
+Promise { &lt;pending>, ... }
+> then1: 1
+then2: 2
+then3: 4
+
+> 
+</pre></section><section data-level="h2"><h2>Placing an Order using Promises</h2><p>In  <a href="code/async-order-sim/promise-order.mjs?lang=mjs">promise-order.mjs:</a>
+</p><pre class="hljs language-mjs">function doOrder(orderer, params) {
+  orderer.validate(params)
+    .then(succ1 => orderer.placeOrder(succ1))
+    .then(succ2 => orderer.sendEmail(succ2))
+    .then(succ3 => console.log(succ3))
+    .catch(err => console.error(err));
+}
+			
+  
+</pre><pre class="hljs language-sh"># happy path
+$ ./main.mjs promise-order.mjs
+promise-order validated; order placed; email sent
+
+# catches errors properly
+$ ./main.mjs promise-order.mjs validate
+validate error
+$ ./main.mjs promise-order.mjs order
+order error
+$ ./main.mjs promise-order.mjs email
+email error./main.mjs happy-cb-order.mjs 
+$
+</pre><p>Revisit implementation of 
+<a href="code/async-order-sim/main.mjs?lang=js">main</a> program for asynchronous order simulator.
+</p></section><section data-level="h2"><h2><code>Promise.all()</code></h2><p>Given an <strong>iterable</strong> of promises, returns a promise containing array
+of fulfilled values, or rejection if any promise rejected.
+(note that <code>mulN(i)</code> returns promise for <code>N*i</code> after 2 second delay):
+</p><pre class="hljs language-javascript">> Promise.all([mul2(3), mul3(4), mul4(5)]).
+    then((v) => p(v))
+Promise { &lt;pending>, ... }
+> [ 6, 12, 20 ]
+
+// err() returns a rejected promise
+> Promise.all([mul2(3), err(3)(2), mul3(4), mul4(5)]).
+    then((v) => p(v)).
+    catch((e) => p(`caught ${e}`))
+Promise {  &lt;pending>, ... }
+> caught Error: err
+</pre></section><section data-level="h2"><h2><code>Promise.all()</code> Continued</h2><p><code>Promise.all()</code> runs all promises in parallel:
+</p><pre class="hljs language-javascript">> p(t()); Promise.all([mul2(3), mul3(4), mul4(5)]).
+    then((v) => p(`${t()}: ${v}`))
+15:49:41 GMT-0500 (EST)
+Promise { &lt;pending>, ... }
+> 15:49:43 GMT-0500 (EST): 6,12,20
+</pre><p>Took 2 seconds to run all 3 functions even though each function
+takes 2 seconds apiece.
+</p></section><section data-level="h2"><h2><code>Promise.race()</code></h2><p>Given an <strong>iterable</strong> of promises, returns a promise containing
+settlement of which ever incoming promise completes first.
+</p><pre class="hljs language-javascript">> Promise.race([mul2(3), mul3(4), mul4(5)]).
+    then((v) => p(v))
+Promise { &lt;pending>, ... }
+> 6
+
+>
+</pre><p><code>Promise.any()</code> is similar except that it rejects only if
+all promises reject (<code>Promise.race()</code> will reject if the
+first settled promise rejects).
+</p></section><section data-level="h2"><h2>Placing an Order using Generators</h2><p>Combine promises and generators to linearize control flow:
+</p><p>In  <a href="code/async-order-sim/generator-order.mjs?lang=mjs">generator-order.mjs:</a>
+</p><pre class="hljs language-mjs">function generatorOrder(orderer, params) {
+  const gen = doOrder(orderer, params);
+  gen.next().value                        //validation promise
+    .then(succ1 => gen.next(succ1).value) //order result promise
+    .then(succ2 => gen.next(succ2).value) //email result promise
+    .then(succ3 => console.log(succ3))    //output overall result
+    .catch(err => console.error(err));    //catch any error
+}
+
+function* doOrder(orderer, params) {
+  const validationResult = yield orderer.validate(params);
+  const orderResult =
+    yield orderer.placeOrder(validationResult);
+  yield orderer.sendEmail(orderResult);
+}
+</pre></section><section data-level="h2"><h2>Placing an Order using Generators: Log</h2><pre class="hljs language-sh"># happy path
+./main.mjs generator-order.mjs 
+generator-order validated; order placed; email sent
+
+# catches errors properly
+$ ./main.mjs generator-order.mjs validate
+validate error
+$ ./main.mjs generator-order.mjs order
+order error
+$ ./main.mjs generator-order.mjs email
+email error
+$
+</pre></section><section data-level="h2"><h2><code>async</code> / <code>await</code></h2><ul><li><p>Extra syntax around promises and generators to allow writing
+    asynchronous code in a synchronous style.
+</p></li><li><p>If a function or function expression has the <code class="hljs language-javascript">async</code> (contextual)
+    keyword in front of it, then that function always returns a
+    promise.
+</p></li><li><p>When the <code class="hljs language-javascript">await</code> (contextual) keyword is used in front of
+    an expression which is a promise, it blocks the program
+    until the promise is settled.  The value of an <code class="hljs language-javascript">await</code>
+    expression is the fulfillment value of the promise.
+</p></li><li><p>The <code class="hljs language-javascript">await</code> keyword can only be used within a <code class="hljs language-javascript">async</code> function.
+</p></li><li><p>Errors can be handled using <code class="hljs language-javascript">try</code>-<code></code><code class="hljs language-javascript">catch</code>.
+</p></li><li><p>Seems a big win.
+</p></li><li><p>Note that we may need to fall back on promises using <code>Promise.all()</code>
+    when we want to run code in parallel rather than sequentially.
+</p></li></ul></section><section data-level="h2"><h2><code>async</code> / <code>await</code> Example</h2><pre class="hljs language-javascript">> function msgPromise() {
+    return new Promise(function (resolve) {
+      setTimeout(() =>
+                 resolve(`hello@${t()}`), 2000)});
+   }
+undefined
+> async function msg(n) {
+    const m = await msgPromise();
+    return `${n}: ${m}`
+  }
+undefined
+</pre></section><section data-level="h2"><h2>Top-Level <code>async</code> / <code>await</code> Example: Invoking using IIFE</h2><p>Until ES-2022, top-level <code class="hljs language-javascript">await</code> not allowed.  Used IIFE as workaround.
+</p><pre class="hljs language-javascript">> ( async () => {     //must use async to use await
+    p(await msg(22));
+    p(await msg(42));
+  })()              //async IIFE
+Promise { &lt;pending>, ... }
+> 22: hello@21:06:53 GMT-0500 (EST)
+42: hello@21:06:55 GMT-0500 (EST)
+
+>
+</pre></section><section data-level="h2"><h2>Async <code>sleep()</code></h2><pre class="hljs language-javascript">> async function sleep(millis) {
+    return new Promise((resolve) =>
+      setTimeout(() => resolve(), millis));
+}
+
+//using es-2022 top-level await
+> p(t()); await sleep(2000); p(t()); 
+18:49:06 GMT-0400 (Eastern Daylight Time)
+18:49:08 GMT-0400 (Eastern Daylight Time)
+undefined
+>
+</pre></section><section data-level="h2"><h2>Placing an Order using <code class="hljs language-javascript">async</code> and <code class="hljs language-javascript">await</code></h2><p>In  <a href="code/async-order-sim/async-await-order.mjs?lang=mjs">async-await-order.mjs:</a>
+</p><pre class="hljs language-mjs">async function doOrder(orderer, params) {
+  try {
+    const validation = await orderer.validate(params);
+    const order = await orderer.placeOrder(validation);
+    const result = await orderer.sendEmail(order);
+    console.log(result);
+  }
+  catch (err) {
+    console.error(err);
+  }
+}
+</pre><pre class="hljs language-sh"># happy path
+./main.mjs async-await-order.mjs 
+async-await-order validated; order placed; email sent
+
+# catches errors properly
+$ ./main.mjs async-await-order.mjs validate
+validate error
+$ ./main.mjs async-await-order.mjs order
+order error
+$ ./main.mjs async-await-order.mjs email
+email error
+$
+</pre></section></section></div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/slide-controls.mjs"></script>
+    <script type="module" src="../../assets/scripts/nav.mjs"></script> 
+    <script type="module" src="../../assets/scripts/highlight.mjs"></script>
+</body>
+</html>
+

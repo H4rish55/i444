@@ -1,0 +1,375 @@
+                    U s e r s   A u t h e n t i c a t i o n
+
+
+			  Overview
+			  ========
+
+  + Authentication vs authorization.
+
+  + Password storage.
+
+  + Demo following technologies:
+
+    + JSON
+
+    + Asynchronous programming using `async` and `await`.
+
+    + Mongo db
+
+    + Zod validation.
+
+  + Testing.
+
+
+                          Authentication vs Authorization
+                          ===============================
+
+
+  + *Authentication*: Who we are.  Example: user-id and password.
+
+  + *Authorization*: What we can do.  Example: Unix file system
+    permissions.
+
+  + *2-Factor Authentication*: Authentication based on 2 independent
+    factors: for example, "what we know" and "what we have".
+    Examples: user-id password and fingerprint; user-id password and
+    cellphone; user-id password and iris scan.
+
+  + Authentication and authorization are orthogonal concepts, but
+    authorization usually requires some kind of earlier
+    authentication.
+
+  + *Access control*: control access to resources based on authentication
+    and authorization.
+ 
+
+                          Password Storage
+                          ================
+
+  + A responsible programmer should *never* store a plaintext
+    password.
+
+  + Typically, passwords are hashed (not encrypted) using a one-way
+    hashing algorithm like SHA256 or bcrypt.  Only hash is stored.
+    When user logs in, entered password is hashed and compared with
+    stored hash; if they match, then login is allowed, else denied.
+
+  %%%
+  + Initially, Unix password hashes were stored in world-readable
+    `/etc/passwd`.  Now stored in `/etc/shadow` with restricted
+    readability.
+  %%%
+
+  + Simple hash is amenable to a "dictionary attack" where hashes are
+    precomputed for many common passwords; if precomputed hash matches
+    stored hash (got by accessing the password file), then password is
+    dictionary word.
+
+
+
+                        More on Hashing
+                        ===============
+  
+  + Map variable length content to fixed-length hash string.
+
+  + Good hashing algorithms ensure that changing the content slightly
+    (even by a single bit) will result in a different hash.
+
+  + The uses of hashing include hash tables, summarizing content,
+    cryptographic signatures.
+
+  + Cryptographically secure hashing algorithms SHA-256, and bcrypt.
+    The latter is purposely slow.  Note that MD5 is no longer regarded
+    as cryptographically secure.
+
+```
+$ echo hello | sha256sum 
+5891b5b522d5df086d0ff... (64 hexets)
+$ echo hellp | sha256sum 
+bf8c83416f31143ee2fa5... (64 hexets)
+$
+```
+
+                          Password Storage Continued
+                          ==========================
+
+  + One way of cracking passwords is to have pre-built maps mapping 
+    common ."dictionary words``." to their hash values and simply find a
+    match in the stored hashes for the hash of the password being
+    cracked.
+
+  + Dictionary attacks can be made harder by adding a random salt to
+    each password before hashing.  The salt is stored along with the
+    hash to allow matching an entered password.  So a 2 character salt
+    with 64 possibilities for each salt character would increase the
+    number of combinations for a dictionary attack by 4096.
+
+  + In 2000's, brute-forcing passwords becoming possible because
+    of extremely fast hardware (sometimes using GPUs).
+
+  + Normal hashing algorithms like SHA-256 were designed to be fast.
+
+  + Current best practice for password hashing is to use purposely
+    slowed up hash algorithms like `bcrypt` to make it harder for
+    crackers.
+
+
+		    Using bcrypt
+		    ============
+
+In .<./code/users-auth/bin/bcrypt-hash.mjs?lang=js> bcrypt-hash.mjs:
+
+.include("./code/users-auth/bin/bcrypt-hash.mjs")
+
+		    Using bcrypt: Log
+		    =================
+
+```
+$ node code/users-auth/bin/bcrypt-hash.mjs
+hash1: $2b$10$wXRP2XE8q3czM8mHe9Fi2.h... (truncated)
+hash2: $2b$10$0zqbCRkJomsoXaL3oSo4De2... (truncated)
+cmp1 true
+cmp2 false
+```
+
+%%%
+			Node Package Manager
+			====================
+
+  + Track dependencies of project transitively.
+
+  + Handles multiple versions of same package.
+
+      # Assume project requires v1 of packages A and B.
+
+      # Package A requires v1 of package C.
+
+      # Package B requires v2 of package C.
+
+    npm sets things up so as to have both v1 and v2 coexistent
+    at runtime.  This can occasionally cause trouble, but usually
+    works seamlessly.
+
+
+			npm Dependencies
+			================
+
+  + Distinguish different types of dependencies:
+
+      + Runtime dependencies.
+
+      + Development dependencies (use option `-D` or `--save-dev`).
+
+          + Build-time dependencies like `webpack`.
+
+          + Testing dependencies like `mocha`.
+
+
+                   Config File package.json
+		   ========================
+
+  + Config file `package.json` is JSON: hence no comments allowed!!
+
+  + Sample .<code/users-auth/package.json> package.json.
+
+  + `npm install PACKAGE` will install `PACKAGE` and all its
+    dependencies as runtime dependencies in the `node_modules`
+    directory.
+
+  + `npm install -D PACKAGE` will install `PACKAGE` and all its
+    dependencies as development dependencies in the `node_modules`
+    directory.
+
+  + Above commands will create a `package-lock.json` which specifies
+    the exact versions of the dependencies found.
+
+  + `npm install` will install all dependencies from `package.json`.
+    Unfortunately, it does not
+    .<https://stackoverflow.com/questions/45022048/why-does-npm-install-rewrite-package-lock-json>
+    "respect package-lock.json".
+
+  + I use `npm ci` to get exactly the same versions as
+    `package-lock.json`.
+%%%
+
+
+		MongoDb
+		=======
+
+  + One of many nosql databases.  No rigid relations need to be predefined.
+
+  + Allows storing and JS data serialized in ."documents``." having `_id`
+    as primary key (when storing a document without an `_id` property, it is created
+    automatically with a suitable ID value).
+
+  + Allows indexing.
+
+  + Provides basic *Create-Read-Update-Delete* (CRUD) repertoire.
+
+
+    	     	   Mongo CRUD
+		   ==========
+
+All operations asynchronous.  Set up to return a `Promise` when
+called without a handler.
+
+  :Create:
+    `insertOne()` and `insertMany()`.
+
+  :Read:
+    `find()` returns a `Cursor`.  Can grab all using `toArray()`.
+
+  :Update:
+    `updateOne()` and `updateMany()`.  Also, `findOneAndUpdate()`
+    and `findOneAndReplace()`.  Can combine insert and update
+    functionality using `upsert` option.
+
+  :Delete:
+    `deleteOne()` and `deleteMany()`.
+
+
+		Asynchronous DB Operations
+		==========================
+
+  + As mentioned, most DB operations are asynchronous.
+
+  + Usually a good idea to cache DB connection as opening
+    a DB connection is an expensive operation.
+
+  + Create a .<https://en.wikipedia.org/wiki/Data_access_object>
+    "Data Access Object" (DAO) which wraps a database.  Cache database
+    connection within object when object is first created.
+
+  + DAO should provide dumb persistence operations and not contain
+    domain logic.
+
+  + Getting a connection to a DB is an asynchronous operation.
+
+  + Can we build object using an `async` `constructor`??
+
+  + Use a static factory method instead.
+
+
+
+			Setting up a Mongo Project
+			==========================
+
+.code(lang=sh)
+```
+$ npm init -y #creates package.json
+...
+$ npm install mongodb    #old versions required --save
+npm notice created a lockfile as package-lock.json...
+...
+$ ls -a
+.gitignore node_modules package.json package-lock.json ...
+$
+```
+
+    		      Mongo Shell Log
+		      ===============
+
+Allows interacting with mongo db.  Following log assumes that
+collection `userInfos` in db `users` is loaded with simpsons data.
+
+```
+$ mongosh
+Current Mongosh Log ID: ...
+...
+...
+test> help
+...
+> use users   //assume populated with Simpsons
+switched to db users
+users> db.userInfos.find({})
+{ "_id" : "bart", "id" : "bart", ... }
+{ "_id" : "marge", "id" : "marge", ... }
+{ "_id" : "lisa", "id" : "lisa", ... }
+{ "_id" : "homer", "id" : "homer", ... }
+users> db.userInfos.find({"firstName": "Bart"})
+{ "_id" : "bart", "id" : "bart", ... }
+users> db.userInfos.find({}).length()
+4
+```
+	
+    		      Mongo Shell Log Continued
+		      =========================
+
+```
+users> db.userInfos.deleteOne({"firstName": "Bart"})
+{ "acknowledged" : true, "deletedCount" : 1 }
+> db.userInfos.find({}).length()
+3
+users> db.userInfos.deleteMany({})
+{ "acknowledged" : true, "deletedCount" : 3 }
+users> db.userInfos.find({}).length()
+0
+```
+
+			Zod Validation Framework
+			========================
+
+.<https://zod.dev/?id=table-of-contents> Zod is a TS centered validation
+framework.
+
+  + Schemas describing validation constraints.
+
+  + TypeScript type extracted automatically from zod schemas.
+
+  + Schemas for basic JS types like primitives, objects and arrays.
+
+  + Possible to add additional constraints like a minimal length.
+
+  + Add additional constrains using refinements.
+
+  + Transform to different types using transforms.
+
+~~~
+const UserInfo =  z.object({
+  email: z.string().email(),
+  firstName: z.string().min(1).regex(/^[\w\s]+$/),
+  lastName: z.string().min(1).regex(/^[\w\s]+$/),
+});
+
+type UserInfo = z.infer<typeof UserInfo>;
+~~~
+
+			User Auth Features
+			==================
+
+  + Store user-info objects.
+
+  + Demonstrate use of `insert*()`, `find*()`, `delete*()`.
+
+  + .<code/users-auth/LOG?lang=sh> "Sample log".
+
+			.=auth= TS Implementation
+			=========================
+
+  : .<code/users-auth/src/lib/auth-services.ts?lang=ts> auth-services.ts :
+    Top-level authentication services.
+
+  : .<code/users-auth/src/lib/user.ts?lang=ts> user.ts :
+    User interface and zod validation.
+
+  : .<code/users-auth/src/lib/auth-dao.ts?lang=ts> auth-dao.ts :
+    Data Access Object which implements db operations.
+
+  : .<code/users-auth/src/lib/main.ts?lang=ts> main.ts :
+    Command-line interface, trivially invoked from
+    .<code/users-auth/src/index.ts?lang=ts> index.ts.
+
+  : .<code/users-auth/src/test/mem-db-server.ts?lang=ts> test/mem-db-server.ts :
+    Memory based mongo sever as a *test double*.  Advantages include
+    speed and that clearing of in-memory db before each test.
+
+  : .<code/users-auth/src/test/auth-dao.ts?lang=ts> test/auth-dao.ts :
+    Auth dao tests.
+
+  : .<code/users-auth/src/test/auth-services.ts?lang=ts> test/auth-services.ts :
+    Auth service tests.
+
+  : .<code/users-auth/src/test/user.ts?lang=ts> test/user.ts :
+    User tests.
+
+
