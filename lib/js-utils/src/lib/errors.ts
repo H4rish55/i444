@@ -93,7 +93,7 @@ export function err(arg1: any, arg2?: string | Record<string, string>,
 export class Errs {
   errors: Err[] = [];
   toString() {
-    return this.errors.map(e => e.toString()).join();
+    return this.errors.map(e => e.toString()).join('\n');
   }
   add(arg0: any, ...args: any[]) {
     this.errors.push(err(arg0, ...args));
