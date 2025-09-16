@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Iterators  and  Generators</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link href="../../assets/styles/article.css" rel="stylesheet" type="text/css" /> 
+</head>
+
+<body class=umt-slides>
+
+    <nav id="course-nav">
+      <ul>
+      </ul>
+    </nav>
+    
+    <div class="umt-content">
+      <div><section data-level="h1"><h1>Iterators  and  Generators</h1><section data-level="h2"><h2>Overview</h2><ul><li><p>Useful to iterate over collections like <code>Array</code>, <code>Map</code> or <code>Set</code>
+    using <code class="hljs language-javascript">for-of</code> with iteration controlled by collection.
+</p></li><li><p>Possible to make an arbitrary object <strong>iterable</strong> (using <code class="hljs language-javascript">for-of</code>)
+    if the object provides a function-valued <code>Symbol.iterator</code>
+    property which returns an iterator object which implements the
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators">iterator protocol</a>.
+</p></li><li><p>Made easier using generators.
+</p></li></ul></section><section data-level="h2"><h2>Symbols</h2><p>A
+
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol">Symbol</a> is a JS primitive value guaranteed to be unique. (Similar to
+Lisp's 
+<a href="https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node110.html">uninterned symbols</a>).
+</p><pre class="hljs language-javascript">> const s1 = Symbol('descr')
+undefined
+> const s2 = Symbol('descr')
+undefined
+> s1 === s2
+false
+> s1
+Symbol(descr)
+> typeof s1
+'symbol'
+> 
+</pre></section><section data-level="h2"><h2>Encapsulation using Symbols</h2><p>Symbols provide a weak form of encapsulation.  They can be used as
+property names and those properties are inaccessible without having
+access to the symbol.
+</p><pre class="hljs language-javascript">> const obj = {}
+undefined
+> obj[s1] = 42   //s1 symbol from last slide
+42
+> obj[s1]
+42
+> obj[Symbol('descr')]
+undefined
+> obj[s2]
+undefined
+>
+</pre></section><section data-level="h2"><h2>Global Symbol Registry</h2><p>It is possible to share symbols across multiple modules by adding them
+to a global symbol registry.
+</p><pre class="hljs language-javascript">Symbol.for() adds to global registry if not present
+> const s3 = Symbol.for('descr')
+undefined
+> const s4 = Symbol.for('descr')
+undefined
+> s3 === s4  //same symbol since global
+true
+> s3 === s1  //global symbols not equal local symbol
+false
+> Symbol.keyFor(s3) //retrieve key for global symbol
+'descr'
+> Symbol.keyFor(s1) //does not work for local symbol
+undefined
+// Symbol contains properties for standard symbols
+> Symbol.iterator
+Symbol(Symbol.iterator)
+</pre></section><section data-level="h2"><h2>Iterating using for-of</h2><p>Values contained in <code>Iterable</code> objects can be iterated over using
+<code>for-of</code> loops.
+</p><pre class="hljs language-javascript">for (let v of iterable) { ... }
+</pre><p>Builtin iterables include <code>String</code>, <code>Array</code>, ES6 <code>Map</code> and <code>Set</code>,
+<code>arguments</code>, but <strong>not Object</strong>.
+</p><pre class="hljs language-javascript">> for (const x of 'abc') { console.log(x); }
+a
+b
+c
+undefined
+>
+</pre></section><section data-level="h2"><h2>Building Iterables</h2><p>Any object can be made iterable by implementing the
+
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols">iterable protocol</a>.
+</p><ul><li><p>Must implement a zero argument method with name given by
+    <code>Symbol.iterator</code>.
+</p></li><li><p>When this function is invoked, it must return an object
+    implementing the <strong>iterator protocol</strong>.
+</p></li><li><p>So two protocols involved: <strong>iterable</strong> and <strong>iterator</strong>.
+</p></li><li><p>Much simpler when using <strong>generators</strong>.
+</p></li></ul></section><section data-level="h2"><h2>Iterator Protocol</h2><p>An object implementing the <strong>iterator protocol</strong> must have a <code>next()</code>
+method which returns an object having at least the following two
+properties:
+</p><dl><dt> <code>done</code></dt><dd><p>    A boolean which is set to true iff the iterator is done.
+    If true, then <code>value</code> optionally gives the return value of the
+    iterator.
+</p></dd><dt> <code>value</code></dt><dd><p>    Any JavaScript object giving the current value returned by the
+    iterator.  Need not be present when <code>done</code> is true.
+</p></dd></dl></section><section data-level="h2"><h2>Iterator and Iterable Types in TypeScript</h2><p>Using prefix <code>My</code> to avoid clash with built-in TypeScript types.
+</p><pre class="hljs language-ts">//an iterable must have a zero arg [Symbol.Iterator] function
+//which returns an iterator
+type MyIterable = {
+  [Symbol.iterator](): MyIterator
+};
+
+//an iterator must have a next() function which returns an
+//iterator result
+type MyIterator = {
+  next: (v?: any) => MyIteratorResult
+};
+
+//an iterator result must have a done flag; if false, 
+//value should give yield of iterator
+type MyIteratorResult = {
+  value?: any,
+  done: boolean
+};
+</pre></section><section data-level="h2"><h2>Sequence Iterable</h2><p>Build a sequence iterable to allow iterating through a sequence of
+integers.  Example edited log:
+</p><pre class="hljs language-javascript">> for (const v of makeSeq(3, 5)) { console.log(v); }
+3
+4
+5
+
+//step by 2
+> for (const v of makeSeq(3, 10, 2)) { console.log(v); }
+3
+5
+7
+9
+>
+</pre></section><section data-level="h2"><h2>Sequence Iterable Code</h2><p>In  <a href="code/seq.js">seq.js:</a>
+</p><pre class="hljs language-mjs">export default
+function makeSeq(lo=0, hi=Number.MAX_SAFE_INTEGER, inc=1) {
+  return {
+    [Symbol.iterator]() { //fn property syntax
+      let value = lo;
+      return {
+	next() {
+	  const obj = { done: value > hi, value };
+	  value += inc;
+	  return obj;
+	},
+      };
+    },
+  };
+}
+</pre></section><section data-level="h2"><h2>Infinite Iteration</h2><pre class="hljs language-javascript">> for (const v of makeSeq()) { //&quot;infinite&quot; iterator
+    if (v > 3) break;
+    console.log(v);
+  }
+0
+1
+2
+3
+</pre></section><section data-level="h2"><h2>Nested Iteration</h2><pre class="hljs language-javascript">> for (const i of makeSeq(1, 2)) { //nested seq obj lifetimes
+    for (const j of makeSeq(3, 4)) {
+      console.log(i, j);
+    }
+  }
+1 3
+1 4
+2 3
+2 4
+>
+</pre></section><section data-level="h2"><h2>A Glimpse at Generators</h2><p>Generators defined using <code>function*</code> and <code>yield</code>.  
+</p><pre class="hljs language-javascript">> function* seq(lo=0, hi=Number.POSITIVE_INFINITY) {
+    for (let i = Math.floor(lo); i &lt;= hi; i++) yield(i);
+  }
+undefined
+> for (s of seq(1, 3)) console.log(s);
+1
+2
+3
+undefined
+>
+</pre></section><section data-level="h2"><h2>Generators Return Iterators</h2><ul><li><p>When a generator is called it does not run the generator
+    code, but immediately returns an <strong>iterator</strong>.
+</p></li><li><p>Generator code can <code class="hljs language-javascript">yield</code> successive values; <code class="hljs language-javascript">return</code> terminates
+    the generator.
+</p></li><li><p>Caller interacts with returned iterator to step the generator.
+</p></li><li><p>Iterators have a <code>next()</code> method which returns an
+    object with two properties:
+</p><dl><dt> <code>done</code> </dt><dd><p>       A boolean which is true when the generator is done.
+</p></dd><dt> <code>value</code> </dt><dd><p>       The currently yielded value.
+</p></dd></dl></li><li><p>Passing argument to <code>next()</code> makes argument the value returned
+    by <code class="hljs language-javascript">yield</code>.
+</p></li><li><p><code>next()</code> is asymmetric: its argument is sent to the currently
+    suspended <code class="hljs language-javascript">yield</code>, but it returns the operand of the <strong>following</strong>
+    <code class="hljs language-javascript">yield</code>.
+</p></li><li><p>Not possible to make first <code class="hljs language-javascript">yield</code> return a specific value.
+</p></li></ul></section><section data-level="h2"><h2>Using <code>next()</code> Return Value</h2><p>Slightly modified example from  <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/yield#using_yield">MDN:</a>
+</p><pre class="hljs language-javascript">function* counter(value=0) {
+ while (true) {
+   const step = yield value++;
+   if (step !== undefined) {
+     value += step;
+   }
+ }
+}
+</pre></section><section data-level="h2"><h2>Using <code>next()</code> Return Value: Log</h2><pre class="hljs language-javascript">> const gen = counter()
+undefined
+> gen.next().value
+0
+> gen.next().value
+1
+> gen.next().value
+2
+> gen.next(10).value
+13
+> gen.next().value
+14
+> gen.next().value
+15
+> gen.next(5).value
+21
+> gen.next().value
+22
+> 
+</pre></section></section></div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/slide-controls.mjs"></script>
+    <script type="module" src="../../assets/scripts/nav.mjs"></script> 
+    <script type="module" src="../../assets/scripts/highlight.mjs"></script>
+</body>
+</html>
+

@@ -27,6 +27,9 @@ runnable version of code for that section.
 
   + .<destructuring/destructuring.html> "Destructuring".
 
+  + .<iterators-generators/iterators-generators.html>
+    "Iterators and Generators".
+
   + .<async/async.html> Async.
 
   + .<users-auth/users-auth.html> "Users Authentication".
@@ -36,9 +39,6 @@ runnable version of code for that section.
 %%%
 
   + .<regex/regex.html> "Regex".
-
-  + .<iterators-generators/iterators-generators.html>
-    "Iterators and Generators".
 
   + .<functions/functions.html> Functions.
 

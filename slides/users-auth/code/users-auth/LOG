@@ -1,9 +1,9 @@
 # edited annotated log
 
 # usage
-$ ./index.mjs 
-usage: index.mjs DB_URL (register|login|get|query|update|remove|clear) \
-       PARAMS_JSON
+$ ./index.mjs
+
+usage: index.mjs DB_URL (register|login|get|query|update|remove|clear) PARAMS_JSON
 
 # register with JSON syntax error
 $ ./index.mjs mongodb://localhost:27017/auth register \
@@ -13,23 +13,22 @@ bad data json {"email": "zdu@x.com", "firstName": "zerksis", "lastName": "umriga
 # register missing password
 $ ./index.mjs mongodb://localhost:27017/auth register \
     '{"email": "zdu@x.com", "firstName": "zerksis", "lastName": "umrigar" }'
-MISSING: password is required
-MISSING: confirmPassword is required
+E_MISSING: password is required
+E_MISSING: confirmPassword is required
 
 # register not sufficiently strong password
 $ ./index.mjs mongodb://localhost:27017/auth register \
   '{"email": "zdu@x.com", "firstName": "zerksis", "lastName": "umrigar",
      "password": "abcd1234", "confirmPassword": "abcd1234" }'
-BAD_REQ: password must contain at least one lowercase letter, \
-  one uppercase letter, one digit and one punctuation character
+E_BAD_VAL: password must contain at least one lowercase letter, 
+           one uppercase letter, one digit and one punctuation character
 
 # success!!
 $ $ ./index.mjs mongodb://localhost:27017/auth register \
   '{"email": "zdu@x.com", "firstName": "zerksis", "lastName": "umrigar",
      "password": "Abcd1234!", "confirmPassword": "Abcd1234!" }'
 {
-  userId: '1_97',
-  passwordHash: '$2b$10$/IJQ2/DuEghSb3SKKWxtwuRoeKIfiWAUAllMz9WsGxaBXLvG0yNKi',
+  id: '1_07',
   email: 'zdu@x.com',
   firstName: 'zerksis',
   lastName: 'umrigar'
@@ -39,36 +38,33 @@ $ $ ./index.mjs mongodb://localhost:27017/auth register \
 $ ./index.mjs mongodb://localhost:27017/auth login \
      '{"email": "zdu@x.com", "password": "Abcd1234!" }'
 {
-  userId: '1_97',
-  passwordHash: '$2b$10$/IJQ2/DuEghSb3SKKWxtwuRoeKIfiWAUAllMz9WsGxaBXLvG0yNKi',
+  id: '1_07',
   email: 'zdu@x.com',
   firstName: 'zerksis',
   lastName: 'umrigar'
 }
 
 # access user
-$ ./index.mjs mongodb://localhost:27017/auth get '{"userId": "1_97" }'
+$ ./index.mjs mongodb://localhost:27017/auth get '{"id": "1_07" }'
 {
-  userId: '1_97',
-  passwordHash: '$2b$10$/IJQ2/DuEghSb3SKKWxtwuRoeKIfiWAUAllMz9WsGxaBXLvG0yNKi',
+  id: '1_07',
   email: 'zdu@x.com',
   firstName: 'zerksis',
   lastName: 'umrigar'
 }
 
 # upcase firstName
-$ ./index.mjs mongodb://localhost:27017/auth update \
-              '{"userId": "1_97", "firstName": "Zerksis" }'
-{
-  userId: '1_97',
-  passwordHash: '$2b$10$/IJQ2/DuEghSb3SKKWxtwuRoeKIfiWAUAllMz9WsGxaBXLvG0yNKi',
+./index.mjs mongodb://localhost:27017/auth update \
+              '{"id": "1_07", "firstName": "Zerksis" }'
+> {
+  id: '1_07',
   email: 'zdu@x.com',
   firstName: 'Zerksis',
   lastName: 'umrigar'
 }
 
 # remove user
-$ ./index.mjs mongodb://localhost:27017/auth remove '{"userId": "1_97" }'
+./index.mjs mongodb://localhost:27017/auth remove '{"id": "1_07" }'
 undefined
 
 # no longer able to login

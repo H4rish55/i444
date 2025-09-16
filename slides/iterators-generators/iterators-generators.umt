@@ -1,0 +1,318 @@
+              I t e r a t o r s   a n d   G e n e r a t o r s
+
+
+
+                            Overview
+			    ========
+
+  + Useful to iterate over collections like `Array`, `Map` or `Set`
+    using .~for-of~ with iteration controlled by collection.
+
+  + Possible to make an arbitrary object *iterable* (using .~for-of~)
+    if the object provides a function-valued `Symbol.iterator`
+    property which returns an iterator object which implements the
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators>
+    *iterator protocol*.
+
+  + Made easier using generators.
+
+	      	      	    Symbols
+			    =======
+
+A
+.<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol>
+Symbol is a JS primitive value guaranteed to be unique. (Similar to
+Lisp's .<https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node110.html>
+"uninterned symbols").
+
+~~~
+> const s1 = Symbol('descr')
+undefined
+> const s2 = Symbol('descr')
+undefined
+> s1 === s2
+false
+> s1
+Symbol(descr)
+> typeof s1
+'symbol'
+> 
+~~~
+
+			Encapsulation using Symbols
+			===========================
+
+Symbols provide a weak form of encapsulation.  They can be used as
+property names and those properties are inaccessible without having
+access to the symbol.
+
+~~~
+> const obj = {}
+undefined
+> obj[s1] = 42   //s1 symbol from last slide
+42
+> obj[s1]
+42
+> obj[Symbol('descr')]
+undefined
+> obj[s2]
+undefined
+>
+~~~
+
+
+    	    	    Global Symbol Registry
+		    ======================
+
+It is possible to share symbols across multiple modules by adding them
+to a global symbol registry.
+
+~~~
+Symbol.for() adds to global registry if not present
+> const s3 = Symbol.for('descr')
+undefined
+> const s4 = Symbol.for('descr')
+undefined
+> s3 === s4  //same symbol since global
+true
+> s3 === s1  //global symbols not equal local symbol
+false
+> Symbol.keyFor(s3) //retrieve key for global symbol
+'descr'
+> Symbol.keyFor(s1) //does not work for local symbol
+undefined
+// Symbol contains properties for standard symbols
+> Symbol.iterator
+Symbol(Symbol.iterator)
+~~~
+
+                        Iterating using for-of
+                        ======================
+
+Values contained in `Iterable` objects can be iterated over using
+`for-of` loops.
+
+~~~
+for (let v of iterable) { ... }
+~~~
+
+Builtin iterables include `String`, `Array`, ES6 `Map` and `Set`,
+`arguments`, but *not Object*.
+
+~~~
+> for (const x of 'abc') { console.log(x); }
+a
+b
+c
+undefined
+>
+~~~
+
+		Building Iterables
+		==================
+
+Any object can be made iterable by implementing the
+.<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols>
+"iterable protocol".
+
+  + Must implement a zero argument method with name given by
+    `Symbol.iterator`.
+
+  + When this function is invoked, it must return an object
+    implementing the *iterator protocol*.
+
+  + So two protocols involved: *iterable* and *iterator*.
+
+  + Much simpler when using *generators*.
+
+		Iterator Protocol
+		=================
+
+An object implementing the *iterator protocol* must have a `next()`
+method which returns an object having at least the following two
+properties:
+
+  : `done`:
+    A boolean which is set to true iff the iterator is done.
+    If true, then `value` optionally gives the return value of the
+    iterator.
+
+  : `value`:
+    Any JavaScript object giving the current value returned by the
+    iterator.  Need not be present when `done` is true.
+
+
+    	         Iterator and Iterable Types in TypeScript
+		 =========================================
+
+Using prefix `My` to avoid clash with built-in TypeScript types.
+
+.code(lang=ts)
+~~~
+//an iterable must have a zero arg [Symbol.Iterator] function
+//which returns an iterator
+type MyIterable = {
+  [Symbol.iterator](): MyIterator
+};
+
+//an iterator must have a next() function which returns an
+//iterator result
+type MyIterator = {
+  next: (v?: any) => MyIteratorResult
+};
+
+//an iterator result must have a done flag; if false, 
+//value should give yield of iterator
+type MyIteratorResult = {
+  value?: any,
+  done: boolean
+};
+~~~
+
+    	       	    Sequence Iterable
+		    =================
+
+Build a sequence iterable to allow iterating through a sequence of
+integers.  Example edited log:
+
+~~~
+> for (const v of makeSeq(3, 5)) { console.log(v); }
+3
+4
+5
+
+//step by 2
+> for (const v of makeSeq(3, 10, 2)) { console.log(v); }
+3
+5
+7
+9
+>
+~~~
+
+		   Sequence Iterable Code
+		   ======================
+		   
+In .<code/seq.js> seq.js:
+
+.include("code/seq.mjs", end=".1.")
+
+
+    	       	    Infinite Iteration
+		    ==================
+
+~~~
+> for (const v of makeSeq()) { //"infinite" iterator
+    if (v > 3) break;
+    console.log(v);
+  }
+0
+1
+2
+3
+~~~
+
+		    Nested Iteration
+		    ================
+
+~~~
+> for (const i of makeSeq(1, 2)) { //nested seq obj lifetimes
+    for (const j of makeSeq(3, 4)) {
+      console.log(i, j);
+    }
+  }
+1 3
+1 4
+2 3
+2 4
+>
+~~~
+
+                        A Glimpse at Generators
+                        =======================
+
+Generators defined using `function*` and `yield`.  
+
+~~~
+> function* seq(lo=0, hi=Number.POSITIVE_INFINITY) {
+    for (let i = Math.floor(lo); i <= hi; i++) yield(i);
+  }
+undefined
+> for (s of seq(1, 3)) console.log(s);
+1
+2
+3
+undefined
+>
+~~~
+
+
+			Generators Return Iterators
+			===========================
+
+  + When a generator is called it does not run the generator
+    code, but immediately returns an *iterator*.
+
+  + Generator code can .~yield~ successive values; .~return~ terminates
+    the generator.
+
+  + Caller interacts with returned iterator to step the generator.
+
+  + Iterators have a `next()` method which returns an
+    object with two properties:
+
+     : `done` :
+       A boolean which is true when the generator is done.
+
+     : `value` :
+       The currently yielded value.
+
+  + Passing argument to `next()` makes argument the value returned
+    by .~yield~.
+
+  + `next()` is asymmetric: its argument is sent to the currently
+    suspended .~yield~, but it returns the operand of the *following*
+    .~yield~.
+
+  + Not possible to make first .~yield~ return a specific value.
+
+    		    Using `next()` Return Value
+		    ===========================
+
+Slightly modified example from .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/yield#using_yield> MDN:
+
+~~~
+function* counter(value=0) {
+ while (true) {
+   const step = yield value++;
+   if (step !== undefined) {
+     value += step;
+   }
+ }
+}
+~~~
+
+		Using `next()` Return Value: Log
+		================================
+
+~~~
+> const gen = counter()
+undefined
+> gen.next().value
+0
+> gen.next().value
+1
+> gen.next().value
+2
+> gen.next(10).value
+13
+> gen.next().value
+14
+> gen.next().value
+15
+> gen.next(5).value
+21
+> gen.next().value
+22
+> 
+~~~

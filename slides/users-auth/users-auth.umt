@@ -206,26 +206,40 @@ cmp2 false
 
   + Provides basic *Create-Read-Update-Delete* (CRUD) repertoire.
 
+  + No foreign keys but provides uniqueness constraints.
+
+  + Provides transactions.
+
 
     	     	   Mongo CRUD
 		   ==========
 
 All operations asynchronous.  Set up to return a `Promise` when
-called without a handler.
+called without a handler.  CRUD operations on a collection
+include:
 
   :Create:
-    `insertOne()` and `insertMany()`.
+    `.insertOne()` and `.insertMany()`.
 
   :Read:
-    `find()` returns a `Cursor`.  Can grab all using `toArray()`.
+    `.find()` returns a `Cursor`.  `query` argument can filter by
+    equality using `{ "field"`:` "value" } and by range using
+    operators like `{` "field"`:` `{ $gte:` "value" `} }`.  Can sort
+    cursor by `.sort()`, page results using `.skip()` and `.limit()`.
+    Grab all results from a `Cursor` using `toArray()`.
+    
 
   :Update:
-    `updateOne()` and `updateMany()`.  Also, `findOneAndUpdate()`
-    and `findOneAndReplace()`.  Can combine insert and update
-    functionality using `upsert` option.
+    `.updateOne()` and `.updateMany()`.  Query argument selects
+    documents to be updated and actual updates specified using `$set`
+    operator.  Can also use `.findOneAndUpdate()` and
+    `.findOneAndReplace()` when only a single document is expected to
+    be updated.  Can combine insert and update functionality using
+    `upsert` option, which inserts the document if not already
+    present.
 
   :Delete:
-    `deleteOne()` and `deleteMany()`.
+    `.deleteOne()` and `.deleteMany()`.
 
 
 		Asynchronous DB Operations
@@ -258,7 +272,7 @@ called without a handler.
 ```
 $ npm init -y #creates package.json
 ...
-$ npm install mongodb    #old versions required --save
+$ npm install mongodb    
 npm notice created a lockfile as package-lock.json...
 ...
 $ ls -a
@@ -346,11 +360,11 @@ type UserInfo = z.infer<typeof UserInfo>;
 			.=auth= TS Implementation
 			=========================
 
-  : .<code/users-auth/src/lib/auth-services.ts?lang=ts> auth-services.ts :
-    Top-level authentication services.
-
   : .<code/users-auth/src/lib/user.ts?lang=ts> user.ts :
     User interface and zod validation.
+
+  : .<code/users-auth/src/lib/auth-services.ts?lang=ts> auth-services.ts :
+    Top-level authentication services.
 
   : .<code/users-auth/src/lib/auth-dao.ts?lang=ts> auth-dao.ts :
     Data Access Object which implements db operations.
@@ -361,15 +375,15 @@ type UserInfo = z.infer<typeof UserInfo>;
 
   : .<code/users-auth/src/test/mem-db-server.ts?lang=ts> test/mem-db-server.ts :
     Memory based mongo sever as a *test double*.  Advantages include
-    speed and that clearing of in-memory db before each test.
+    speed and clearing of in-memory db before each test.
 
-  : .<code/users-auth/src/test/auth-dao.ts?lang=ts> test/auth-dao.ts :
-    Auth dao tests.
+  : .<code/users-auth/src/test/tst-user.ts?lang=ts> test/tst-user.ts :
+    User tests.
 
-  : .<code/users-auth/src/test/auth-services.ts?lang=ts> test/auth-services.ts :
+  : .<code/users-auth/src/test/tst-auth-services.ts?lang=ts> test/tst-auth-services.ts :
     Auth service tests.
 
-  : .<code/users-auth/src/test/user.ts?lang=ts> test/user.ts :
-    User tests.
+  : .<code/users-auth/src/test/tst-auth-dao.ts?lang=ts> test/tst-auth-dao.ts :
+    Auth dao tests.
 
 

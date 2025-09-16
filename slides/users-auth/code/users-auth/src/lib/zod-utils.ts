@@ -1,4 +1,4 @@
-import * as E from './errors.js';
+import { Errors as E } from 'cs444-js-utils';
 
 import { z } from 'zod';
 
@@ -24,7 +24,7 @@ export function zodToResult<T>(zod: ZodResult<T>, issueInfos: IssueInfos = {})
 
 
 function zodErrorToResultError<T>(zodError: z.ZodError, issueInfos: IssueInfos)
-  : E.Result<void, E.Errs>
+  : E.Result<T, E.Errs>
 {
   const errors = new E.Errs();
   for (const zIssue of zodError.issues) {
@@ -40,14 +40,14 @@ function zodErrorToResultError<T>(zodError: z.ZodError, issueInfos: IssueInfos)
       ? issueInfo
       : issueMessage(zIssue);
     const code = issueCode(zIssue);
-    const path = (zIssue.path ?? []).join('|');
+    const widget = (zIssue.path ?? []).join('|');
     const options = (typeof issueInfo === 'object')
-      ? { ... (issueInfo.options ?? {}), path }
-      : { path };
-    const err = E.Err.err(message, code, options);
+      ? { ... (issueInfo.options ?? {}), widget }
+      : { widget };
+    const err = E.err(message, {code, ...options});
     errors.add(err);
   }
-  return (errors.nErrors() > 0) ? E.errResult(errors) : E.okResult(undefined);
+  return E.errResult(errors);
 }
 
 
@@ -55,25 +55,22 @@ function issueMessage(zIssue: z.ZodIssue) {
   let message = zIssue.message;
   const path = zIssue.path ?? [];
   const widget = (path.at(-1) ?? '').toString();
-  if (zIssue.code === z.ZodIssueCode.invalid_type) {
-    if (zIssue.received === 'undefined') {
-      message = `${widget} is required`.trim();
+  if (zIssue.code === 'invalid_type') {
+    if (zIssue.expected === 'never') {
+      message = `${widget} is forbidden`.trim();
     }
-    else {
-      message = `${widget} must have type ${zIssue.expected}`.trim();
+    else if (zIssue.input === undefined) {
+      message = `${widget} is required`.trim();
     }
   }
   return message;
 }
 
 function issueCode(zIssue: z.ZodIssue) {
-  let code = 'BAD_REQ';
+  let code = 'E_BAD_VAL';
   if (zIssue.code ===  z.ZodIssueCode.invalid_type) {
-    if (zIssue.received === 'undefined') {
-      code = 'MISSING';
-    }
-    else {
-      code = 'BAD_TYPE';
+    if (zIssue.expected !== 'never' && zIssue.input === undefined) {
+      code = 'E_MISSING';
     }
   }
   return code;

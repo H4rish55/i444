@@ -109,14 +109,24 @@ cmp2 false
     automatically with a suitable ID value).
 </p></li><li><p>Allows indexing.
 </p></li><li><p>Provides basic <strong>Create-Read-Update-Delete</strong> (CRUD) repertoire.
+</p></li><li><p>No foreign keys but provides uniqueness constraints.
+</p></li><li><p>Provides transactions.
 </p></li></ul></section><section data-level="h2"><h2>Mongo CRUD</h2><p>All operations asynchronous.  Set up to return a <code>Promise</code> when
-called without a handler.
-</p><dl><dt>Create</dt><dd><p>    <code>insertOne()</code> and <code>insertMany()</code>.
-</p></dd><dt>Read</dt><dd><p>    <code>find()</code> returns a <code>Cursor</code>.  Can grab all using <code>toArray()</code>.
-</p></dd><dt>Update</dt><dd><p>    <code>updateOne()</code> and <code>updateMany()</code>.  Also, <code>findOneAndUpdate()</code>
-    and <code>findOneAndReplace()</code>.  Can combine insert and update
-    functionality using <code>upsert</code> option.
-</p></dd><dt>Delete</dt><dd><p>    <code>deleteOne()</code> and <code>deleteMany()</code>.
+called without a handler.  CRUD operations on a collection
+include:
+</p><dl><dt>Create</dt><dd><p>    <code>.insertOne()</code> and <code>.insertMany()</code>.
+</p></dd><dt>Read</dt><dd><p>    <code>.find()</code> returns a <code>Cursor</code>.  <code>query</code> argument can filter by
+    equality using <code>{ &quot;field&quot;</code>:<code> &quot;value&quot; } and by range using
+    operators like </code>{<code> &quot;field&quot;</code>:<code> </code>{ $gte:<code> &quot;value&quot; </code>} }<code>.  Can sort
+    cursor by </code>.sort()<code>, page results using </code>.skip()<code> and </code>.limit()<code>.
+    Grab all results from a </code>Cursor<code> using </code>toArray()<code>.</code></p></dd><dt>Update</dt><dd><p>    <code>.updateOne()</code> and <code>.updateMany()</code>.  Query argument selects
+    documents to be updated and actual updates specified using <code>$set</code>
+    operator.  Can also use <code>.findOneAndUpdate()</code> and
+    <code>.findOneAndReplace()</code> when only a single document is expected to
+    be updated.  Can combine insert and update functionality using
+    <code>upsert</code> option, which inserts the document if not already
+    present.
+</p></dd><dt>Delete</dt><dd><p>    <code>.deleteOne()</code> and <code>.deleteMany()</code>.
 </p></dd></dl></section><section data-level="h2"><h2>Asynchronous DB Operations</h2><ul><li><p>As mentioned, most DB operations are asynchronous.
 </p></li><li><p>Usually a good idea to cache DB connection as opening
     a DB connection is an expensive operation.
@@ -130,7 +140,7 @@ called without a handler.
 </p></li><li><p>Use a static factory method instead.
 </p></li></ul></section><section data-level="h2"><h2>Setting up a Mongo Project</h2><pre class="hljs language-sh">$ npm init -y #creates package.json
 ...
-$ npm install mongodb    #old versions required --save
+$ npm install mongodb    
 npm notice created a lockfile as package-lock.json...
 ...
 $ ls -a
@@ -181,16 +191,16 @@ type UserInfo = z.infer&lt;typeof UserInfo>;
 </pre></section><section data-level="h2"><h2>User Auth Features</h2><ul><li><p>Store user-info objects.
 </p></li><li><p>Demonstrate use of <code>insert*()</code>, <code>find*()</code>, <code>delete*()</code>.
 </p></li><li><p> <a href="code/users-auth/LOG?lang=sh">Sample log</a>.
-</p></li></ul></section><section data-level="h2"><h2> <span id="auth">TS</span> Implementation</h2><dl><dt>  <a href="code/users-auth/src/lib/auth-services.ts?lang=ts">auth-services.ts</a> </dt><dd><p>    Top-level authentication services.
-</p></dd><dt>  <a href="code/users-auth/src/lib/user.ts?lang=ts">user.ts</a> </dt><dd><p>    User interface and zod validation.
+</p></li></ul></section><section data-level="h2"><h2> <span id="auth">TS</span> Implementation</h2><dl><dt>  <a href="code/users-auth/src/lib/user.ts?lang=ts">user.ts</a> </dt><dd><p>    User interface and zod validation.
+</p></dd><dt>  <a href="code/users-auth/src/lib/auth-services.ts?lang=ts">auth-services.ts</a> </dt><dd><p>    Top-level authentication services.
 </p></dd><dt>  <a href="code/users-auth/src/lib/auth-dao.ts?lang=ts">auth-dao.ts</a> </dt><dd><p>    Data Access Object which implements db operations.
 </p></dd><dt>  <a href="code/users-auth/src/lib/main.ts?lang=ts">main.ts</a> </dt><dd><p>    Command-line interface, trivially invoked from
      <a href="code/users-auth/src/index.ts?lang=ts">index.ts.</a>
 </p></dd><dt>  <a href="code/users-auth/src/test/mem-db-server.ts?lang=ts">test/mem-db-server.ts</a> </dt><dd><p>    Memory based mongo sever as a <strong>test double</strong>.  Advantages include
-    speed and that clearing of in-memory db before each test.
-</p></dd><dt>  <a href="code/users-auth/src/test/auth-dao.ts?lang=ts">test/auth-dao.ts</a> </dt><dd><p>    Auth dao tests.
-</p></dd><dt>  <a href="code/users-auth/src/test/auth-services.ts?lang=ts">test/auth-services.ts</a> </dt><dd><p>    Auth service tests.
-</p></dd><dt>  <a href="code/users-auth/src/test/user.ts?lang=ts">test/user.ts</a> </dt><dd><p>    User tests.
+    speed and clearing of in-memory db before each test.
+</p></dd><dt>  <a href="code/users-auth/src/test/tst-user.ts?lang=ts">test/tst-user.ts</a> </dt><dd><p>    User tests.
+</p></dd><dt>  <a href="code/users-auth/src/test/tst-auth-services.ts?lang=ts">test/tst-auth-services.ts</a> </dt><dd><p>    Auth service tests.
+</p></dd><dt>  <a href="code/users-auth/src/test/tst-auth-dao.ts?lang=ts">test/tst-auth-dao.ts</a> </dt><dd><p>    Auth dao tests.
 </p></dd></dl></section></section></div>
     </div>
 

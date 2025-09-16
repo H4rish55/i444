@@ -3,7 +3,7 @@ import Path from 'path';
 import { makeAuthDao } from './auth-dao.js';
 import { AuthServices, makeAuthServices } from './auth-services.js';
 
-import * as E from './errors.js';
+import { Errors as E } from 'cs444-js-utils';
 
 export default async function main(args: string[]) {
   if (args.length !== 3) {
@@ -16,7 +16,7 @@ export default async function main(args: string[]) {
       panic(`invalid command ${cmd}; must be one of ${CMDS.join('|')}`);
     }
     const servicesResult = await makeAuthServices(dbUrl);
-    if (!servicesResult.isOk) panic(servicesResult);
+    if (servicesResult.isOk === false) panic(servicesResult.err);
     services = servicesResult.val;
     let params;
     try {
@@ -28,7 +28,7 @@ export default async function main(args: string[]) {
     }
     const result = await dispatch(services, cmd, params);
     if (result.isOk === true)  {
-      console.log(result.val);
+      console.dir(result.val, { depth: null });
     }
     else {
       panic(result.err);
