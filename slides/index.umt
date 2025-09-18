@@ -27,6 +27,8 @@ runnable version of code for that section.
 
   + .<destructuring/destructuring.html> "Destructuring".
 
+  + .<regex/regex.html> "Regex".
+
   + .<iterators-generators/iterators-generators.html>
     "Iterators and Generators".
 
@@ -37,8 +39,6 @@ runnable version of code for that section.
 
 
 %%%
-
-  + .<regex/regex.html> "Regex".
 
   + .<functions/functions.html> Functions.
 
