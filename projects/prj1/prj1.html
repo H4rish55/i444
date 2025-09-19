@@ -26,10 +26,15 @@
     
     <div class="umt-content">
       <div><section data-level="h1"><h1>Project  1</h1><p><strong>Due</strong>: Sep 30, before midnight.
-</p><p><strong>Important Reminder</strong>: As per the course  <a href="../../misc/academic-honesty/academic-honesty-policy.html">Academic Honesty Statement</a>,
-cheating of any kind will minimally result in your letter grade
-for the entire course being reduced by one level.
-</p><p>This document first provides the aims of this project, followed by a
+</p><p><strong>Important Reminders</strong>:
+</p><ul><li><p>As per the course
+    
+    <a href="../../misc/academic-honesty/academic-honesty-policy.html">Academic Honesty Statement</a>, cheating of any kind will minimally
+    result in your letter grade for the entire course being reduced by
+    one level.
+</p></li></ul><ul><li><p>If any use of AI is detected, you will receive a <strong>zero</strong> for the
+    entire project.
+</p></li></ul><p>This document first provides the aims of this project, followed by a
 discussion of its background including relevance to future projects.
 It then lists the requirements as explicitly as possible.  It then
 hints at how these requirements can be met.
@@ -584,7 +589,7 @@ update for <code>ChatRoom</code>s, the type implies that this is a distinct
 policy.)
 </p><p>Hence if the database entity for a <code>ChatMsg</code> directly stored the
 <code>chatName</code> and <code>roomName</code> fields, any update to these fields via
-the <code>User</code> or <code>ChatRoom</code> entities would be extrenly clumsy, requiring
+the <code>User</code> or <code>ChatRoom</code> entities would be extremely clumsy, requiring
 an update of an unlimited number of <code>ChatMsg</code>s.
 </p><p>A better solution would be to replace the <code>chatName</code> and <code>roomName</code>
 fields with <code>userId</code> and <code>roomId</code> fields.  Now any change to the
@@ -611,7 +616,7 @@ transaction.
     the entity types).
 </p></li><li><p>Decide on indexes for your collections.  Use the indexes
     to facilitate efficient search and ensure that uniqueness
-    constrains are satisfied.
+    constraints are satisfied.
 </p></li></ol></section><section data-level="h2"><h2>Hints</h2><p>The following points are worth noting:
 </p><ul><li><p>The methods you are required to implement must return a
      <a href="../../lib/js-utils/src/lib/errors.ts?lang=ts">Result</a> which wraps
@@ -889,12 +894,13 @@ ignore them as long as you meet all project requirements.
 	<code>ID</code>s).  This should be a fairly simple wrapper around mongo's
 	<code>insertOne()</code> similar to the previously implemented <code>addUser()</code>
 	and <code>addChatRoom()</code> methods.
-</p></li><li><p>Add a method to the DAO which directly supports the external <code>
-        </code>makeChatMsg()<code> functionality.  This will merely call the
-	modified </code>getUser()<code> and </code>getChatRoom()<code> functionality to
+</p></li><li><p>Add a method to the DAO which directly supports the external
+        <code>makeChatMsg()</code> functionality.  This will merely call the
+	modified <code>getUser()</code> and <code>getChatRoom()</code> functionality to
 	convert the names to IDs and then call the above private
 	method.  You will need to ensure an early error return if
-	any of the calls fail.</code></p></li></ol></li><li><p>Implement the DAO functionality for the <code>findChatMsgs()</code> method.
+	any of the calls fail.
+</p></li></ol></li><li><p>Implement the DAO functionality for the <code>findChatMsgs()</code> method.
     The <code>roomName</code> and the optional <code>chatName</code> in findParams will need
     to be converted to ID's.  This will be very similar to what you
     did for <code>makeChatMsg()</code> except that it is complicated slightly by

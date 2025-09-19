@@ -1,0 +1,116 @@
+    F u n c t i o n   I m p l e m e n t a t i o n    R e s t r i c t i o n s
+
+[This document uses use `C:fn()` to refer to `C.prototype.fn()`.]
+
+The functions you are required to implement for this assignment 
+require you to write code in a *strictly* functional style without any
+.<https://en.wikipedia.org/wiki/Immutable_object> mutation or
+recursion.  The specific restrictions are:
+
+  + Your code may not make any explicit use of mutation, iteration or
+    recursion.
+
+  + You code may not contain any .~let~ or .~var~ declarations.
+
+  + The answer provided for a specific question may contain
+    only a *single* top-level function.
+
+What you are allowed to do:
+
+  + Your code may declare .~const~ variables with an initializer.
+
+  + A function may contain nested functions.
+
+  + A function provided for a particular answer may call a function
+    defined in an earlier answer.
+
+  + You may also use the full power of JavaScript
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions>
+    "regular expressions" for functions which manipulate text.
+
+  + You may use any
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String>
+    String,
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp>
+    RegExp,
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array>
+    Array,
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number>
+    Number or
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math>
+    Math functions which do not mutate their arguments.  So for example, you may not use the destructive
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort>
+    Array:sort() but you can use the
+    newer non-destructive
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toSorted>
+    toSorted() instead.  You are not allowed to use
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push>
+    Array:push() as it is destructive, but you may use
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat>
+    Array:concat().
+
+
+Some hints for writing code subject to the above restrictions:
+
+  + In the absence of assignment and iteration, the only sequence of
+    statements you can write are a sequence of zero-or-more .~const~
+    declarations followed by a .~return~ statement, or if-then-else
+    statements with the bodies of the `then` and `else` subject to the
+    same restrictions.  In some cases, if-then-else expressions using
+    `?:` may be preferable to `if-then-else` statements.
+
+  + Use higher-order
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array>
+    Array functions like
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map>
+    map(),
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce> 
+    reduce() and
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter>
+    filter() to replace the use of iteration.
+
+  + Note that the functions provided to many of the `Array` functions
+    like `map()` and `reduce()` take multiple arguments including
+    the current index of the element being operated on and the array
+    being operated on.
+
+  + The
+    .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from>
+    Array.from() factory method may be useful for setting up initial
+    arrays.  Specifically, .~Array.from({length: len})~ can be used
+    for creating an *empty* array having length `len` and
+    .~Array.from({length: len}).map((_, i) => i)~ can be used to set
+    up an array of indexes in `[0, len)`.
+
+
+  + *Warning*: One of the bad parts of JavaScript is that when
+    `return`'ing a value from a function, the expression representing
+    the returned value must start on the same line as the `return`
+    keyword.  So
+
+    ~~~
+    return
+      expr;
+    ~~~
+
+    will return `undefined`, but
+
+    ~~~
+    return expr;
+    ~~~
+
+    or 
+
+    ~~~
+    return (
+      expr
+    );
+    ~~~
+
+    will work.
+
+  + To get an idea of the kind of complex implementation which may be
+    necessary, look at the
+    .<../../slides/js-basics/js-basics.html#fib> "Fibonacci function"
+    discussed in class.
+

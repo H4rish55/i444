@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Function  Implementation   Restrictions</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link href="../../assets/styles/article.css" rel="stylesheet" type="text/css" /> 
+</head>
+
+<body class=umt-article>
+
+    <nav id="course-nav">
+      <ul>
+      </ul>
+    </nav>
+    
+    <div class="umt-content">
+      <div><section data-level="h1"><h1>Function  Implementation   Restrictions</h1><p>[This document uses use <code>C:fn()</code> to refer to <code>C.prototype.fn()</code>]
+</p><p>The functions you are required to implement for this assignment 
+require you to write code in a <strong>strictly</strong> functional style without any
+ <a href="https://en.wikipedia.org/wiki/Immutable_object">mutation</a> or
+recursion.  The specific restrictions are:
+</p><ul><li><p>Your code may not make any explicit use of mutation, iteration or
+    recursion.
+</p></li><li><p>You code may not contain any <code class="hljs language-javascript">let</code> or <code class="hljs language-javascript">var</code> declarations.
+</p></li><li><p>The answer provided for a specific question may contain
+    only a <strong>single</strong> top-level function.
+</p></li></ul><p>What you are allowed to do:
+</p><ul><li><p>Your code may declare <code class="hljs language-javascript">const</code> variables with an initializer.
+</p></li><li><p>A function may contain nested functions.
+</p></li><li><p>A function provided for a particular answer may call a function
+    defined in an earlier answer.
+</p></li><li><p>You may also use the full power of JavaScript
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions">regular expressions</a> for functions which manipulate text.
+</p></li><li><p>You may use any
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String,</a>
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp,</a>
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array,</a>
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a> or
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math">Math</a> functions which do not mutate their arguments.  So for example, you may not use the destructive
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort">Array:sort()</a> but you can use the
+    newer non-destructive
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toSorted">toSorted()</a> instead.  You are not allowed to use
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push">Array:push()</a> as it is destructive, but you may use
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat">Array:concat().</a>
+</p></li></ul><p>Some hints for writing code subject to the above restrictions:
+</p><ul><li><p>In the absence of assignment and iteration, the only sequence of
+    statements you can write are a sequence of zero-or-more <code class="hljs language-javascript">const</code>
+    declarations followed by a <code class="hljs language-javascript">return</code> statement, or if-then-else
+    statements with the bodies of the <code>then</code> and <code>else</code> subject to the
+    same restrictions.  In some cases, if-then-else expressions using
+    <code>?:</code> may be preferable to <code>if-then-else</code> statements.
+</p></li><li><p>Use higher-order
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a> functions like
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map">map(),</a>
+     
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce">reduce()</a> and
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter">filter()</a> to replace the use of iteration.
+</p></li><li><p>Note that the functions provided to many of the <code>Array</code> functions
+    like <code>map()</code> and <code>reduce()</code> take multiple arguments including
+    the current index of the element being operated on and the array
+    being operated on.
+</p></li><li><p>The
+    
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from">Array.from()</a> factory method may be useful for setting up initial
+    arrays.  Specifically, <code class="hljs language-javascript">Array.from({length: len})</code> can be used
+    for creating an <strong>empty</strong> array having length <code>len</code> and
+    <code class="hljs language-javascript">Array.from({length: len}).map((_, i) => i)</code> can be used to set
+    up an array of indexes in <code>[0, len)</code>.
+</p></li><li><p><strong>Warning</strong>: One of the bad parts of JavaScript is that when
+    <code>return</code>'ing a value from a function, the expression representing
+    the returned value must start on the same line as the <code>return</code>
+    keyword.  So
+</p><pre class="hljs language-javascript">    return
+      expr;
+</pre><p>    will return <code>undefined</code>, but
+</p><pre class="hljs language-javascript">    return expr;
+</pre><p>    or 
+</p><pre class="hljs language-javascript">    return (
+      expr
+    );
+</pre><p>    will work.
+</p></li><li><p>To get an idea of the kind of complex implementation which may be
+    necessary, look at the
+     <a href="../../slides/js-basics/js-basics.html#fib">Fibonacci function</a>
+    discussed in class.
+</p></li></ul></section></div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/slide-controls.mjs"></script>
+    <script type="module" src="../../assets/scripts/nav.mjs"></script> 
+    <script type="module" src="../../assets/scripts/highlight.mjs"></script>
+</body>
+</html>
+

@@ -7,11 +7,11 @@ function setup() {
 
 window.onload = setup;
 
-const COURSE_BASE = 'cs544/';
+const COURSE_BASE = 'cs444/';
 function startCrawl() {
   const loc = window.location.href;
   const courseIndex = loc.indexOf(COURSE_BASE);
-  if (courseIndex >= 0) { //only crawl cs544
+  if (courseIndex >= 0) { //only crawl cs444
     const startUrl = loc.substring(0, courseIndex + COURSE_BASE.length);
     crawl([startUrl], startUrl, new UrlInfos(startUrl));
   }

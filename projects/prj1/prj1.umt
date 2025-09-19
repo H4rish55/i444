@@ -2,9 +2,16 @@
 
 *Due*: Sep 30, before midnight.
 
-*Important Reminder*: As per the course .<../../misc/academic-honesty/academic-honesty-policy.html> "Academic Honesty Statement",
-cheating of any kind will minimally result in your letter grade
-for the entire course being reduced by one level.
+*Important Reminders*:
+
+   + As per the course
+    .<../../misc/academic-honesty/academic-honesty-policy.html>
+    "Academic Honesty Statement", cheating of any kind will minimally
+    result in your letter grade for the entire course being reduced by
+    one level.
+
+  + If any use of AI is detected, you will receive a *zero* for the
+    entire project.
 
 This document first provides the aims of this project, followed by a
 discussion of its background including relevance to future projects.
@@ -904,7 +911,7 @@ policy.)
 
 Hence if the database entity for a `ChatMsg` directly stored the
 `chatName` and `roomName` fields, any update to these fields via
-the `User` or `ChatRoom` entities would be extrenly clumsy, requiring
+the `User` or `ChatRoom` entities would be extremely clumsy, requiring
 an update of an unlimited number of `ChatMsg`s.
 
 A better solution would be to replace the `chatName` and `roomName`
@@ -939,7 +946,7 @@ Based on the above observations:
 
   # Decide on indexes for your collections.  Use the indexes
     to facilitate efficient search and ensure that uniqueness
-    constrains are satisfied.
+    constraints are satisfied.
 
 			Hints
 			=====
@@ -1330,7 +1337,7 @@ ignore them as long as you meet all project requirements.
 	`insertOne()` similar to the previously implemented `addUser()`
 	and `addChatRoom()` methods.
 
-      # Add a method to the DAO which directly supports the external `
+      # Add a method to the DAO which directly supports the external
         `makeChatMsg()` functionality.  This will merely call the
 	modified `getUser()` and `getChatRoom()` functionality to
 	convert the names to IDs and then call the above private

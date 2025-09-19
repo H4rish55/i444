@@ -1,0 +1,161 @@
+                      H o m e w o r k   1   
+
+*Due Date*: Sep 28 before midnight. .;
+*Max Points*: 100
+
+*Important Reminders*:
+
+   + As per the course
+    .<../../misc/academic-honesty/academic-honesty-policy.html>
+    "Academic Honesty Statement", cheating of any kind will minimally
+    result in your letter grade for the entire course being reduced by
+    one level.
+
+  + If any use of AI is detected, you will receive a *zero* for the
+    entire assignment.
+
+*Justify all answers.*
+
+*It may be the case that some questions cannot be answered as
+ requested.*
+
+Note that some of the questions require you to show code.  You may use
+a JavaScript implementation to verify your answers.
+
+You are encouraged to use the web or the library but are *required* to
+cite any external sources used in your answers.
+
+Many of the questions are meant to familiarize you with the built-in
+functions available in JavaScript (and many other languages) for
+arrays and strings. 
+
+To be turned in using *two* submission links on gradescope:
+
+  : Homework 1 PDF :
+    This link requires you to upload a *single PDF* containing
+    the answers to the first five questions in this document.
+    You will then need to indicate the page within your upload
+    where your answer to each question is located.
+
+  : Homework 1 Zip :
+    This link requires you to upload a single zip file which when
+    unpacked *must* create a `hw1-sol` directory containing
+    the following files:
+
+     : `hw1-sol/hw1-sol.ts` :
+       This TypeScript file must contain runnable code for 11
+       functions.  The provided .<hw1-sol> hw1-sol directory contains
+       a .<hw1-sol/hw1-sol.ts?lang=ts> "skeleton starter file"
+       which provides the specifications for the required functions,
+       as well as a .<hw1-sol/hw1-tests.ts?lang=ts> "tests file"
+       which can be used to clear up any ambiguities in the
+       specifications.
+       
+
+  # JavaScript's `Array` class supports a .<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice> splice()
+    method which reverses an array in place.  Why is there no similar
+    method for the `String` class? "6-points"
+
+ 
+  # A Java programmer is attempting to use JavaScript to validate
+    a `user` object:
+
+    ~~~
+    if (user.id == null) {
+      //report error that id field is not defined
+    }
+    ~~~
+
+    What is wrong with this code?  Provide a better replacement:
+    "6-points"
+
+
+
+  # Given a vocabulary .$\Sigma$ containing 2 symbols `0` and `1`,
+    give regex's for the following: "10-points"
+
+      # All non-empty strings over .$\Sigma$ which have length less
+        than 10.
+
+      # All strings over .$\Sigma$ which have length less than 20 and
+        end with a `1`.
+
+      # All strings of length 4 over .$\Sigma$ which are palindromes.
+
+      # All non-empty strings over .$\Sigma$ which are palindromes.
+
+      # All non-empty strings over .$\Sigma$ which are even, when
+        interpreted as a binary number.
+
+
+  # In .<../../projects/prj1/prj1.html> "Project 1":
+
+      # The
+        .<../../projects/prj1/prj1-sol/src/lib/chat-types.ts?lang=ts#:~:text=type%20User%20%3d>
+        User type contains a separate `id` property even though both
+        `email` and `chatName` are documented as unique and could also
+        be used to uniquely identify a user.  What are the advantages
+        of such a design? "8-points"
+
+      # The entities represent timestamps using UTC time.  What are
+        the advantages and disadvantages of this choice? "8-points"
+
+
+
+  # You are working for an evil spammer who requires you to scrape
+    web pages looking for US phone numbers.  For each discovered
+    phone number, you are required to automatically classify how
+    likely it is to really be a phone number into 3 categories:
+    `low`, `medium` and `high`.  Discuss how you would
+    proceed using the technologies discussed so far in this course.
+
+    Your answer should be specific showing code or pseudo-code
+    fragments.
+
+    You need not consider how the web pages are fetched from web
+    sites.  You should assume that you have HTML text available
+    locally and you have to extract possible phone numbers from that
+    text. "15-points"
+
+    
+  # Implement the 11 functions specified in
+    .<./hw1-sol/hw1-sol.ts?lang=ts> hw1-sol.ts subject to
+    .<restrictions.html> "these restrictions".  To start with, copy
+    the .<hw1-sol> hw1-sol directory to your `submit` folder on your VM.
+
+    .code(lang=sh)
+    ~~~
+    $ cd ~/cs444
+    $ git pull
+    $ cd ~/i444/submit	   # go to clone of github repo
+    $ git pull             # pull in any updates
+    $ cp -r ~/cs444/hw/hw1/hw1-sol .  #copy initial files
+    $ cd hw1-sol           # go to copied dir
+    $ git add .            # add copied files to git
+    $ git commit -m 'started hw1 fns'
+    $ git push             # push to github
+    ~~~
+
+    Implement the specified functions.  As each function is implemented,
+    activate its tests in .<hw1-sol/hw1-tests.ts?lang=ts> hw1-tests.ts
+    by uncommenting the corresponding part of `FN_TESTS`.  You can
+    run the tests verbosely by running `hw1-tests.ts` with one-or-more
+    arguments as in `./hw1-tests-ts -v`.
+
+    When completed, the above command should result in all tests
+    passing as in this linked .<LOG> LOG.
+
+    Running `hw1-tests.ts` without any arguments should result in
+    empty output when all activated tests pass.
+
+    To submit, zip your entire `hw1-sol` directory:
+
+    .code(lang=sh)
+    ~~~
+    $ cd ~/i444/submit	   # go to clone of github repo
+    $ ~/cs444/bin/do-zip.sh hw1-sol
+    ~~~
+
+    and submit the resulting zip-file using the *Homework 1 Zip*
+    submission link on gradescope.
+

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Homework  1</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link href="../../assets/styles/article.css" rel="stylesheet" type="text/css" /> 
+</head>
+
+<body class=umt-article>
+
+    <nav id="course-nav">
+      <ul>
+      </ul>
+    </nav>
+    
+    <div class="umt-content">
+      <div><section data-level="h1"><h1>Homework  1</h1><p><strong>Due Date</strong>: Sep 28 before midnight. <br>
+<strong>Max Points</strong>: 100
+</p><p><strong>Important Reminders</strong>:
+</p><ul><li><p>As per the course
+    
+    <a href="../../misc/academic-honesty/academic-honesty-policy.html">Academic Honesty Statement</a>, cheating of any kind will minimally
+    result in your letter grade for the entire course being reduced by
+    one level.
+</p></li></ul><ul><li><p>If any use of AI is detected, you will receive a <strong>zero</strong> for the
+    entire assignment.
+</p></li></ul><p><strong>Justify all answers.</strong>
+</p><p><strong>It may be the case that some questions cannot be answered as
+ requested.</strong>
+</p><p>Note that some of the questions require you to show code.  You may use
+a JavaScript implementation to verify your answers.
+</p><p>You are encouraged to use the web or the library but are <strong>required</strong> to
+cite any external sources used in your answers.
+</p><p>Many of the questions are meant to familiarize you with the built-in
+functions available in JavaScript (and many other languages) for
+arrays and strings. 
+</p><p>To be turned in using <strong>two</strong> submission links on gradescope:
+</p><dl><dt> Homework 1 PDF </dt><dd><p>    This link requires you to upload a <strong>single PDF</strong> containing
+    the answers to the first five questions in this document.
+    You will then need to indicate the page within your upload
+    where your answer to each question is located.
+</p></dd><dt> Homework 1 Zip </dt><dd><p>    This link requires you to upload a single zip file which when
+    unpacked <strong>must</strong> create a <code>hw1-sol</code> directory containing
+    the following files:
+</p><dl><dt> <code>hw1-sol/hw1-sol.ts</code> </dt><dd><p>       This TypeScript file must contain runnable code for 11
+       functions.  The provided  <a href="hw1-sol">hw1-sol</a> directory contains
+       a  <a href="hw1-sol/hw1-sol.ts?lang=ts">skeleton starter file</a>
+       which provides the specifications for the required functions,
+       as well as a  <a href="hw1-sol/hw1-tests.ts?lang=ts">tests file</a>
+       which can be used to clear up any ambiguities in the
+       specifications.
+</p></dd></dl></dd></dl><ol><li><p>JavaScript's <code>Array</code> class supports a  <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice">splice()</a>
+    method which reverses an array in place.  Why is there no similar
+    method for the <code>String</code> class? <em>6-points</em>
+</p></li><li><p>A Java programmer is attempting to use JavaScript to validate
+    a <code>user</code> object:
+</p><pre class="hljs language-javascript">    if (user.id == null) {
+      //report error that id field is not defined
+    }
+</pre><p>    What is wrong with this code?  Provide a better replacement:
+    <em>6-points</em>
+</p></li><li><p>Given a vocabulary \(\Sigma\) containing 2 symbols <code>0</code> and <code>1</code>,
+    give regex's for the following: <em>10-points</em>
+</p><ol><li><p>All non-empty strings over \(\Sigma\) which have length less
+        than 10.
+</p></li><li><p>All strings over \(\Sigma\) which have length less than 20 and
+        end with a <code>1</code>.
+</p></li><li><p>All strings of length 4 over \(\Sigma\) which are palindromes.
+</p></li><li><p>All non-empty strings over \(\Sigma\) which are palindromes.
+</p></li><li><p>All non-empty strings over \(\Sigma\) which are even, when
+        interpreted as a binary number.
+</p></li></ol></li><li><p>In  <a href="../../projects/prj1/prj1.html">Project 1</a>:
+</p><ol><li><p>The
+        
+        <a href="../../projects/prj1/prj1-sol/src/lib/chat-types.ts?lang=ts#:~:text=type%20User%20%3d">User</a> type contains a separate <code>id</code> property even though both
+        <code>email</code> and <code>chatName</code> are documented as unique and could also
+        be used to uniquely identify a user.  What are the advantages
+        of such a design? <em>8-points</em>
+</p></li><li><p>The entities represent timestamps using UTC time.  What are
+        the advantages and disadvantages of this choice? <em>8-points</em>
+</p></li></ol></li><li><p>You are working for an evil spammer who requires you to scrape
+    web pages looking for US phone numbers.  For each discovered
+    phone number, you are required to automatically classify how
+    likely it is to really be a phone number into 3 categories:
+    <code>low</code>, <code>medium</code> and <code>high</code>.  Discuss how you would
+    proceed using the technologies discussed so far in this course.
+</p><p>    Your answer should be specific showing code or pseudo-code
+    fragments.
+</p><p>    You need not consider how the web pages are fetched from web
+    sites.  You should assume that you have HTML text available
+    locally and you have to extract possible phone numbers from that
+    text. <em>15-points</em>
+</p></li><li><p>Implement the 11 functions specified in
+     <a href="./hw1-sol/hw1-sol.ts?lang=ts">hw1-sol.ts</a> subject to
+     <a href="restrictions.html">these restrictions</a>.  To start with, copy
+    the  <a href="hw1-sol">hw1-sol</a> directory to your <code>submit</code> folder on your VM.
+</p><pre class="hljs language-sh">    $ cd ~/cs444
+    $ git pull
+    $ cd ~/i444/submit	   # go to clone of github repo
+    $ git pull             # pull in any updates
+    $ cp -r ~/cs444/hw/hw1/hw1-sol .  #copy initial files
+    $ cd hw1-sol           # go to copied dir
+    $ git add .            # add copied files to git
+    $ git commit -m 'started hw1 fns'
+    $ git push             # push to github
+</pre><p>    Implement the specified functions.  As each function is implemented,
+    activate its tests in  <a href="hw1-sol/hw1-tests.ts?lang=ts">hw1-tests.ts</a>
+    by uncommenting the corresponding part of <code>FN_TESTS</code>.  You can
+    run the tests verbosely by running <code>hw1-tests.ts</code> with one-or-more
+    arguments as in <code>./hw1-tests-ts -v</code>.
+</p><p>    When completed, the above command should result in all tests
+    passing as in this linked  <a href="LOG">LOG.</a>
+</p><p>    Running <code>hw1-tests.ts</code> without any arguments should result in
+    empty output when all activated tests pass.
+</p><p>    To submit, zip your entire <code>hw1-sol</code> directory:
+</p><pre class="hljs language-sh">    $ cd ~/i444/submit	   # go to clone of github repo
+    $ ~/cs444/bin/do-zip.sh hw1-sol
+</pre><p>    and submit the resulting zip-file using the <strong>Homework 1 Zip</strong>
+    submission link on gradescope.
+</p></li></ol></section></div>
+    </div>
+
+    <script type="module" src="../../assets/scripts/slide-controls.mjs"></script>
+    <script type="module" src="../../assets/scripts/nav.mjs"></script> 
+    <script type="module" src="../../assets/scripts/highlight.mjs"></script>
+</body>
+</html>
+
