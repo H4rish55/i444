@@ -578,7 +578,7 @@ string.replace(substr|regex, replacement|function)
 			Crawler
 			=======
 
-  + Hardcoded to crawl only cs544 website.
+  + Hardcoded to crawl only cs444 website.
 
   + Does not crawl links inserted dynamically by JavaScript.
 

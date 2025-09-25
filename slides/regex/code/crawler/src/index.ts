@@ -1,7 +1,7 @@
 const OK = 200;
 
 function setup() {
-  document.getElementById('go').addEventListener('click',
+  document.querySelector('#go').addEventListener('click',
 						 () => startCrawl());
 }
 
