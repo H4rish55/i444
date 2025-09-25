@@ -1,8 +1,10 @@
 export default
 function makeSeq(lo=0, hi=Number.MAX_SAFE_INTEGER, inc=1) {
+  //return obj implementing iterable protocol
   return {
     [Symbol.iterator]() { //fn property syntax
       let value = lo;
+      //return obj implementing iterator protocol
       return {
 	next() {
 	  const obj = { done: value > hi, value };

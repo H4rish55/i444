@@ -193,7 +193,7 @@ integers.  Example edited log:
 		   Sequence Iterable Code
 		   ======================
 		   
-In .<code/seq.js> seq.js:
+In .<code/seq.mjs?lang=js> seq.mjs:
 
 .include("code/seq.mjs", end=".1.")
 
