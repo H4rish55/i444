@@ -44,7 +44,7 @@ async function crawl(toDos: string[], startUrl: string, urlInfos: UrlInfos) {
     //let m; //old way of matching multiple
     //while ( (m = hrefRegex.exec(html)) ) {
     for (const m of html.matchAll(hrefRegex)) {
-      const url1 = m[1].replace(/#[\w\-]+$/, '');      
+      const url1 = m[1].replace(/#[\w\-]+$/, ''); // ignore fragment ids     
       const linkedUrl = new URL(url1, baseUrl);
       const href = linkedUrl.href;
       const isNew = urlInfos.isNew(href);
