@@ -1105,8 +1105,9 @@ ignore them as long as you meet all project requirements.
     treats `*.mjs` files as ES6 JavaScript modules.
 
   # Use `npm install -D` to install the following packages as
-  *development* dependencies: `@types/node`, `@types/semver`, `chai`,
-  `shx`, `mockdate`, `mongodb-memory-server` and `typescript`.
+    *development* dependencies: `@types/node`, `@types/semver`,
+    `@types/chai`, `chai`, `shx`, `mockdate`, `mongodb-memory-server`
+    and `typescript`.
 
       + The `@types/*` packages provide the typescript compiler with
         information about the types exported by the respective
