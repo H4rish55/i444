@@ -1,7 +1,7 @@
-#!/usr/bin/env bun
+#!/usr/bin/env -S node --experimental-strip-types
 
 //using node produces too much noise
-//#!/usr/bin/env -S node --experimental-strip-types 
+//#!/usr/bin/env bun 
 
 import assert from "node:assert";
 import FNS from './hw1-sol.ts';
@@ -18,7 +18,6 @@ type FnTests = {
 
 // remove comments for fn tests when that fn is implemented
 const FN_TESTS = [
-  /*
   { fn: FNS.sortStrChars,
     tests: [
       { args: [ 'hello world' ], result: ' dehllloorw' },
@@ -235,7 +234,6 @@ const FN_TESTS = [
       },
     ]
   },
-  */
 ];
 
 function go(args) {
