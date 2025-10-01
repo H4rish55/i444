@@ -189,8 +189,16 @@ tst.suite('Chat', () => {
       expect(typeof id).to.equal('string');      
     });
 
-    tst.test.todo('ensure created room can be retrieved', async () => {
-      //TODO
+    tst.test('ensure created room can be retrieved', async () => {
+      const room = ROOMS[0];
+      const result = await C.makeChatRoom(room);
+      assert(result.isOk === true);
+      const roomId = result.val;
+      const getResult = await C.getChatRoom({id: roomId});
+      assert(getResult.isOk === true);
+      const retrievedRoom = getResult.val;
+      assert.equal(retrievedRoom.roomName, room.roomName);
+      assert.equal(retrievedRoom.descr, room.descr);
     });
 
     
@@ -219,12 +227,20 @@ tst.suite('Chat', () => {
 
     
     
-    tst.test.todo('ensure cannot retrieve room with bad id', async () => {
-      //TODO
+    tst.test('ensure cannot retrieve room with bad id', async () => {
+      const badId = T.brand<T.RoomIdX>('bad-room-id');
+      const result = await C.getChatRoom({id: badId});
+      assert(result.isOk === false);
+      expect(result.err.errors[0].options.code).to.equal('E_NOT_FOUND');
     });
 
-    tst.test.todo('ensure cannot insert room with duplicate roomName', async () => {
-      //TODO
+    tst.test('ensure cannot insert room with duplicate roomName', async () => {
+      const room = ROOMS[0];
+      const result1 = await C.makeChatRoom(room);
+      assert(result1.isOk === true);
+      const result2 = await C.makeChatRoom(room);
+      assert(result2.isOk === false);
+      expect(result2.err.errors[0].options.code).to.equal('E_EXISTS');
     });
 
   });
